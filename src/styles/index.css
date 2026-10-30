@@ -997,7 +997,8 @@ a {
 .hero-visual {
   position: relative;
   align-self: center;
-  margin: 5vw 4.5vw 5vw 0;
+  /* Left gutter keeps the tilted corner and caption off the dark copy column. */
+  margin: 5vw 4.5vw 5vw clamp(24px, 3vw, 48px);
   transform: rotate(2deg);
 }
 
@@ -1042,12 +1043,19 @@ a {
   gap: 8px;
 }
 
+/* Clears the frame's 18px offset shadow, which would otherwise paint over it. */
 .hero-visual figcaption {
+  position: relative;
+  z-index: 1;
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
-  padding-top: 13px;
+  gap: 6px 16px;
+  margin-right: 18px;
+  padding-top: 34px;
   font-family: "DM Mono", monospace;
   font-size: 9px;
+  letter-spacing: 0.06em;
 }
 
 .hero-side-note {
@@ -1749,55 +1757,34 @@ a {
   color: var(--acid);
 }
 
+/* Work index: one project per row, text and media as two separate heavy panels,
+   alternating sides (Z-pattern). Even rows swap the grid areas. */
 .project-list {
-  display: flex;
-  gap: 24px;
-  overflow-x: auto;
-  padding: 30px 3vw 45px;
+  display: grid;
+  gap: clamp(36px, 5vw, 72px);
+  padding: clamp(32px, 4.5vw, 64px) 3vw clamp(48px, 6vw, 88px);
+}
+
+.project-index {
   background: var(--ink);
-  cursor: grab;
-  overscroll-behavior-inline: contain;
-  scroll-behavior: smooth;
-  scroll-padding-inline: 3vw;
-  scroll-snap-type: inline mandatory;
-  scrollbar-color: var(--acid) rgba(243, 240, 230, 0.16);
-  scrollbar-width: thin;
-}
-
-.project-list:active {
-  cursor: grabbing;
-}
-
-.project-list::-webkit-scrollbar {
-  height: 9px;
-}
-
-.project-list::-webkit-scrollbar-track {
-  background: rgba(243, 240, 230, 0.16);
-}
-
-.project-list::-webkit-scrollbar-thumb {
-  border: 2px solid var(--ink);
-  background: var(--acid);
 }
 
 .project-card {
+  --panel-gap: clamp(14px, 1.8vw, 24px);
+  --panel-shadow: clamp(6px, 0.8vw, 10px);
   position: relative;
   display: grid;
-  flex: 0 0 min(72vw, 880px);
-  grid-template-rows: auto 1fr;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  grid-template-areas: "text media";
+  gap: var(--panel-gap);
   min-width: 0;
-  overflow: hidden;
-  border: var(--line);
-  background: var(--paper);
-  scroll-snap-align: center;
   transform-style: preserve-3d;
   will-change: transform;
 }
 
-.project-card:hover {
-  z-index: 2;
-  box-shadow: inset 0 0 0 3px var(--acid);
+.project-card:nth-child(even) {
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  grid-template-areas: "media text";
 }
 
 .project-card-hitbox {
@@ -1808,28 +1795,77 @@ a {
 
 .project-card-hitbox:focus-visible {
   outline: 4px solid var(--acid);
-  outline-offset: -7px;
+  outline-offset: 6px;
 }
 
-.project-card:nth-child(2n) {
-  border-right: var(--line);
-}
-
-.project-card.featured {
-  flex-basis: min(78vw, 980px);
+/* Local project photo, layered over the CSS artwork (which shows if it's missing). */
+.project-image {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .project-visual {
   position: relative;
-  min-height: 430px;
+  top: 0;
+  left: 0;
+  grid-area: media;
+  min-height: clamp(300px, 34vw, 540px);
   overflow: hidden;
-  border-bottom: var(--line);
+  border: 2px solid var(--paper);
   background: #d7d4ca;
+  box-shadow: var(--panel-shadow) var(--panel-shadow) 0 var(--paper);
+  container-type: inline-size;
+  transition: box-shadow 220ms ease, top 220ms ease, left 220ms ease;
+}
+
+.project-card:nth-child(even) .project-visual {
+  box-shadow: calc(var(--panel-shadow) * -1) var(--panel-shadow) 0 var(--paper);
+}
+
+/* Featured work: the text panel's offset slab turns acid. */
+/* Offsets (not transforms) for the hover press, so the panel never becomes a
+   stacking context that would trap .project-link under the card hitbox. */
+.project-content {
+  --slab: var(--orange);
+  position: relative;
+  top: 0;
+  left: 0;
+  grid-area: text;
+  border: 2px solid var(--paper);
+  background: var(--paper);
+  box-shadow: var(--panel-shadow) var(--panel-shadow) 0 var(--slab);
+  transition: box-shadow 220ms ease, top 220ms ease, left 220ms ease;
+}
+
+.project-card.featured .project-content {
+  --slab: var(--acid);
+}
+
+.project-card:nth-child(even) .project-content {
+  box-shadow: calc(var(--panel-shadow) * -1) var(--panel-shadow) 0 var(--slab);
+}
+
+/* Hover: both panels press down into their slabs. */
+.project-card:hover .project-content,
+.project-card:hover .project-visual {
+  top: calc(var(--panel-shadow) / 2);
+  left: calc(var(--panel-shadow) / 2);
+  box-shadow: 0 0 0 transparent;
+}
+
+.project-card:nth-child(even):hover .project-content,
+.project-card:nth-child(even):hover .project-visual {
+  left: calc(var(--panel-shadow) / -2);
 }
 
 .project-artwork-motion {
   position: absolute;
-  inset: -22px;
+  inset: -16px;
   will-change: transform;
 }
 
@@ -1897,7 +1933,7 @@ a {
   right: 4%;
   bottom: -15%;
   font-family: "Rajdhani", sans-serif;
-  font-size: min(34vw, 460px);
+  font-size: min(62cqw, 460px);
   line-height: 1;
   letter-spacing: -0.12em;
 }
@@ -1918,12 +1954,12 @@ a {
   position: absolute;
   z-index: 2;
   display: grid;
-  width: 125px;
-  height: 74px;
+  width: clamp(54px, 26cqw, 125px);
+  height: clamp(32px, 15cqw, 74px);
   place-items: center;
   border: var(--line);
   background: var(--paper);
-  box-shadow: 7px 7px 0 var(--ink);
+  box-shadow: clamp(3px, 1.2cqw, 7px) clamp(3px, 1.2cqw, 7px) 0 var(--ink);
   font-family: "DM Mono", monospace;
   font-size: 9px;
   font-style: normal;
@@ -2008,13 +2044,155 @@ a {
     -12px -12px 0 var(--violet);
 }
 
+/* 001 Creators Fit: stacked subscription tiers */
+.visual-creators {
+  background: #f4c5db;
+}
+
+.art-tiers {
+  position: absolute;
+  inset: 0;
+}
+
+.art-tiers i {
+  position: absolute;
+  left: 18%;
+  width: 52%;
+  padding: 2.4cqw 3cqw;
+  border: var(--line);
+  background: var(--paper);
+  box-shadow: 1.4cqw 1.4cqw 0 var(--ink);
+  font-family: "DM Mono", monospace;
+  font-size: clamp(6px, 2.6cqw, 14px);
+  font-style: normal;
+  letter-spacing: 0.06em;
+}
+
+.art-tiers i:nth-child(1) { top: 20%; transform: rotate(-4deg); }
+.art-tiers i:nth-child(2) { top: 40%; left: 24%; background: var(--acid); transform: rotate(2deg); }
+.art-tiers i:nth-child(3) { top: 60%; left: 30%; color: var(--paper); background: var(--ink); transform: rotate(-2deg); }
+
+.art-tiers b {
+  position: absolute;
+  right: 6%;
+  bottom: -6%;
+  font-family: "Rajdhani", sans-serif;
+  font-size: min(30cqw, 260px);
+  line-height: 1;
+  letter-spacing: -0.08em;
+  opacity: 0.9;
+}
+
+/* 002 HealthHub: paper card, QR record, WhatsApp-style reminder */
+.visual-healthhub {
+  background:
+    linear-gradient(rgba(17, 17, 15, 0.08) 1px, transparent 1px) 0 0 / 100% 7cqw,
+    #bfe3d0;
+}
+
+.art-health {
+  position: absolute;
+  inset: 0;
+}
+
+.art-health i {
+  position: absolute;
+  font-family: "DM Mono", monospace;
+  font-style: normal;
+}
+
+.health-card {
+  top: 22%;
+  left: 9%;
+  width: 36%;
+  padding: 3cqw;
+  border: var(--line);
+  background: var(--paper);
+  font-size: clamp(6px, 2.6cqw, 14px);
+  line-height: 1.4;
+  transform: rotate(-6deg);
+  clip-path: polygon(0 0, 100% 0, 100% 78%, 88% 84%, 76% 78%, 64% 86%, 50% 80%, 0 88%);
+}
+
+.health-qr {
+  top: 18%;
+  right: 12%;
+  display: grid;
+  width: 26%;
+  aspect-ratio: 1;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 1.6cqw;
+  border: var(--line);
+  background: var(--paper);
+}
+
+.health-qr b:is(:nth-child(1), :nth-child(2), :nth-child(4), :nth-child(5), :nth-child(7), :nth-child(10), :nth-child(11), :nth-child(13), :nth-child(15), :nth-child(16)) {
+  background: var(--ink);
+}
+
+.health-ping {
+  bottom: 14%;
+  left: 34%;
+  padding: 1.8cqw 3cqw;
+  border: var(--line);
+  border-radius: 3cqw 3cqw 3cqw 0;
+  background: var(--acid);
+  font-size: clamp(6px, 2.4cqw, 13px);
+  letter-spacing: 0.06em;
+}
+
+/* 003 Nohs Somos: street grid with community pins */
+.visual-nohs {
+  background:
+    linear-gradient(90deg, transparent 47%, var(--paper) 47% 53%, transparent 53%) 0 0 / 22cqw 100%,
+    linear-gradient(transparent 44%, var(--paper) 44% 56%, transparent 56%) 0 0 / 100% 16cqw,
+    var(--violet);
+}
+
+.art-map {
+  position: absolute;
+  inset: 0;
+  transform: rotate(-8deg) scale(1.15);
+}
+
+.map-pin {
+  position: absolute;
+  width: 5cqw;
+  aspect-ratio: 1;
+  border: var(--line);
+  border-radius: 50% 50% 50% 0;
+  background: var(--paper);
+  transform: rotate(-45deg);
+}
+
+.map-pin--one { top: 26%; left: 20%; }
+.map-pin--two { top: 58%; left: 38%; }
+.map-pin--three { top: 34%; left: 70%; }
+
+.map-pin--safe {
+  top: 46%;
+  left: 54%;
+  display: grid;
+  width: 13cqw;
+  place-items: center;
+  background: var(--acid);
+  box-shadow: 0 0 0 2.4cqw rgba(0, 255, 65, 0.25);
+  font-family: "DM Mono", monospace;
+  font-size: clamp(5px, 2cqw, 11px);
+  font-style: normal;
+}
+
+.map-pin--safe span {
+  transform: rotate(45deg);
+}
+
 .art-type {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: end;
   justify-content: space-between;
-  padding: 30px;
+  padding: clamp(14px, 5cqw, 30px);
 }
 
 .art-type::before {
@@ -2027,7 +2205,7 @@ a {
 
 .art-type span {
   font-family: "Rajdhani", sans-serif;
-  font-size: min(25vw, 330px);
+  font-size: min(42cqw, 330px);
   font-weight: 700;
   line-height: 0.7;
   letter-spacing: -0.1em;
@@ -2044,21 +2222,25 @@ a {
 
 .project-content {
   display: flex;
-  min-height: 470px;
   flex-direction: column;
-  padding: 24px 3vw 28px;
+  min-width: 0;
+  padding: clamp(22px, 2.8vw, 40px);
 }
 
 .project-meta-row {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 44px;
+  gap: 16px;
+  margin-bottom: clamp(28px, 4vw, 56px);
+  padding-bottom: 12px;
+  border-bottom: var(--line);
 }
 
 .project-number,
 .project-meta-row > span {
   font-family: "DM Mono", monospace;
-  font-size: 9px;
+  font-size: 10px;
+  letter-spacing: 0.06em;
 }
 
 .project-meta-row > span {
@@ -2071,21 +2253,22 @@ a {
   display: flex;
   align-items: start;
   justify-content: space-between;
-  gap: 20px;
+  gap: 16px;
 }
 
 .project-title-row p {
-  margin: 0 0 6px;
+  margin: 0 0 10px;
   font-family: "DM Mono", monospace;
-  font-size: 8px;
+  font-size: 10px;
   letter-spacing: 0.08em;
 }
 
 .project-title-row h2 {
   margin: 0;
-  font-size: clamp(38px, 4.6vw, 74px);
+  font-size: clamp(34px, 4.2vw, 68px);
   line-height: 0.88;
   letter-spacing: -0.065em;
+  overflow-wrap: anywhere;
 }
 
 .project-title-row h2 > span {
@@ -2094,13 +2277,13 @@ a {
 }
 
 .project-arrow {
-  font-size: 28px;
+  font-size: clamp(24px, 2.4vw, 36px);
 }
 
 .project-description {
-  max-width: 590px;
-  margin: 30px 0;
-  font-size: 14px;
+  max-width: 52ch;
+  margin: clamp(18px, 2vw, 28px) 0 clamp(22px, 2.6vw, 36px);
+  font-size: clamp(14px, 1.1vw, 16px);
   line-height: 1.55;
 }
 
@@ -2108,7 +2291,7 @@ a {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin: auto 0 26px;
+  margin: auto 0 22px;
   padding: 0;
   list-style: none;
 }
@@ -2117,7 +2300,8 @@ a {
   padding: 6px 8px;
   border: 1px solid var(--ink);
   font-family: "DM Mono", monospace;
-  font-size: 8px;
+  font-size: 8.5px;
+  text-transform: uppercase;
 }
 
 .project-link {
@@ -2125,10 +2309,11 @@ a {
   z-index: 4;
   display: flex;
   justify-content: space-between;
-  padding: 15px 0 4px;
+  padding: 14px 0 0;
   border-top: var(--line);
   font-family: "DM Mono", monospace;
-  font-size: 9px;
+  font-size: 10px;
+  letter-spacing: 0.06em;
 }
 
 .project-detail {
@@ -2199,6 +2384,7 @@ a {
   position: relative;
   min-height: min(78vh, 900px);
   overflow: hidden;
+  container-type: inline-size;
   border-bottom: var(--line);
 }
 
@@ -2236,6 +2422,10 @@ a {
   font-weight: 500;
   line-height: 1;
   letter-spacing: -0.055em;
+}
+
+.detail-lead > p + p {
+  margin-top: 16px;
 }
 
 .detail-lead > p {
@@ -2352,6 +2542,7 @@ a {
 .detail-media-small {
   position: relative;
   overflow: hidden;
+  container-type: inline-size;
   border-right: var(--line);
 }
 
@@ -2366,6 +2557,39 @@ a {
   color: var(--ink);
   font-family: "DM Mono", monospace;
   font-size: 8px;
+}
+
+.detail-figures {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 2px;
+  padding: 2px;
+  background: var(--ink);
+  border-bottom: var(--line);
+}
+
+.detail-figures figure {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  container-type: inline-size;
+}
+
+.detail-figures figcaption {
+  position: absolute;
+  z-index: 2;
+  left: 12px;
+  bottom: 12px;
+  max-width: calc(100% - 24px);
+  padding: 6px 8px;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "DM Mono", monospace;
+  font-size: 8px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .detail-media-note {
@@ -2387,6 +2611,12 @@ a {
   font-weight: 600;
   line-height: 0.92;
   letter-spacing: -0.055em;
+}
+
+.detail-media-note p.detail-lesson {
+  font-size: clamp(22px, 2.4vw, 34px);
+  line-height: 1.08;
+  letter-spacing: -0.04em;
 }
 
 .detail-media-note p strong {
@@ -2967,6 +3197,11 @@ a {
 }
 
 @media (max-width: 960px) {
+  /* The vertical note hugs the viewport edge once the hero stacks. */
+  .hero-side-note {
+    display: none;
+  }
+
   /* The idle stencil waits left of the LAB slot; keep it clear of the wordmark. */
   .header-stencil {
     left: -150px;
@@ -2982,7 +3217,7 @@ a {
 
   .hero-visual {
     width: min(78vw, 650px);
-    margin: 0 auto 80px;
+    margin: 56px auto 80px;
   }
 
   .section-heading {
@@ -3048,12 +3283,10 @@ a {
     gap: 45px;
   }
 
-  .project-visual {
-    min-height: 340px;
-  }
-
-  .project-content {
-    min-height: 450px;
+  /* Tablet: panels split evenly so the text column keeps a readable measure. */
+  .project-card,
+  .project-card:nth-child(even) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
 
   .section-heading h2 {
@@ -3239,34 +3472,36 @@ a {
     flex: none;
   }
 
+  /* Phones: panels stack, media first, and the zig-zag settles into one column. */
   .project-list {
-    gap: 14px;
-    padding: 18px 4vw 30px;
-    scroll-padding-inline: 4vw;
+    gap: 44px;
+    padding: 28px 16px 52px;
   }
 
   .project-card,
-  .project-card:nth-child(2n) {
-    flex-basis: 88vw;
-    border-right: var(--line);
-    scroll-snap-align: start;
-  }
-
-  .project-card.featured {
-    flex-basis: 91vw;
+  .project-card:nth-child(even) {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "media"
+      "text";
   }
 
   .project-visual {
-    min-height: 72vw;
+    min-height: 0;
+    aspect-ratio: 4 / 3;
   }
 
-  .project-content {
-    min-height: 430px;
-    padding: 22px 5vw 26px;
+  .project-card:nth-child(even) .project-visual,
+  .project-card:nth-child(even) .project-content {
+    box-shadow: var(--panel-shadow) var(--panel-shadow) 0 var(--paper);
   }
 
-  .project-title-row h2 {
-    font-size: 13vw;
+  .project-card:nth-child(even) .project-content {
+    box-shadow: var(--panel-shadow) var(--panel-shadow) 0 var(--slab);
+  }
+
+  .project-meta-row > span {
+    max-width: 60%;
   }
 
   .project-contact {
@@ -3299,8 +3534,9 @@ a {
   }
 
   .hero-visual {
-    width: 84vw;
-    margin-bottom: 58px;
+    width: calc(100vw - 32px - 18px);
+    margin: 40px auto 58px;
+    transform: translateX(-9px) rotate(2deg);
   }
 
   .hero-side-note {
@@ -3467,6 +3703,12 @@ a {
   .project-card:hover,
   .project-card:nth-child(even):hover {
     transform: none;
+  }
+
+  .project-card:hover .project-content,
+  .project-card:hover .project-visual {
+    top: 0;
+    left: 0;
   }
 
   .text-glitch::before,

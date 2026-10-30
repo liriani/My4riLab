@@ -9,7 +9,7 @@ export default function HomePage() {
 
       <header className="hero" id="top">
         <div className="hero-copy">
-          <p className="kicker">INDEPENDENT CREATIVE DEVELOPER / 2025</p>
+          <p className="kicker">INDEPENDENT CREATIVE DEVELOPER / SINCE 2019</p>
           <div className="hero-title">
             <div style={{ animation: "fade-up 0.6s ease both 0.2s" }}>
               <h1
@@ -72,7 +72,7 @@ export default function HomePage() {
         <p>LET&apos;S MAKE THE INTERNET HUMAN.</p>
         <a href="mailto:its.liriani@gmail.com">ITS.LIRIANI@GMAIL.COM ↗</a>
         <div>
-          <span>© 2025 4RI / LIRI</span>
+          <span>© {new Date().getFullYear()} 4RI / LIRI</span>
           <span>LOCAL SIGNAL / WORLDWIDE</span>
         </div>
       </footer>

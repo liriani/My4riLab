@@ -1,6 +1,5 @@
 import {
   motion,
-  MotionValue,
   useMotionValue,
   useReducedMotion,
   useSpring,
@@ -10,18 +9,18 @@ import { useState } from "react";
 import { Link } from "react-router";
 import { Project } from "@/data/projects";
 import ProjectArtwork from "@/components/ui/ProjectArtwork";
+import ProjectImage from "@/components/ui/ProjectImage";
 
 const spring = { stiffness: 300, damping: 20, mass: 0.7 };
 
+// Rows have room for most stacks; the detail page always lists all of it.
+const MAX_TAGS = 6;
+
 type MotionProjectCardProps = {
   project: Project;
-  scrollProgress: MotionValue<number>;
 };
 
-export default function MotionProjectCard({
-  project,
-  scrollProgress,
-}: MotionProjectCardProps) {
+export default function MotionProjectCard({ project }: MotionProjectCardProps) {
   const reducedMotion = useReducedMotion();
   const [isHovered, setIsHovered] = useState(false);
   const rawRotateX = useMotionValue(0);
@@ -30,19 +29,19 @@ export default function MotionProjectCard({
   const rotateX = useSpring(rawRotateX, spring);
   const rotateY = useSpring(rawRotateY, spring);
   const skewX = useSpring(rawSkew, spring);
-  const artworkX = useTransform(rotateY, [-6, 6], [-13, 13]);
-  const artworkY = useTransform(rotateX, [-6, 6], [10, -10]);
-  const figureX = useTransform(scrollProgress, [0, 1], [-18, 46]);
-  const categoryX = useTransform(scrollProgress, [0, 1], [22, -38]);
+  const artworkX = useTransform(rotateY, [-6, 6], [-8, 8]);
+  const artworkY = useTransform(rotateX, [-6, 6], [6, -6]);
+  const hiddenTags = project.stack.length - MAX_TAGS;
 
   const moveCard = (event: React.PointerEvent<HTMLElement>) => {
     if (reducedMotion) return;
     const bounds = event.currentTarget.getBoundingClientRect();
     const normalizedX = (event.clientX - bounds.left) / bounds.width - 0.5;
     const normalizedY = (event.clientY - bounds.top) / bounds.height - 0.5;
-    rawRotateY.set(normalizedX * 8);
-    rawRotateX.set(normalizedY * -7);
-    rawSkew.set(normalizedX * -1.1);
+    // Full-width rows: keep the tilt subtle so the far edge doesn't swing.
+    rawRotateY.set(normalizedX * 2.5);
+    rawRotateX.set(normalizedY * -2);
+    rawSkew.set(normalizedX * -0.3);
   };
 
   const resetCard = () => {
@@ -61,7 +60,6 @@ export default function MotionProjectCard({
         skewX: reducedMotion ? 0 : skewX,
         transformPerspective: 1100,
       }}
-      whileHover={reducedMotion ? undefined : { y: -10, scale: 1.008 }}
       transition={spring}
       onPointerMove={moveCard}
       onHoverStart={() => setIsHovered(true)}
@@ -86,12 +84,9 @@ export default function MotionProjectCard({
         >
           <ProjectArtwork type={project.visual} />
         </motion.div>
-        <motion.span className="project-figure" style={{ x: figureX }}>
-          FIG / {project.number}
-        </motion.span>
-        <motion.span className="project-category" style={{ x: categoryX }}>
-          {project.badge ?? project.category}
-        </motion.span>
+        <ProjectImage src={project.thumbnail} alt="" />
+        <span className="project-figure">FIG / {project.number}</span>
+        <span className="project-category">{project.badge ?? project.category}</span>
       </div>
 
       <div className="project-content">
@@ -111,8 +106,8 @@ export default function MotionProjectCard({
                     reducedMotion
                       ? undefined
                       : {
-                          x: isHovered ? ((index % 3) - 1) * 2 : 0,
-                          y: isHovered ? (index % 2 ? 4 : -4) : 0,
+                          x: isHovered ? ((index % 3) - 1) * 1.5 : 0,
+                          y: isHovered ? (index % 2 ? 2 : -2) : 0,
                           rotate: isHovered ? (index % 2 ? 1.4 : -1.4) : 0,
                         }
                   }
@@ -133,19 +128,22 @@ export default function MotionProjectCard({
         </div>
         <p className="project-description">{project.description}</p>
         <ul>
-          {project.stack.map((item) => (
+          {project.stack.slice(0, MAX_TAGS).map((item) => (
             <li key={item}>{item}</li>
           ))}
+          {hiddenTags > 0 && <li aria-label={`${hiddenTags} more`}>+{hiddenTags}</li>}
         </ul>
-        <a
-          className="project-link"
-          href={project.repository}
-          target="_blank"
-          rel="noreferrer"
-        >
-          {project.private ? "PRIVATE REPOSITORY / ACCESS REQUIRED" : "VIEW REPOSITORY"}
-          <span>↗</span>
-        </a>
+        {project.repository ? (
+          <a className="project-link" href={project.repository} target="_blank" rel="noreferrer">
+            {project.private ? "PRIVATE REPO / ACCESS REQUIRED" : "VIEW REPOSITORY"}
+            <span>↗</span>
+          </a>
+        ) : (
+          <Link className="project-link" to={`/projects/${project.slug}`}>
+            OPEN CASE FILE
+            <span>→</span>
+          </Link>
+        )}
       </div>
     </motion.article>
   );

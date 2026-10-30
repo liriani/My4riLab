@@ -221,7 +221,7 @@ export default function AboutPage() {
 
       <footer className="projects-footer">
         <Link to="/">← RETURN HOME</Link>
-        <span>© 2025 4RI / LIRI</span>
+        <span>© {new Date().getFullYear()} 4RI / LIRI</span>
         <a href="https://github.com/liriani" target="_blank" rel="noreferrer">
           GITHUB ↗
         </a>

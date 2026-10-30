@@ -1,6 +1,5 @@
 import { Link } from "react-router";
-import { useRef, useState } from "react";
-import { useScroll } from "framer-motion";
+import { useState } from "react";
 import CursorTrailCanvas from "@/components/motion/CursorTrailCanvas";
 import MotionProjectCard from "@/components/motion/MotionProjectCard";
 import { projects, ProjectCategory } from "@/data/projects";
@@ -10,9 +9,7 @@ type Category = "All" | ProjectCategory;
 const categories: Category[] = ["All", "Product", "Creative", "Tool"];
 
 export default function ProjectsPage() {
-  const galleryRef = useRef<HTMLDivElement>(null);
   const [activeCategory, setActiveCategory] = useState<Category>("All");
-  const { scrollXProgress } = useScroll({ container: galleryRef });
   const visibleProjects =
     activeCategory === "All"
       ? projects
@@ -25,7 +22,7 @@ export default function ProjectsPage() {
 
       <header className="projects-hero">
         <div className="projects-eyebrow">
-          <span>SELECTED WORK / 2025</span>
+          <span>SELECTED WORK / SINCE 2019</span>
           <span>PRODUCT × CODE × EXPERIMENT</span>
         </div>
         <h1>
@@ -38,7 +35,7 @@ export default function ProjectsPage() {
             Interfaces, tools, and digital experiments built to be used—not just
             looked at.
           </p>
-          <span>08 PROJECTS / SCROLL TO EXPLORE ↓</span>
+          <span>{String(projects.length).padStart(2, "0")} PROJECTS / SCROLL TO EXPLORE ↓</span>
         </div>
       </header>
 
@@ -61,13 +58,9 @@ export default function ProjectsPage() {
           <span>{String(visibleProjects.length).padStart(2, "0")} RESULTS</span>
         </div>
 
-        <div className="project-list" ref={galleryRef}>
+        <div className="project-list">
           {visibleProjects.map((project) => (
-            <MotionProjectCard
-              key={project.title}
-              project={project}
-              scrollProgress={scrollXProgress}
-            />
+            <MotionProjectCard key={project.slug} project={project} />
           ))}
         </div>
       </section>
@@ -83,7 +76,7 @@ export default function ProjectsPage() {
 
       <footer className="projects-footer">
         <Link to="/">← RETURN HOME</Link>
-        <span>© 2025 4RI / LIRI</span>
+        <span>© {new Date().getFullYear()} 4RI / LIRI</span>
         <a href="https://github.com/liriani" target="_blank" rel="noreferrer">
           GITHUB ↗
         </a>
