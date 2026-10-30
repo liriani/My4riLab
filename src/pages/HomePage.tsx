@@ -43,7 +43,8 @@ export default function HomePage() {
           </div>
         </div>
         <HeroGlitch
-          src={`${import.meta.env.BASE_URL}portrait-placeholder.svg`}
+          src={`${import.meta.env.BASE_URL}portrait-forward.jpg`}
+          scrolledSrc={`${import.meta.env.BASE_URL}portrait-phone.jpg`}
           alt="Glitched portrait of 4ri, also known as Liri"
         />
         <div className="hero-side-note" aria-hidden="true">
