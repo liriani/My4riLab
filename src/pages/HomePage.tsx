@@ -1,13 +1,11 @@
 import { Link } from "react-router";
 import AboutSkills from "@/components/sections/AboutSkills";
-import Header from "@/components/layout/Header";
 import HeroGlitch from "@/features/glitch/HeroGlitch";
 import SouvenirStudio from "@/features/glitch/SouvenirStudio";
 
 export default function HomePage() {
   return (
     <main>
-      <Header showSouvenir />
 
       <header className="hero" id="top">
         <div className="hero-copy">

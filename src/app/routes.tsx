@@ -1,4 +1,5 @@
 import { createBrowserRouter } from "react-router";
+import SiteLayout from "@/components/layout/SiteLayout";
 
 function HydrateFallback() {
   return (
@@ -17,50 +18,58 @@ const basename = import.meta.env.BASE_URL.replace(/\/$/, "") || "/";
 export const router = createBrowserRouter([
   {
     path: "/",
+    Component: SiteLayout,
     HydrateFallback,
-    lazy: async () => {
-      const { default: Component } = await import("../pages/HomePage");
-      return { Component };
-    },
-  },
-  {
-    path: "/projects",
-    HydrateFallback,
-    lazy: async () => {
-      const { default: Component } = await import("../pages/ProjectsPage");
-      return { Component };
-    },
-  },
-  {
-    path: "/projects/:slug",
-    HydrateFallback,
-    lazy: async () => {
-      const { default: Component } = await import("../pages/ProjectDetail");
-      return { Component };
-    },
-  },
-  {
-    path: "/about",
-    HydrateFallback,
-    lazy: async () => {
-      const { default: Component } = await import("../pages/AboutPage");
-      return { Component };
-    },
-  },
-  {
-    path: "/lab",
-    HydrateFallback,
-    lazy: async () => {
-      const { default: Component } = await import("../pages/InteractionGalleryPage");
-      return { Component };
-    },
-  },
-  {
-    path: "*",
-    HydrateFallback,
-    lazy: async () => {
-      const { default: Component } = await import("../pages/HomePage");
-      return { Component };
-    },
+    children: [
+      {
+        index: true,
+        lazy: async () => {
+          const { default: Component } = await import("../pages/HomePage");
+          return { Component };
+        },
+      },
+      {
+        path: "projects",
+        lazy: async () => {
+          const { default: Component } = await import("../pages/ProjectsPage");
+          return { Component };
+        },
+      },
+      {
+        path: "projects/:slug",
+        lazy: async () => {
+          const { default: Component } = await import("../pages/ProjectDetail");
+          return { Component };
+        },
+      },
+      {
+        path: "about",
+        lazy: async () => {
+          const { default: Component } = await import("../pages/AboutPage");
+          return { Component };
+        },
+      },
+      {
+        path: "lab",
+        lazy: async () => {
+          const { default: Component } = await import("../pages/InteractionGalleryPage");
+          return { Component };
+        },
+      },
+      {
+        path: "lab/:caseId",
+        lazy: async () => {
+          const { default: Component } = await import("../pages/LabCaseStudyPage");
+          return { Component };
+        },
+      },
+      {
+        path: "*",
+        lazy: async () => {
+          const { default: Component } = await import("../pages/HomePage");
+          return { Component };
+        },
+      },
+    ],
   },
 ], { basename });

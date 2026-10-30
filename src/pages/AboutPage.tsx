@@ -2,10 +2,8 @@ import { Link } from "react-router";
 import {
   CSSProperties,
   PointerEvent as ReactPointerEvent,
-  useEffect,
   useRef,
 } from "react";
-import Header from "@/components/layout/Header";
 
 type Tool = {
   name: string;
@@ -27,9 +25,6 @@ const tools: Tool[] = [
 export default function AboutPage() {
   const shaderRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
 
   const moveShader = (event: ReactPointerEvent<HTMLDivElement>) => {
     const element = shaderRef.current;
@@ -48,7 +43,6 @@ export default function AboutPage() {
 
   return (
     <main className="about-page">
-      <Header />
 
       <header className="about-page-hero">
         <div className="about-page-kicker">

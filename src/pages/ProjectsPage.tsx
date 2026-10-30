@@ -1,8 +1,7 @@
 import { Link } from "react-router";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useScroll } from "framer-motion";
 import CursorTrailCanvas from "@/components/motion/CursorTrailCanvas";
-import Header from "@/components/layout/Header";
 import MotionProjectCard from "@/components/motion/MotionProjectCard";
 import { projects, ProjectCategory } from "@/data/projects";
 
@@ -19,14 +18,10 @@ export default function ProjectsPage() {
       ? projects
       : projects.filter((project) => project.category === activeCategory);
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
 
   return (
     <main className="projects-page">
       <CursorTrailCanvas />
-      <Header />
 
       <header className="projects-hero">
         <div className="projects-eyebrow">

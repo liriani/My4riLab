@@ -1,6 +1,4 @@
-import { useEffect } from "react";
 import { Link, useParams } from "react-router";
-import Header from "@/components/layout/Header";
 import ProjectArtwork from "@/components/ui/ProjectArtwork";
 import { getProjectBySlug, projects } from "@/data/projects";
 
@@ -8,9 +6,6 @@ export default function ProjectDetail() {
   const { slug } = useParams();
   const project = getProjectBySlug(slug);
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [slug]);
 
   if (!project) {
     return (
@@ -27,7 +22,6 @@ export default function ProjectDetail() {
 
   return (
     <main className="project-detail">
-      <Header />
 
       <header className="detail-hero">
         <div className="detail-label-row">

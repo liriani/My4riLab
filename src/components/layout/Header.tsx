@@ -1,10 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import GlitchWordmark from "./GlitchWordmark";
-
-type HeaderProps = {
-  showSouvenir?: boolean;
-};
 
 type DeploymentPhase = "idle" | "opening" | "spraying" | "painted" | "settled";
 
@@ -49,12 +45,13 @@ const SPRAY_DOTS = Array.from({ length: 52 }, (_, index) => {
   };
 });
 
-export default function Header({ showSouvenir = false }: HeaderProps) {
+export default function Header() {
   const [phase, setPhase] = useState<DeploymentPhase>(
     hasDeployedLab ? "settled" : "idle",
   );
   const sprayTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const paintTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { pathname } = useLocation();
 
   const clearTimer = (timer: typeof sprayTimer) => {
     if (timer.current) window.clearTimeout(timer.current);
@@ -81,6 +78,12 @@ export default function Header({ showSouvenir = false }: HeaderProps) {
       paintTimer.current = null;
     }, 3200);
   };
+
+  // The header stays mounted across routes, so a fresh page settles the
+  // painted LAB link instead of replaying its reveal.
+  useEffect(() => {
+    setPhase((current) => (current === "painted" ? "settled" : current));
+  }, [pathname]);
 
   useEffect(
     () => () => {
@@ -185,15 +188,18 @@ export default function Header({ showSouvenir = false }: HeaderProps) {
           </div>
         </div>
 
+        {/* Touch screens can't hover to spray the LAB link in, so phones get it plainly. */}
+        <Link className="nav-lab-compact" to="/lab">LAB</Link>
+
         <div className="nav-push">
           <Link to="/about">ABOUT</Link>
-          {showSouvenir && <a href="#souvenir">SOUVENIR</a>}
+          <Link className="nav-souvenir" to="/#souvenir">SOUVENIR</Link>
         </div>
       </nav>
 
-      <a className="availability" href="mailto:its.liriani@gmail.com">
+      <a className="availability" href="mailto:its.liriani@gmail.com" aria-label="Available for work: email 4ri">
         <i />
-        AVAILABLE FOR WORK
+        <span>AVAILABLE FOR WORK</span>
       </a>
 
       <span className="header-deployment-status" aria-live="polite">

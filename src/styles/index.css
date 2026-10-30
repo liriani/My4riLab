@@ -8,6 +8,8 @@
   --orange: #ff4618;
   --violet: #7457ff;
   --line: 2px solid var(--ink);
+  /* One header height for every route; sticky offsets below derive from it. */
+  --header-h: 76px;
   color: var(--ink);
   background: var(--paper);
   font-family: "Space Grotesk", sans-serif;
@@ -19,7 +21,8 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  /* Hash targets and scrollIntoView land below the sticky header. */
+  scroll-padding-top: var(--header-h);
 }
 
 body {
@@ -91,12 +94,13 @@ a {
 }
 
 .site-nav {
-  position: relative;
-  z-index: 10;
+  position: sticky;
+  top: 0;
+  z-index: 50;
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  min-height: 76px;
+  height: var(--header-h);
   padding: 0 3vw;
   border-bottom: var(--line);
   background: rgba(243, 240, 230, 0.94);
@@ -124,6 +128,10 @@ a {
   display: flex;
   align-items: center;
   gap: 34px;
+}
+
+.nav-lab-compact {
+  display: none;
 }
 
 .nav-push {
@@ -181,6 +189,11 @@ a {
   font-size: 7px;
   letter-spacing: 0.1em;
   pointer-events: none;
+}
+
+.header-deployment-status:empty,
+.site-header--settled .header-deployment-status {
+  display: none;
 }
 
 .guerrilla-zone {
@@ -647,12 +660,6 @@ a {
   }
 }
 
-.about-page > .site-header,
-.project-detail > .site-header {
-  position: sticky;
-  top: 0;
-}
-
 .lab-page {
   min-height: 100vh;
   background:
@@ -815,7 +822,7 @@ a {
   position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1.06fr) minmax(380px, 0.94fr);
-  min-height: calc(100vh - 76px);
+  min-height: calc(100vh - var(--header-h));
   border-bottom: var(--line);
   overflow: hidden;
 }
@@ -1702,7 +1709,7 @@ a {
 
 .project-toolbar {
   position: sticky;
-  top: 76px;
+  top: var(--header-h);
   z-index: 6;
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -2502,7 +2509,7 @@ a {
 }
 
 .about-page-hero {
-  min-height: calc(100vh - 76px);
+  min-height: calc(100vh - var(--header-h));
   padding: 34px 3vw 44px;
   border-bottom: var(--line);
   background:
@@ -2960,6 +2967,11 @@ a {
 }
 
 @media (max-width: 960px) {
+  /* The idle stencil waits left of the LAB slot; keep it clear of the wordmark. */
+  .header-stencil {
+    left: -150px;
+  }
+
   .hero {
     grid-template-columns: 1fr;
   }
@@ -3063,9 +3075,39 @@ a {
 }
 
 @media (max-width: 640px) {
+  :root {
+    --header-h: 64px;
+  }
+
+  /* Same three-column header on phones: wordmark / WORK·LAB·ABOUT / status dot. */
   .site-nav {
-    grid-template-columns: 1fr 1fr;
-    min-height: 64px;
+    grid-template-columns: auto 1fr auto;
+    gap: 12px;
+    font-size: 10px;
+  }
+
+  .nav-links,
+  .nav-push {
+    justify-content: center;
+    gap: clamp(12px, 5vw, 24px);
+  }
+
+  .guerrilla-zone,
+  .nav-souvenir {
+    display: none;
+  }
+
+  .nav-lab-compact {
+    display: block;
+  }
+
+  .site-header--painted .nav-push,
+  .site-header--settled .nav-push {
+    transform: none;
+  }
+
+  .availability span {
+    display: none;
   }
 
   .projects-hero {
@@ -3183,7 +3225,6 @@ a {
   }
 
   .project-toolbar {
-    top: 64px;
     display: flex;
     min-height: 66px;
     justify-content: space-between;
@@ -3237,10 +3278,6 @@ a {
     align-items: start;
     flex-direction: column;
     gap: 16px;
-  }
-
-  .nav-links {
-    display: none;
   }
 
   .header-deployment-status {
