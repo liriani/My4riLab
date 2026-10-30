@@ -46,46 +46,83 @@ export default function AboutPage() {
     <main className="about-page">
 
       <header className="about-page-hero">
+        {/* Decorative: the portrait melts into the hero instead of sitting in a frame. */}
+        <div className="about-hero-portrait" aria-hidden="true">
+          <img src={`${import.meta.env.BASE_URL}portrait-profile.jpg`} alt="" decoding="async" />
+        </div>
         <div className="about-page-kicker">
-          <span>ABOUT / MULTIDISCIPLINARY PRACTICE</span>
-          <span>PRODUCT DESIGNER × FRONT-END DEVELOPER</span>
+          <span>ABOUT / FROM THE CANVAS TO THE CONSOLE</span>
+          <span>SENIOR CREATIVE DEVELOPER × ARTIST</span>
         </div>
         <div className="about-hero-grid">
           <h1>
-            DESIGN
+            COLOR FIRST.
             <br />
-            <span>WITH CODE.</span>
+            <span>CODE SECOND.</span>
             <br />
-            CODE WITH
+            RULES?
             <br />
-            CHARACTER.
+            NEGOTIABLE.
           </h1>
           <div className="about-hero-aside">
             <p className="about-role-index">01 / WHO I AM</p>
             <p>
-              I&apos;m a Product Designer and front-end developer with a deep
-              creative edge, building interfaces that feel product-ready and
-              visually alive.
+              I&apos;m Liri, a senior creative developer who came to code from
+              traditional art. I still think like a painter: in color, contrast and
+              gesture. The browser just happens to be a canvas that moves back.
             </p>
             <div className="about-status">
               <i />
-              <span>DESIGNING, PROTOTYPING, SHIPPING</span>
+              <span>MAKING THE WEB LESS STATIC</span>
             </div>
           </div>
         </div>
       </header>
 
+      <section className="about-origin" aria-labelledby="about-origin-title">
+        <p className="about-role-index">02 / ORIGIN</p>
+        <h2 id="about-origin-title">
+          I DIDN&apos;T LEAVE ART.
+          <br />
+          <span>I MOVED IT INTO THE BROWSER.</span>
+        </h2>
+        <div className="about-origin-body">
+          <p>
+            I trained my eye long before I trained my hands on a keyboard.
+            Traditional art taught me the things I still use every single day: how
+            color sets a mood before a word is read, how composition tells the eye
+            where to go next, how a mark carries the energy of the hand that made it.
+          </p>
+          <p>
+            Engineering gave those instincts a new material, and it turned out to be
+            the most flexible one I&apos;ve ever worked with. Code holds color and
+            composition, but it also holds time, state and response. A painting can
+            only be looked at. An interface can look back.
+          </p>
+          <p>
+            That is the part I fell for, and why I stayed. Today I design and build
+            in the same breath, so nothing gets lost between the first sketch and
+            the thing people actually touch.
+          </p>
+        </div>
+        <blockquote className="about-origin-quote">
+          “A painting can only be looked at.
+          <br />
+          <span>An interface can look back.”</span>
+        </blockquote>
+      </section>
+
       <section className="build-rhythm">
         <header className="about-section-header">
-          <p>02 / THE BUILD RHYTHM</p>
+          <p>03 / THE TOOLKIT</p>
           <h2>
             TOOLS BECOME
             <br />
             <span>INSTRUMENTS.</span>
           </h2>
           <p>
-            A practical stack for moving quickly from rough idea to expressive,
-            production-ready interface.
+            I swapped brushes for a stack, not the habit of picking each tool for
+            what it lets people feel. These are the ones that earn their place.
           </p>
         </header>
 
@@ -103,46 +140,51 @@ export default function AboutPage() {
         <div className="process-line">
           <div>
             <span>01</span>
-            <strong>FRAME</strong>
-            <p>Find the useful question.</p>
+            <strong>OBSERVE</strong>
+            <p>Notice how people actually move.</p>
           </div>
           <div>
             <span>02</span>
-            <strong>PROTOTYPE</strong>
-            <p>Make the idea tangible.</p>
+            <strong>SKETCH</strong>
+            <p>Paper first. Always.</p>
           </div>
           <div>
             <span>03</span>
-            <strong>REFINE</strong>
-            <p>Give every detail intent.</p>
+            <strong>BUILD</strong>
+            <p>Make it real. Make it respond.</p>
           </div>
           <div>
             <span>04</span>
-            <strong>SHIP</strong>
-            <p>Put the work into motion.</p>
+            <strong>TUNE</strong>
+            <p>Teach the hand where to go.</p>
           </div>
         </div>
       </section>
 
       <section className="creative-vision">
         <div className="creative-copy">
-          <p className="about-role-index">03 / CREATIVE VISION</p>
+          <p className="about-role-index">04 / COLOR &amp; MOTION</p>
           <h2>
-            BEYOND THE
+            COLOR IS
             <br />
-            <span>STANDARD STACK.</span>
+            <span>A VERB.</span>
           </h2>
           <p>
-            My work leans toward interactive experiences, motion, and polished
-            browser-based storytelling. Creative coding, GLSL shaders, and
-            TouchDesigner let me explore light, rhythm, texture, and responsive
-            systems beyond conventional UI.
+            I don&apos;t use color to decorate a screen; I use it to direct one. Acid
+            green says <em>touch here</em>. A shift in warmth says <em>something
+            changed</em>. Contrast is choreography: it decides where you look first,
+            what you try next, and how you know you&apos;ve arrived.
+          </p>
+          <p>
+            Shaders, GLSL and TouchDesigner are where I push that furthest, letting
+            light and color react to the person in front of them. The field beside
+            this text is a small version of the idea. Move your pointer; it follows.
           </p>
           <div className="inline-badges">
-            <span>GLSL</span>
-            <span>WEBGL</span>
+            <span>COLOR SYSTEMS</span>
+            <span>MOTION</span>
+            <span>GLSL / WEBGL</span>
             <span>TOUCHDESIGNER</span>
-            <span>AUDIO REACTIVE</span>
           </div>
         </div>
 
@@ -171,49 +213,61 @@ export default function AboutPage() {
 
       <section className="analog-section">
         <div className="analog-title">
-          <p className="about-role-index">04 / ANALOG &amp; OFF-SCREEN</p>
+          <p className="about-role-index">05 / TEACHING THE HAND</p>
           <h2>
-            HANDS ON.
+            NOBODY READS
             <br />
-            <span>SCREEN OFF.</span>
+            <span>THE RULEBOOK.</span>
           </h2>
         </div>
         <div className="analog-body">
           <p>
-            I balance the digital with the physical, stepping away from Figma
-            grids to ground myself in DIY handcrafts and analog game design.
+            Away from the screen I still make things with my hands: DIY craft,
+            analog games, objects you can pick up and turn over. Board games taught
+            me more about interfaces than any style guide. Nobody reads the
+            rulebook; they learn by playing, and good pieces teach their own rules.
           </p>
           <p>
-            Making with real materials changes how I think about systems,
-            constraints, feedback, and play. That perspective returns to the
-            screen as interfaces with more personality and human texture.
+            That is how I design movement on the web. A page should teach you how
+            to move through it: a hover that hints, a scroll that pushes back, a
+            link that reacts before you commit. When the layout answers your hand
+            the way an object would, you stop reading instructions and start
+            exploring. That moment, when someone figures it out by touch, is the
+            part of the job I love most.
           </p>
         </div>
         <div className="analog-cards">
           <article>
             <span>A</span>
-            <strong>DIY / HANDCRAFT</strong>
-            <i>TACTILITY</i>
+            <strong>TRADITIONAL ART</strong>
+            <i>COLOR &amp; COMPOSITION</i>
           </article>
           <article>
             <span>B</span>
             <strong>ANALOG GAMES</strong>
-            <i>SYSTEMS</i>
+            <i>RULES YOU LEARN BY PLAYING</i>
           </article>
           <article>
             <span>C</span>
-            <strong>MAKING THINGS</strong>
-            <i>PERSONALITY</i>
+            <strong>DIY / HANDCRAFT</strong>
+            <i>TACTILITY</i>
           </article>
         </div>
       </section>
 
       <section className="about-manifesto">
-        <p>THE THROUGH-LINE</p>
+        <p>06 / THE THROUGH-LINE</p>
         <blockquote>
-          I AM A MULTIDISCIPLINARY MAKER BRINGING{" "}
-          <span>PERSONALITY TO EVERY PIXEL.</span>
+          I DON&apos;T BUILD PAGES.{" "}
+          <span>I BUILD PLACES THAT MOVE BACK.</span>
         </blockquote>
+        <p className="about-manifesto-note">
+          Static, interchangeable websites are a habit, not a law. I&apos;m an
+          artist, an engineer, a maker and a bit of a troublemaker, and every
+          project is a small act of disobedience against the boring web: more
+          color, more motion, more of a person behind the pixels. Code isn&apos;t
+          just my tool. It&apos;s how I talk back.
+        </p>
         <div>
           <Link to="/projects">SEE SELECTED WORK ↗</Link>
           <a href="mailto:its.liriani@gmail.com">START A CONVERSATION ↗</a>
