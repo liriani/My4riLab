@@ -22,7 +22,7 @@ export default function ProjectsPage() {
 
       <header className="projects-hero">
         <div className="projects-eyebrow">
-          <span>SELECTED WORK / SINCE 2019</span>
+          <span>SELECTED WORK</span>
           <span>PRODUCT × CODE × EXPERIMENT</span>
         </div>
         <h1>

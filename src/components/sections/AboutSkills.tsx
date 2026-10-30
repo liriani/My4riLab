@@ -25,7 +25,7 @@ export default function AboutSkills() {
           CREATIVE EDGE.
         </p>
         <aside>
-          <span>PROFILE / SINCE 2019</span>
+          <span>PROFILE</span>
           <p>
             I build product-ready interfaces that feel visually alive—balancing
             thoughtful UX, expressive UI, and polished browser-based storytelling.

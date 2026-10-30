@@ -590,6 +590,33 @@ a {
   text-align: center;
   pointer-events: none;
   transform: rotate(4deg);
+  transition: background 160ms ease, color 160ms ease, box-shadow 160ms ease;
+}
+
+/* Once hung, the sign is a door to the hidden /souvenir room. */
+.site-header--painted .header-fresh-paint-sign,
+.site-header--settled .header-fresh-paint-sign {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.header-fresh-paint-sign:hover,
+.header-fresh-paint-sign:focus-visible {
+  color: var(--acid);
+  background: var(--ink);
+  box-shadow: 3px 3px 0 var(--orange);
+  outline: 0;
+}
+
+.site-header--settled .header-fresh-paint-sign:hover,
+.site-header--settled .header-fresh-paint-sign:focus-visible {
+  animation: paint-sign-wobble 420ms ease-in-out;
+}
+
+@keyframes paint-sign-wobble {
+  25% { transform: rotate(-3deg); }
+  60% { transform: rotate(5deg); }
+  100% { transform: rotate(2deg); }
 }
 
 .header-fresh-paint-sign::before,
@@ -1595,25 +1622,258 @@ a {
   color: var(--orange);
 }
 
-.floating-upload {
-  position: absolute;
-  right: 3vw;
-  bottom: 48px;
-  display: flex;
+/* Upload sits at the top of the control panel, before 01 TARGET AREA. */
+.studio-upload {
+  display: grid;
+  grid-template-columns: auto 1fr;
   align-items: center;
-  gap: 14px;
-  padding: 14px 18px;
+  gap: 2px 14px;
+  width: calc(100% - 6px);
+  margin-bottom: 26px;
+  padding: 14px 16px;
   border: var(--line);
   background: var(--orange);
   box-shadow: 6px 6px 0 var(--paper);
+  color: var(--ink);
+  font-family: "DM Mono", monospace;
+  text-align: left;
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+.studio-upload > span {
+  grid-row: span 2;
+  font-size: 28px;
+  line-height: 0.8;
+}
+
+.studio-upload b {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.studio-upload small {
+  font-size: 8px;
+  letter-spacing: 0.08em;
+  opacity: 0.7;
+}
+
+.studio-upload:hover,
+.studio-upload:focus-visible {
+  box-shadow: 2px 2px 0 var(--paper);
+  outline: 0;
+  transform: translate(4px, 4px);
+}
+
+/* ───────── hidden /souvenir room ───────── */
+.souvenir-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+  grid-template-areas:
+    "meta meta"
+    "title body";
+  align-items: end;
+  gap: 40px 5vw;
+  padding: clamp(40px, 6vw, 88px) 3vw clamp(48px, 6vw, 80px);
+  border-bottom: var(--line);
+}
+
+.souvenir-intro-meta {
+  display: flex;
+  grid-area: meta;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px 24px;
   font-family: "DM Mono", monospace;
   font-size: 10px;
+  letter-spacing: 0.08em;
+}
+
+.souvenir-access {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 9px;
+  border: 1px solid var(--ink);
+  background: var(--acid);
+}
+
+.souvenir-access i,
+.souvenir-teaser-kicker i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ink);
+  animation: blink 1.4s steps(2) infinite;
+}
+
+.souvenir-intro h1 {
+  grid-area: title;
+  margin: 0;
+  font-size: clamp(52px, 8.4vw, 140px);
+  line-height: 0.84;
+  letter-spacing: -0.075em;
+}
+
+.souvenir-intro h1 span {
+  color: var(--orange);
+  font-style: italic;
+  font-weight: 400;
+}
+
+.souvenir-intro-body {
+  grid-area: body;
+  max-width: 460px;
+  padding-left: 22px;
+  border-left: var(--line);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.souvenir-intro-body p {
+  margin: 0 0 14px;
+}
+
+.souvenir-doors {
+  margin: 22px 0 0;
+  padding: 0;
+  border-top: var(--line);
+  list-style: none;
+  font-family: "DM Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+}
+
+.souvenir-doors li {
+  display: flex;
+  gap: 14px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(17, 17, 15, 0.25);
+}
+
+.souvenir-doors b {
+  color: var(--orange);
   font-weight: 500;
 }
 
-.floating-upload span {
-  font-size: 20px;
-  line-height: 0.5;
+.souvenir-doors a {
+  border-bottom: 1px solid;
+}
+
+/* ───────── reward at the end of /about ───────── */
+.souvenir-teaser {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
+  align-items: center;
+  gap: clamp(32px, 5vw, 80px);
+  padding: clamp(56px, 7vw, 100px) 3vw;
+  background:
+    linear-gradient(rgba(0, 255, 65, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 65, 0.04) 1px, transparent 1px),
+    var(--ink);
+  background-size: 32px 32px;
+  color: var(--paper);
+}
+
+.souvenir-teaser-kicker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 28px;
+  font-family: "DM Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+}
+
+.souvenir-teaser-kicker i {
+  background: var(--acid);
+}
+
+.souvenir-teaser h2 {
+  margin: 0;
+  font-size: clamp(40px, 5.6vw, 92px);
+  line-height: 0.86;
+  letter-spacing: -0.07em;
+}
+
+.souvenir-teaser h2 span {
+  display: block;
+  color: var(--acid);
+  font-style: italic;
+  font-weight: 400;
+}
+
+.souvenir-teaser-copy > p:not(.souvenir-teaser-kicker) {
+  max-width: 520px;
+  margin: 28px 0 34px;
+  font-size: 15px;
+  line-height: 1.55;
+  opacity: 0.86;
+}
+
+.souvenir-teaser-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+  padding: 16px 20px;
+  border: var(--line);
+  background: var(--acid);
+  box-shadow: 6px 6px 0 var(--orange);
+  color: var(--ink);
+  font-family: "DM Mono", monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+.souvenir-teaser-cta span {
+  font-size: 18px;
+  transition: transform 160ms ease;
+}
+
+.souvenir-teaser-cta:hover,
+.souvenir-teaser-cta:focus-visible {
+  box-shadow: 2px 2px 0 var(--orange);
+  outline: 0;
+  transform: translate(4px, 4px);
+}
+
+.souvenir-teaser-cta:hover span {
+  transform: translateX(4px);
+}
+
+.souvenir-teaser-preview {
+  margin: 0;
+  transform: rotate(-2deg);
+}
+
+.souvenir-teaser-frame {
+  position: relative;
+  padding: 10px;
+  border: 2px solid var(--paper);
+  background: var(--ink);
+  box-shadow: 14px 14px 0 var(--orange);
+}
+
+.souvenir-teaser-frame > span {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  padding: 6px 8px;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "DM Mono", monospace;
+  font-size: 8px;
+}
+
+.souvenir-teaser-preview figcaption {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 26px;
+  font-family: "DM Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.06em;
 }
 
 .visually-hidden {
@@ -3232,6 +3492,22 @@ a {
 }
 
 @media (max-width: 960px) {
+  .souvenir-intro {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "meta"
+      "title"
+      "body";
+  }
+
+  .souvenir-teaser {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .souvenir-teaser-preview {
+    max-width: 560px;
+  }
+
   /* The vertical note hugs the viewport edge once the hero stacks. */
   .hero-side-note {
     display: none;
@@ -3360,8 +3636,7 @@ a {
     gap: clamp(12px, 5vw, 24px);
   }
 
-  .guerrilla-zone,
-  .nav-souvenir {
+  .guerrilla-zone {
     display: none;
   }
 
@@ -3655,8 +3930,37 @@ a {
     padding: 18px 14px;
   }
 
-  .floating-upload {
-    bottom: 42px;
+  .souvenir-intro {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "meta"
+      "title"
+      "body";
+    gap: 28px;
+  }
+
+  .souvenir-intro h1 {
+    font-size: 15vw;
+  }
+
+  /* About headings bottom out at 52px; on the narrowest phones "INSTRUMENTS."
+     is wider than the screen, so let them scale with the viewport instead. */
+  .about-section-header h2,
+  .creative-copy h2,
+  .analog-title h2 {
+    font-size: min(52px, 15vw);
+  }
+
+  /* "MULTIDISCIPLINARY" is one long word; size it to fit a phone's width. */
+  .about-manifesto blockquote {
+    font-size: 9.6vw;
+    overflow-wrap: break-word;
+  }
+
+  .souvenir-teaser-cta {
+    width: 100%;
+    justify-content: space-between;
+    font-size: 10px;
   }
 
   .site-footer div {

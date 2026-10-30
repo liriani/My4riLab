@@ -50,6 +50,15 @@ export const router = createBrowserRouter([
         },
       },
       {
+        // Unlisted: reached only through the header's wet-paint sign or the
+        // reward at the end of /about.
+        path: "souvenir",
+        lazy: async () => {
+          const { default: Component } = await import("../pages/SouvenirPage");
+          return { Component };
+        },
+      },
+      {
         path: "lab",
         lazy: async () => {
           const { default: Component } = await import("../pages/InteractionGalleryPage");

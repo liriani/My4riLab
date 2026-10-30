@@ -49,6 +49,7 @@ export default function Header() {
   const [phase, setPhase] = useState<DeploymentPhase>(
     hasDeployedLab ? "settled" : "idle",
   );
+  const isLive = phase === "painted" || phase === "settled";
   const sprayTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const paintTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { pathname } = useLocation();
@@ -183,9 +184,17 @@ export default function Header() {
             </div>
           )}
 
-          <div className="header-fresh-paint-sign" aria-hidden="true">
+          {/* Easter egg: once the sign has dropped in, it's the only door to /souvenir from the header. */}
+          <Link
+            className="header-fresh-paint-sign"
+            to="/souvenir"
+            state={{ from: "paint" }}
+            aria-hidden={!isLive}
+            aria-label={isLive ? "Sorry, fresh paint! (something is hidden behind this sign)" : undefined}
+            tabIndex={isLive ? 0 : -1}
+          >
             <span>SORRY,<br /><strong>FRESH PAINT!</strong></span>
-          </div>
+          </Link>
         </div>
 
         {/* Touch screens can't hover to spray the LAB link in, so phones get it plainly. */}
@@ -193,7 +202,6 @@ export default function Header() {
 
         <div className="nav-push">
           <Link to="/about">ABOUT</Link>
-          <Link className="nav-souvenir" to="/#souvenir">SOUVENIR</Link>
         </div>
       </nav>
 

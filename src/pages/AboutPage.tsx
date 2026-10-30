@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import SouvenirTeaser from "@/features/glitch/SouvenirTeaser";
 import {
   CSSProperties,
   PointerEvent as ReactPointerEvent,
@@ -218,6 +219,8 @@ export default function AboutPage() {
           <a href="mailto:its.liriani@gmail.com">START A CONVERSATION ↗</a>
         </div>
       </section>
+
+      <SouvenirTeaser />
 
       <footer className="projects-footer">
         <Link to="/">← RETURN HOME</Link>

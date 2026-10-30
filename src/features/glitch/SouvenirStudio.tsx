@@ -121,7 +121,7 @@ export default function SouvenirStudio() {
   return (
     <section className="souvenir-section" id="souvenir">
       <div className="section-heading">
-        <p className="kicker">03 / TAKE SOMETHING WITH YOU</p>
+        <p className="kicker">THE ENGINE / LIVE</p>
         <h2>
           MAKE A <span>SOUVENIR.</span>
         </h2>
@@ -179,6 +179,26 @@ export default function SouvenirStudio() {
         </div>
 
         <aside className="control-panel">
+          {/* Source first: pick the image, then decide where the damage lands. */}
+          <input
+            ref={fileInputRef}
+            className="visually-hidden"
+            type="file"
+            accept="image/*"
+            onChange={uploadImage}
+            tabIndex={-1}
+            aria-hidden="true"
+          />
+          <button
+            type="button"
+            className="studio-upload"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <span aria-hidden="true">+</span>
+            <b>UPLOAD YOUR OWN PHOTO</b>
+            <small>STAYS IN YOUR BROWSER</small>
+          </button>
+
           <div className="control-head">
             <span>01</span>
             <h3>TARGET AREA</h3>
@@ -258,20 +278,6 @@ export default function SouvenirStudio() {
         </aside>
       </div>
 
-      <input
-        ref={fileInputRef}
-        className="visually-hidden"
-        type="file"
-        accept="image/*"
-        onChange={uploadImage}
-      />
-      <button
-        type="button"
-        className="floating-upload"
-        onClick={() => fileInputRef.current?.click()}
-      >
-        <span>+</span> UPLOAD YOUR IMAGE
-      </button>
     </section>
   );
 }

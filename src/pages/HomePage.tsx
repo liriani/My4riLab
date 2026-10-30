@@ -1,7 +1,6 @@
 import { Link } from "react-router";
 import AboutSkills from "@/components/sections/AboutSkills";
 import HeroGlitch from "@/features/glitch/HeroGlitch";
-import SouvenirStudio from "@/features/glitch/SouvenirStudio";
 
 export default function HomePage() {
   return (
@@ -9,7 +8,7 @@ export default function HomePage() {
 
       <header className="hero" id="top">
         <div className="hero-copy">
-          <p className="kicker">INDEPENDENT CREATIVE DEVELOPER / SINCE 2019</p>
+          <p className="kicker">INDEPENDENT CREATIVE DEVELOPER</p>
           <div className="hero-title">
             <div style={{ animation: "fade-up 0.6s ease both 0.2s" }}>
               <h1
@@ -66,7 +65,6 @@ export default function HomePage() {
       </section>
 
       <AboutSkills />
-      <SouvenirStudio />
 
       <footer className="site-footer">
         <p>LET&apos;S MAKE THE INTERNET HUMAN.</p>
