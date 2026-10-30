@@ -101,7 +101,7 @@ export default function ProjectDetail() {
           <Link to="/projects">
             <span>
               PROJECT ARCHIVE
-              <small>Explore all work</small>
+              <small>Explore all work </small>
             </span>
             <strong>←</strong>
           </Link>
