@@ -1,4 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type PointerEvent,
+} from "react";
 import { loadImage } from "./imageUtils";
 import {
   GlitchSettings,
@@ -58,10 +65,29 @@ export default function HeroGlitch({ src, scrolledSrc, alt }: HeroGlitchProps) {
   const isScrolled = useScrolledPast(SCROLL_THRESHOLD);
   const image = images ? (isScrolled ? images.scrolled : images.rest) : null;
   const settings = useMemo(() => HERO_SETTINGS, []);
+  // Hover (or tap, on touch) to focus: the engine stops its loop and the
+  // clean photo fades in over it; leaving resumes the glitch.
+  const [focused, setFocused] = useState(false);
+  const pointerType = useRef("mouse");
   const { canvasRef, maskRef, generateMask } = useGlitchEngine({
     image,
     settings,
+    isAnimating: !focused,
   });
+
+  const onPointerEnter = (event: PointerEvent) => {
+    if (event.pointerType === "mouse") setFocused(true);
+  };
+  const onPointerLeave = (event: PointerEvent) => {
+    if (event.pointerType === "mouse") setFocused(false);
+  };
+  const onPointerDown = (event: PointerEvent) => {
+    pointerType.current = event.pointerType;
+  };
+  // Touch screens have no hover, so a tap toggles focus instead.
+  const onClick = () => {
+    if (pointerType.current !== "mouse") setFocused((value) => !value);
+  };
   const previousImage = useRef<HTMLImageElement | null>(null);
 
   // Preload both portraits up front so the swap never waits on the network.
@@ -96,13 +122,25 @@ export default function HeroGlitch({ src, scrolledSrc, alt }: HeroGlitchProps) {
 
   return (
     <figure className="hero-visual">
-      <div className="hero-canvas-frame">
+      <div
+        className={`hero-canvas-frame ${focused ? "is-focused" : ""}`}
+        style={{ "--hero-zoom": settings.zoom } as CSSProperties}
+        onPointerEnter={onPointerEnter}
+        onPointerLeave={onPointerLeave}
+        onPointerDown={onPointerDown}
+        onClick={onClick}
+      >
         <canvas ref={maskRef} className="engine-mask" aria-hidden="true" />
         <canvas ref={canvasRef} className="engine-canvas" role="img" aria-label={alt} />
+        {image && (
+          <div className="hero-photo" aria-hidden="true">
+            <img src={image.src} alt="" />
+          </div>
+        )}
         <span className="visual-index">FIG. 001</span>
         <span className="visual-state">
           <i />
-          {isScrolled && scrolledSrc ? "DO NOT DISTURB" : "LIVE SIGNAL"}
+          {focused ? "SIGNAL PAUSED" : isScrolled && scrolledSrc ? "DO NOT DISTURB" : "LIVE SIGNAL"}
         </span>
       </div>
       <figcaption>

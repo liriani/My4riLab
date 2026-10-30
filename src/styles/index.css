@@ -994,11 +994,15 @@ a {
   font-weight: 500;
 }
 
+/* Broken grid: the portrait reaches back across the column line and lands on
+   the dark copy panel. Negative margin (not scale) so the caption and frame
+   grow with it and the canvas stays sharp. */
 .hero-visual {
+  --hero-invade: clamp(48px, 7vw, 128px);
   position: relative;
+  z-index: 3;
   align-self: center;
-  /* Left gutter keeps the tilted corner and caption off the dark copy column. */
-  margin: 5vw 4.5vw 5vw clamp(24px, 3vw, 48px);
+  margin: 4vw 4.5vw 4vw calc(var(--hero-invade) * -1);
   transform: rotate(2deg);
 }
 
@@ -1019,6 +1023,34 @@ a {
 
 .engine-mask {
   display: none;
+}
+
+/* Hover to focus: the untouched photo, cropped exactly like the engine's
+   cover-fit + zoom, fades in over the paused canvas. */
+.hero-photo {
+  position: absolute;
+  inset: 12px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease;
+}
+
+.hero-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(var(--hero-zoom, 1));
+}
+
+.hero-canvas-frame.is-focused .hero-photo {
+  opacity: 1;
+}
+
+.hero-canvas-frame.is-focused .visual-state i {
+  background: var(--orange);
+  animation: none;
 }
 
 .visual-index,
@@ -1043,7 +1075,8 @@ a {
   gap: 8px;
 }
 
-/* Clears the frame's 18px offset shadow, which would otherwise paint over it. */
+/* A paper label strip: clears the frame's 18px offset shadow and stays legible
+   where the figure overlaps the dark panel. */
 .hero-visual figcaption {
   position: relative;
   z-index: 1;
@@ -1051,8 +1084,10 @@ a {
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 6px 16px;
-  margin-right: 18px;
-  padding-top: 34px;
+  margin: 34px 18px 0 0;
+  padding: 8px 10px;
+  border: var(--line);
+  background: var(--paper);
   font-family: "DM Mono", monospace;
   font-size: 9px;
   letter-spacing: 0.06em;
