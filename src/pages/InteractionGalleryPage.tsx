@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router";
 import "@/styles/lab.css";
 import { labCaseId, labCasePath, labCases } from "@/data/lab/labCases";
+import { CleanupCloth, InkLayer, InkTip, useInkTraces } from "@/features/lab/InkTraces";
 
 export default function InteractionGalleryPage() {
   const [resets, setResets] = useState<number[]>(() => labCases.map(() => 0));
+  const pageRef = useRef<HTMLElement>(null);
+  const ink = useInkTraces(pageRef);
 
   const reset = (index: number) =>
     setResets((current) => current.map((value, i) => (i === index ? value + 1 : value)));
@@ -13,7 +16,9 @@ export default function InteractionGalleryPage() {
     document.getElementById(`lab-${labCaseId(index)}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
 
   return (
-    <main className="lx-page">
+    // Clicks bubble here after each exhibit has handled them, so the paint
+    // layer never gets in the way of the interactions themselves.
+    <main className="lx-page lx-page--inked" ref={pageRef} onClick={ink.onPageClick}>
       <section className="lx-hero">
         <p>A FIELD STUDY IN DIGITAL MISBEHAVIOR</p>
         <h1>
@@ -89,7 +94,16 @@ export default function InteractionGalleryPage() {
         <span>END OF CONTROLLED ENVIRONMENT</span>
         <h2>Nothing broke permanently. Probably.</h2>
         <Link to="/projects" className="lx-play">PLAY<br />MORE</Link>
+        <CleanupCloth
+          markCount={ink.markCount}
+          wiping={ink.wiping}
+          onWipeAll={ink.wipeAll}
+          onEraseAt={ink.eraseAt}
+        />
       </footer>
+
+      <InkLayer traces={ink.traces} wiping={ink.wiping} />
+      <InkTip tip={ink.tip} />
     </main>
   );
 }

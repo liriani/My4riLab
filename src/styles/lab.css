@@ -632,6 +632,206 @@ html:has(.cs-toolbar) { scroll-padding-top: calc(var(--header-h) + 56px); }
 .cs-missing h1 { font-size: clamp(40px, 8vw, 96px); letter-spacing: -0.06em; line-height: 0.9; }
 .cs-missing a { justify-self: center; padding: 10px 14px; background: var(--lx-lime); border: 1px solid var(--lx-ink); font: 10px "DM Mono", monospace; letter-spacing: 0.06em; }
 
+/* ───────── tactile layer: wet-paint traces, field-note tips, cleanup cloth ───────── */
+.lx-page--inked { position: relative; }
+
+/* Above the exhibits, below the sticky site header; never intercepts a click. */
+.lx-ink-layer { position: absolute; inset: 0; z-index: 40; overflow: hidden; pointer-events: none; }
+
+.lx-trace {
+  position: absolute;
+  width: 30px;
+  height: 40px;
+  margin: -20px 0 0 -15px;
+  opacity: 0.42;
+  transform: rotate(var(--rot)) scale(var(--scale));
+  /* Pressed on wet, then dries down to a stain that stays until wiped. */
+  animation: lx-ink-press 260ms cubic-bezier(0.2, 1.6, 0.4, 1) both, lx-ink-dry 9s ease-out 260ms both;
+}
+@keyframes lx-ink-press {
+  from { opacity: 0; transform: rotate(var(--rot)) scale(calc(var(--scale) * 1.5)); }
+  to { opacity: 0.95; transform: rotate(var(--rot)) scale(var(--scale)); }
+}
+@keyframes lx-ink-dry {
+  from { opacity: 0.95; filter: saturate(1.3); }
+  to { opacity: 0.42; filter: saturate(0.85); }
+}
+
+/* Fingerprint: concentric ridges, feathered at the edge like a real press. */
+.lx-trace--print {
+  border-radius: 50% 50% 44% 44% / 56% 56% 44% 44%;
+  background:
+    repeating-radial-gradient(ellipse 58% 46% at 48% 60%, var(--ink) 0 1.3px, transparent 1.4px 3.1px);
+  -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 52%, #000 58%, transparent 76%);
+  mask-image: radial-gradient(ellipse 50% 50% at 50% 52%, #000 58%, transparent 76%);
+}
+/* Wet sheen while fresh. */
+.lx-trace--print::after {
+  position: absolute;
+  top: 22%;
+  left: 30%;
+  width: 26%;
+  height: 16%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  filter: blur(1.5px);
+  content: "";
+  animation: lx-ink-sheen 2.4s ease-out forwards;
+}
+@keyframes lx-ink-sheen { to { opacity: 0; } }
+
+/* Smudge: a dragged thumb, streaked along its length. */
+.lx-trace--smudge {
+  width: 64px;
+  height: 20px;
+  margin: -10px 0 0 -32px;
+  border-radius: 50% 40% 45% 55%;
+  background: linear-gradient(90deg, transparent, var(--ink) 16%, var(--ink) 58%, transparent);
+  -webkit-mask-image: repeating-linear-gradient(0deg, #000 0 2px, rgba(0, 0, 0, 0.35) 2px 4px);
+  mask-image: repeating-linear-gradient(0deg, #000 0 2px, rgba(0, 0, 0, 0.35) 2px 4px);
+}
+
+/* Splat: a heavy drop with satellites. */
+.lx-trace--splat {
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
+  border-radius: 46% 54% 40% 60% / 52% 44% 56% 48%;
+  background: var(--ink);
+  box-shadow:
+    15px -9px 0 -7px var(--ink),
+    -13px 11px 0 -8px var(--ink),
+    5px 17px 0 -9px var(--ink),
+    -16px -12px 0 -9px var(--ink);
+}
+
+.lx-trace.is-wiped,
+.lx-ink-layer.is-wiping .lx-trace { animation: lx-ink-smear 420ms ease-in forwards; }
+.lx-ink-layer.is-wiping .lx-trace { animation-duration: 700ms; animation-delay: 120ms; }
+@keyframes lx-ink-smear {
+  from { opacity: 0.42; }
+  to { opacity: 0; filter: blur(5px); transform: rotate(var(--rot)) translateX(46px) scale(2.1, 0.7); }
+}
+
+/* Field-note tip: a taped acid label that pops beside the cursor. */
+.lx-tip {
+  --tx: 16px;
+  --ty: calc(-100% - 16px);
+  position: fixed;
+  z-index: 60;
+  max-width: min(270px, calc(100vw - 32px));
+  padding: 10px 13px 11px;
+  color: var(--lx-ink);
+  background: var(--lx-lime);
+  border: 2px solid var(--lx-ink);
+  box-shadow: 4px 4px 0 var(--lx-ink);
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  pointer-events: none;
+  transform: translate(var(--tx), var(--ty)) rotate(-1.5deg);
+  animation: lx-tip-in 280ms cubic-bezier(0.2, 1.6, 0.4, 1) both, lx-tip-out 300ms ease-in 2.45s forwards;
+}
+.lx-tip.is-flip-x { --tx: calc(-100% - 16px); }
+.lx-tip.is-flip-y { --ty: 16px; }
+.lx-tip span { display: block; margin-bottom: 5px; font: 500 8px "DM Mono", monospace; letter-spacing: 0.1em; }
+/* Tape strip. */
+.lx-tip::before {
+  position: absolute;
+  top: -9px;
+  left: 18px;
+  width: 38px;
+  height: 14px;
+  background: rgba(251, 250, 245, 0.75);
+  border: 1px solid rgba(18, 18, 18, 0.2);
+  transform: rotate(-6deg);
+  content: "";
+}
+@keyframes lx-tip-in {
+  from { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0.8) rotate(-6deg); }
+}
+@keyframes lx-tip-out {
+  to { opacity: 0; transform: translate(var(--tx), calc(var(--ty) - 8px)) rotate(-1.5deg); }
+}
+
+/* Cleanup strip along the bottom of the footer. */
+.lx-cleanup {
+  display: flex;
+  grid-column: 1 / -1;
+  order: 4;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px 32px;
+  margin-top: 36px;
+  padding-top: 26px;
+  border-top: 1px solid rgba(251, 250, 245, 0.25);
+  font-family: "DM Mono", monospace;
+}
+.lx-cleanup p { display: grid; gap: 6px; font-size: 11px; letter-spacing: 0.06em; }
+.lx-cleanup p span { color: var(--lx-lime); font-size: 8px; letter-spacing: 0.1em; }
+
+/* The cloth: quilted tissue, hard shadow, slightly crooked. Drag it to scrub. */
+.lx-cloth {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 2px 14px;
+  padding: 12px 18px 12px 12px;
+  color: var(--lx-ink) !important;
+  background: var(--lx-card);
+  border: 2px solid var(--lx-ink);
+  box-shadow: 6px 6px 0 #ff4b36;
+  text-align: left;
+  cursor: grab;
+  touch-action: none;
+  transform: rotate(-2deg);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+.lx-cloth i,
+.lx-cloth-held,
+.lx-cloth-sweep {
+  background:
+    repeating-linear-gradient(45deg, transparent 0 7px, rgba(18, 18, 18, 0.1) 7px 8px),
+    repeating-linear-gradient(-45deg, transparent 0 7px, rgba(18, 18, 18, 0.1) 7px 8px),
+    var(--lx-card);
+}
+.lx-cloth i { grid-row: span 2; width: 38px; height: 38px; border: 1px solid var(--lx-ink); transform: rotate(8deg); }
+.lx-cloth b { font-size: 13px; font-weight: 500; letter-spacing: 0.06em; }
+.lx-cloth small { font-size: 8px; letter-spacing: 0.08em; opacity: 0.65; }
+.lx-cloth:hover,
+.lx-cloth:focus-visible { box-shadow: 2px 2px 0 #ff4b36; outline: 0; transform: rotate(0deg) translate(4px, 4px); }
+.lx-cloth.is-held { cursor: grabbing; opacity: 0.4; }
+.lx-cloth:disabled { opacity: 0.5; cursor: progress; }
+
+/* Cloth in hand while scrubbing. */
+.lx-cloth-held {
+  position: fixed;
+  z-index: 46;
+  width: 120px;
+  height: 92px;
+  border: 2px solid var(--lx-ink);
+  box-shadow: 5px 5px 0 rgba(18, 18, 18, 0.35);
+  pointer-events: none;
+  transform: translate(-50%, -50%) rotate(-8deg);
+}
+
+/* Full wipe: a cloth slab sweeps the viewport left to right. */
+.lx-cloth-sweep {
+  position: fixed;
+  z-index: 45;
+  top: -10vh;
+  left: -45vw;
+  width: 38vw;
+  height: 120vh;
+  border-inline: 3px solid var(--lx-ink);
+  box-shadow: -18px 0 40px rgba(18, 18, 18, 0.2);
+  pointer-events: none;
+  transform: rotate(6deg);
+  animation: lx-cloth-sweep 880ms cubic-bezier(0.6, 0, 0.3, 1) forwards;
+}
+@keyframes lx-cloth-sweep { to { left: 110vw; } }
+
 /* responsive — same breakpoints as the portfolio (960 tablet / 640 phone) so the
    shared header and the lab change layout together. */
 @media (max-width: 1100px) {
@@ -670,6 +870,8 @@ html:has(.cs-toolbar) { scroll-padding-top: calc(var(--header-h) + 56px); }
   .lx-label { grid-template-columns: 1fr; gap: 10px; }
   .lx-label-id { flex-direction: row; align-items: center; padding: 0 0 10px; border-right: 0; border-bottom: 1px solid rgba(18, 18, 18, 0.22); }
   .lx-footer { padding-block: 48px; }
+  .lx-cleanup { flex-direction: column; align-items: flex-start; }
+  .lx-cloth { width: 100%; }
 
   .cs-toolbar { grid-template-columns: 1fr auto; gap: 12px; min-height: 52px; }
   .cs-crumb { display: none; }
