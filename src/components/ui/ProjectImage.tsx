@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-/** Resolves a public/ path against the deploy base (e.g. /My4riLab/ on GitHub Pages). */
+/** Resolves a public/ path against the deploy base (/ on by4ri.com, or BASE_PATH if set). */
 export const assetUrl = (path: string) => `${import.meta.env.BASE_URL}${path.replace(/^\//, "")}`;
 
 type ProjectImageProps = {

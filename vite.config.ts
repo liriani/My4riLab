@@ -5,9 +5,10 @@ import path from "node:path";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  // GitHub Pages serves a project repo from /<repo>/, so assets need this prefix.
-  // Override with BASE_PATH (e.g. BASE_PATH=/ for a custom domain).
-  base: process.env.BASE_PATH ?? "/My4riLab/",
+  // The site is served from the custom domain by4ri.com (see public/CNAME),
+  // so it lives at the domain root. Without a custom domain, GitHub Pages would
+  // serve it from /My4riLab/ instead: build with BASE_PATH=/My4riLab/ for that.
+  base: process.env.BASE_PATH ?? "/",
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
