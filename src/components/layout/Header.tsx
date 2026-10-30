@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Link } from "react-router";
 import GlitchWordmark from "./GlitchWordmark";
 
@@ -9,33 +9,45 @@ type HeaderProps = {
 type DeploymentPhase = "idle" | "opening" | "spraying" | "painted" | "settled";
 
 const sprayParticles = Array.from({ length: 18 }, (_, index) => index);
+
 let hasDeployedLab = false;
 
-// Viscous drip: flares out of the letter baseline (starts above y=0 so there is
-// no hard cut), tapers down the stem, and ends in a subtle oval teardrop bulb.
-const dripPath = (cx: number, length: number, neck: number, flare = 8) => {
-  const w = neck;
-  const b = neck * 1.45;
-  const L = length;
-  const f = (n: number) => +n.toFixed(2);
-  return [
-    `M${f(cx - flare)} -3`,
-    `C${f(cx - flare * 0.5)} 0 ${f(cx - w - 0.5)} 4 ${f(cx - w)} 12`,
-    `C${f(cx - w - 0.2)} ${f(L * 0.5)} ${f(cx - w + 0.3)} ${f(L - 12)} ${f(cx - w)} ${f(L - 9)}`,
-    `C${f(cx - w)} ${f(L - 6)} ${f(cx - b)} ${f(L - 5.5)} ${f(cx - b)} ${f(L - 3)}`,
-    `C${f(cx - b)} ${f(L - 0.8)} ${f(cx - b * 0.4)} ${L} ${cx} ${L}`,
-    `C${f(cx + b * 0.4)} ${L} ${f(cx + b)} ${f(L - 0.8)} ${f(cx + b)} ${f(L - 3)}`,
-    `C${f(cx + b)} ${f(L - 5.5)} ${f(cx + w)} ${f(L - 6)} ${f(cx + w)} ${f(L - 9)}`,
-    `C${f(cx + w - 0.3)} ${f(L - 12)} ${f(cx + w + 0.2)} ${f(L * 0.5)} ${f(cx + w + 0.5)} 12`,
-    `C${f(cx + w + 0.5)} 4 ${f(cx + flare * 0.55)} 0 ${f(cx + flare)} -3`,
-    "Z",
-  ].join(" ");
-};
-const drips = [
-  dripPath(23, 38, 2.2, 8),
-  dripPath(51, 24, 1.8, 6),
-  dripPath(77, 43, 2.4, 9),
+const SPRAY_ANCHORS = [
+  [19, 7],
+  [18, 27],
+  [19, 50],
+  [43, 53],
+  [58, 48],
+  [66, 21],
+  [76, 4],
+  [87, 24],
+  [97, 52],
+  [106, 7],
+  [132, 11],
+  [125, 28],
+  [136, 43],
+  [116, 53],
 ];
+
+const SPRAY_DOTS = Array.from({ length: 52 }, (_, index) => {
+  const noise = (salt: number) => {
+    const value = Math.sin((index + 1) * 91.345 + salt * 43.117) * 47453.5453;
+    return value - Math.floor(value);
+  };
+  const anchor = SPRAY_ANCHORS[(index * 5) % SPRAY_ANCHORS.length];
+  const isFlyaway = index % 8 === 0;
+  const distance = isFlyaway ? 12 + noise(1) * 17 : 1.5 + noise(1) * 7;
+  const angle = noise(2) * Math.PI * 2;
+  const diameter = 1 + noise(3) * (isFlyaway ? 1.1 : 2);
+
+  return {
+    x: anchor[0] + Math.cos(angle) * distance,
+    y: anchor[1] + Math.sin(angle) * distance,
+    radius: diameter / 2,
+    opacity: Math.max(0.28, 0.61 - distance * 0.014),
+    delay: `${35 + noise(4) * 310}ms`,
+  };
+});
 
 export default function Header({ showSouvenir = false }: HeaderProps) {
   const [phase, setPhase] = useState<DeploymentPhase>(
@@ -127,35 +139,44 @@ export default function Header({ showSouvenir = false }: HeaderProps) {
 
           {(phase === "spraying" || phase === "painted" || phase === "settled") && (
             <div className="header-paint-mark">
-              <svg className="header-splatters" viewBox="0 0 100 52" aria-hidden="true">
-                <circle cx="4" cy="26" r="1.5" />
-                <circle cx="10" cy="15" r="2.2" />
-                <circle cx="18" cy="5" r="1.2" />
-                <circle cx="25" cy="47" r="1.7" />
-                <circle cx="34" cy="2" r="0.9" />
-                <circle cx="65" cy="4" r="1.4" />
-                <circle cx="75" cy="49" r="1.1" />
-                <circle cx="84" cy="8" r="2.3" />
-                <circle cx="91" cy="38" r="1.6" />
-                <circle cx="97" cy="20" r="1" />
-                <circle cx="3" cy="42" r="0.8" />
-                <circle cx="98" cy="48" r="0.7" />
+              <svg className="paint-spray" viewBox="0 0 150 64" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+                {SPRAY_DOTS.map((dot, index) => (
+                  <circle
+                    key={index}
+                    cx={dot.x}
+                    cy={dot.y}
+                    r={dot.radius}
+                    style={
+                      {
+                        "--speck-opacity": dot.opacity,
+                        "--speck-delay": dot.delay,
+                      } as CSSProperties
+                    }
+                  />
+                ))}
               </svg>
-              <svg className="header-drips" viewBox="0 0 100 45" aria-hidden="true">
-                {drips.map((d) => <path key={d} d={d} />)}
+              <svg className="paint-drips" viewBox="0 0 150 62" preserveAspectRatio="xMidYMin meet">
+                <path className="paint-drip paint-drip--one" d="M34 0 L40 0 C39 9 39 17 38 25 C37.5 30 39 35 37 39 C34.5 35 36 30 35.5 25 C35 16 34 8 34 0 Z" />
+                <path className="paint-drip paint-drip--two" d="M118 0 L124 0 C123 12 124 22 122.5 34 C122 41 124 48 121 53 C118 48 120 41 119.5 34 C119 22 118 11 118 0 Z" />
+                <path className="paint-drip paint-drip--three" d="M131 0 L135 0 C134 7 135 13 133.5 20 C133 24 134 28 132 31 C130 28 131.5 24 131 20 C130.5 13 131 7 131 0 Z" />
               </svg>
-              <Link
-                className={`injected-lab ${phase === "painted" || phase === "settled" ? "is-active" : ""}`}
-                to="/lab"
-                aria-label="Open the Live Lab interaction gallery"
-                aria-disabled={phase !== "painted" && phase !== "settled"}
-                tabIndex={phase === "painted" || phase === "settled" ? 0 : -1}
-                onClick={(event) => {
-                  if (phase !== "painted" && phase !== "settled") event.preventDefault();
-                }}
-              >
-                LAB
-              </Link>
+              <div className="paint-glitch">
+                <Link
+                  className={`injected-lab ${phase === "painted" || phase === "settled" ? "is-active" : ""}`}
+                  to="/lab"
+                  aria-label="Open the Live Lab interaction gallery"
+                  aria-disabled={phase !== "painted" && phase !== "settled"}
+                  tabIndex={phase === "painted" || phase === "settled" ? 0 : -1}
+                  onClick={(event) => {
+                    if (phase !== "painted" && phase !== "settled") event.preventDefault();
+                  }}
+                >
+                  LAB
+                </Link>
+                <span className="paint-glitch-cut paint-glitch-cut--ink" aria-hidden="true">LAB</span>
+                <span className="paint-glitch-cut paint-glitch-cut--cyan" aria-hidden="true">LAB</span>
+                <span className="paint-glitch-cut paint-glitch-cut--magenta" aria-hidden="true">LAB</span>
+              </div>
             </div>
           )}
 

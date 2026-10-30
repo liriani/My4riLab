@@ -405,12 +405,17 @@ a {
   transform: translate(-50%, -50%) rotate(-1deg);
 }
 
-.injected-lab {
+.paint-glitch {
   position: absolute;
-  z-index: 2;
+  inset: 0;
+  pointer-events: none;
+}
+
+.injected-lab,
+.paint-glitch-cut {
+  position: absolute;
   top: 15px;
   left: 50%;
-  color: var(--violet);
   font-family: "Rajdhani", sans-serif;
   font-size: 30px;
   font-weight: 700;
@@ -418,8 +423,66 @@ a {
   line-height: 1;
   pointer-events: none;
   transform: translateX(-50%);
+}
+
+/* Flat, solid spray paint: no filters, no texture. */
+.injected-lab {
+  z-index: 2;
+  color: var(--violet);
   clip-path: inset(0 100% 0 0);
   animation: header-stencil-reveal 1.15s 420ms steps(7, end) forwards;
+}
+
+/* Sharp tear layers that cut across the paint. */
+.paint-glitch-cut {
+  z-index: 3;
+  opacity: 0;
+  user-select: none;
+  will-change: clip-path, translate;
+}
+
+.paint-glitch-cut--ink { color: var(--violet); }
+.paint-glitch-cut--cyan { color: #00f0ff; mix-blend-mode: multiply; }
+.paint-glitch-cut--magenta { color: #ff174f; mix-blend-mode: multiply; }
+
+.site-header--painted .paint-glitch-cut,
+.site-header--settled .paint-glitch-cut {
+  animation-duration: 4.6s;
+  animation-delay: 1.1s;
+  animation-iteration-count: infinite;
+  animation-timing-function: steps(1, end);
+}
+
+.site-header--painted .paint-glitch-cut--ink,
+.site-header--settled .paint-glitch-cut--ink { animation-name: lab-tear-ink; }
+.site-header--painted .paint-glitch-cut--cyan,
+.site-header--settled .paint-glitch-cut--cyan { animation-name: lab-tear-cyan; }
+.site-header--painted .paint-glitch-cut--magenta,
+.site-header--settled .paint-glitch-cut--magenta { animation-name: lab-tear-magenta; }
+
+@keyframes lab-tear-cyan {
+  0%, 10%, 100% { opacity: 0; }
+  1% { opacity: 1; clip-path: inset(16% -8px 62% -8px); translate: -7px 0; }
+  2.5% { opacity: 1; clip-path: inset(48% -8px 30% -8px); translate: 5px 0; }
+  4% { opacity: 1; clip-path: inset(70% -8px 8% -8px); translate: -4px 0; }
+  6% { opacity: 1; clip-path: inset(8% -8px 80% -8px); translate: 8px 0; }
+  8% { opacity: 1; clip-path: inset(36% -8px 48% -8px); translate: -6px 0; }
+}
+
+@keyframes lab-tear-magenta {
+  0%, 10%, 100% { opacity: 0; }
+  1.5% { opacity: 1; clip-path: inset(30% -8px 52% -8px); translate: 7px 0; }
+  3% { opacity: 1; clip-path: inset(62% -8px 20% -8px); translate: -6px 0; }
+  5% { opacity: 1; clip-path: inset(10% -8px 74% -8px); translate: 5px 0; }
+  7% { opacity: 1; clip-path: inset(54% -8px 34% -8px); translate: -8px 0; }
+  9% { opacity: 1; clip-path: inset(76% -8px 6% -8px); translate: 4px 0; }
+}
+
+@keyframes lab-tear-ink {
+  0%, 10%, 100% { opacity: 0; }
+  1% { opacity: 1; clip-path: inset(40% -8px 44% -8px); translate: 9px 0; }
+  3.5% { opacity: 1; clip-path: inset(22% -8px 64% -8px); translate: -9px 0; }
+  6.5% { opacity: 1; clip-path: inset(58% -8px 28% -8px); translate: 10px 0; }
 }
 
 .injected-lab.is-active {
@@ -433,20 +496,21 @@ a {
   outline-offset: 5px;
 }
 
-.header-splatters,
-.header-drips {
+.paint-spray,
+.paint-drips {
   position: absolute;
   overflow: visible;
   fill: currentColor;
 }
 
-.header-splatters {
-  inset: 3px 0 auto;
+.paint-spray {
+  top: 13px;
+  left: 0;
   width: 100%;
-  height: 40px;
+  height: 33px;
 }
 
-.header-splatters circle {
+.paint-spray circle {
   opacity: 0;
   transform: scale(0.2);
   transform-box: fill-box;
@@ -454,25 +518,23 @@ a {
   shape-rendering: geometricPrecision;
 }
 
-.site-header--painted .header-splatters circle {
-  animation: header-splatter-in 380ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+.site-header--painted .paint-spray circle {
+  animation: header-splatter-in 420ms var(--speck-delay) cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
-
-.header-splatters circle:nth-child(2n) { animation-delay: 90ms; }
-.header-splatters circle:nth-child(3n) { animation-delay: 180ms; }
 
 @keyframes header-splatter-in {
-  to { opacity: 0.8; transform: scale(1); }
+  60% { opacity: calc(var(--speck-opacity) + 0.08); }
+  100% { opacity: var(--speck-opacity); transform: scale(1); }
 }
 
-.header-drips {
+.paint-drips {
   top: 35px;
   left: 0;
   width: 100%;
   height: 42px;
 }
 
-.header-drips path {
+.paint-drips path {
   opacity: 0;
   transform: scaleY(0.04);
   transform-box: fill-box;
@@ -480,17 +542,17 @@ a {
   shape-rendering: geometricPrecision;
 }
 
-.site-header--painted .header-drips path {
+.site-header--painted .paint-drips path {
   animation: header-viscous-drip 900ms cubic-bezier(0.3, 0.02, 0.32, 1) forwards;
 }
 
-.site-header--painted .header-drips path:nth-child(2) { animation-delay: 180ms; }
-.site-header--painted .header-drips path:nth-child(3) { animation-delay: 310ms; }
+.site-header--painted .paint-drips path:nth-child(2) { animation-delay: 180ms; }
+.site-header--painted .paint-drips path:nth-child(3) { animation-delay: 310ms; }
 
 @keyframes header-viscous-drip {
-  20% { opacity: 0.9; }
-  72% { opacity: 0.9; transform: scaleY(1.04); }
-  100% { opacity: 0.9; transform: scaleY(1); }
+  20% { opacity: 1; }
+  72% { opacity: 1; transform: scaleY(1.03); }
+  100% { opacity: 1; transform: scaleY(1); }
 }
 
 @keyframes header-stencil-reveal {
@@ -545,13 +607,19 @@ a {
   animation: none;
 }
 
-.site-header--settled .header-splatters circle {
-  opacity: 0.8;
+.site-header--idle .paint-glitch-cut,
+.site-header--opening .paint-glitch-cut,
+.site-header--spraying .paint-glitch-cut {
+  display: none;
+}
+
+.site-header--settled .paint-spray circle {
+  opacity: var(--speck-opacity);
   transform: scale(1);
 }
 
-.site-header--settled .header-drips path {
-  opacity: 0.9;
+.site-header--settled .paint-drips path {
+  opacity: 1;
   transform: scaleY(1);
 }
 
@@ -3342,8 +3410,8 @@ a {
   .header-spray-can,
   .header-spray-cloud i,
   .injected-lab,
-  .header-splatters circle,
-  .header-drips path,
+  .paint-spray circle,
+  .paint-drips path,
   .header-fresh-paint-sign,
   .availability i,
   .visual-state i,
@@ -3383,13 +3451,17 @@ a {
     clip-path: none;
   }
 
-  .site-header--painted .header-splatters circle {
-    opacity: 0.8;
+  .paint-glitch-cut {
+    display: none;
+  }
+
+  .site-header--painted .paint-spray circle {
+    opacity: var(--speck-opacity);
     transform: scale(1);
   }
 
-  .site-header--painted .header-drips path {
-    opacity: 0.9;
+  .site-header--painted .paint-drips path {
+    opacity: 1;
     transform: scaleY(1);
   }
 
