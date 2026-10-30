@@ -85,48 +85,55 @@ export const caseStudies: Record<string, CaseStudy> = {
     ],
   },
   "03": {
-    concept: "A coffee cup sits on the page until the visitor scrolls with enough force to tip it. Coffee puddles and drips while the cup lies on its side.",
-    motion: "A staged sequence: the cup tips first (600ms), the puddle spreads after a 300ms delay, and the drips fall last with staggered delays. Choreographed delays make one class change read as cause and effect.",
-    why: "Scroll is the most passive input there is. Tying consequence to its velocity makes a normally invisible gesture feel physical.",
-    code: `<div id="scene">
-  <div id="cup"></div>
-  <div id="puddle"></div>
-  <span class="drip" style="left:49%"></span>
-  <span class="drip" style="left:58%; --d: 820ms"></span>
+    concept: "A mock document with a small coffee mug parked on its corner. A genuinely hard scroll knocks the mug over and a coffee stain spreads across the copy, soaking and blurring the text underneath. Calm scrolling never triggers it.",
+    motion: "Three beats: the mug tips 104° around its base (520ms ease-in, so it accelerates), a short stream pours from the lip (from 380ms), then the stain grows out of the corner over 1.8s with a soft ease-out, slowing as it soaks in.",
+    why: "Scroll is the most passive input on the web. Requiring real force before anything happens makes the consequence feel earned, and the stain lands on content, so the accident has a victim.",
+    code: `<div id="desk">
+  <article id="doc"><!-- heading bar, text lines, a figure --></article>
+  <button id="mug" aria-label="Knock the coffee mug over"></button>
+  <div id="stain"></div>
 </div>
 
 <style>
-  #scene { position: relative; height: 320px; background: #d6c3a6; }
-  #cup { position: absolute; top: 22%; left: 49%; width: 130px; height: 170px; background: #e94e34;
-         border: 2px solid #121212; border-radius: 6px 6px 28px 28px;
-         transform: rotate(-3deg); transform-origin: 80% 90%;
-         transition: transform 600ms cubic-bezier(.4, 0, 1, 1); }
-  #puddle { position: absolute; top: 62%; left: 58%; width: 10px; height: 10px; background: #5b321f;
-            border-radius: 50%; transition: all 900ms 300ms; }
-  .drip { position: absolute; top: 68%; width: 9px; height: 0; background: #5b321f;
-          border-radius: 0 0 10px 10px; transition: height 1s var(--d, 650ms); }
-  .spilling #cup { transform: rotate(72deg) translate(15px, 15px); }
-  .spilling #puddle { width: 270px; height: 80px; transform: translate(-90px, 0) rotate(7deg); }
-  .spilling .drip { height: 120px; }
+  #desk { position: relative; height: 340px; background: #d5c2a3; overflow: hidden; }
+  #doc { position: absolute; inset: 34px 22% 26px 9%; padding: 26px; background: #fbfaf5; }
+  #mug { position: absolute; top: 6px; right: calc(22% - 30px); width: 48px; height: 56px;
+         background: #e84c30; border: 2px solid #121212; border-radius: 4px 4px 12px 12px;
+         transform-origin: 85% 100%; transition: transform 520ms cubic-bezier(.5, 0, .9, .4); }
+  #stain { position: absolute; top: 46px; right: calc(22% - 18px); width: 62%; height: 74%;
+           border-radius: 58% 42% 63% 37% / 44% 61% 39% 56%;
+           background: radial-gradient(ellipse at 74% 20%, rgba(170, 104, 48, .32) 0 40%,
+             rgba(146, 84, 34, .44) 66%, rgba(104, 56, 20, .85) 76%, transparent 79%);
+           mix-blend-mode: multiply; backdrop-filter: blur(1.6px); pointer-events: none;
+           opacity: 0; transform: scale(.05); transform-origin: 82% 6%; }
+  .spilled #mug { transform: rotate(-104deg) translate(10px, -6px); }
+  .spilled #stain { animation: stain 1.8s 620ms cubic-bezier(.2, .7, .3, 1) forwards; }
+  @keyframes stain { 20% { opacity: 1; } to { opacity: 1; transform: scale(1) rotate(-4deg); } }
 </style>
 
 <script>
-  const scene = document.getElementById("scene");
-  let last = scrollY, reset;
+  const desk = document.getElementById("desk");
+  const spill = () => desk.classList.add("spilled");
+  let visible = false, energy = 0, last = scrollY;
+
+  new IntersectionObserver(([entry]) => (visible = entry.isIntersecting)).observe(desk);
+
   addEventListener("scroll", () => {
-    const speed = Math.abs(scrollY - last);
+    const delta = Math.abs(scrollY - last);
     last = scrollY;
-    if (speed <= 3) return;
-    scene.classList.add("spilling");
-    clearTimeout(reset);
-    reset = setTimeout(() => scene.classList.remove("spilling"), 3200);
+    if (delta > 1400) return;          // anchor jumps and Back are not flings
+    energy = energy * 0.82 + delta;    // decays, so only sustained force builds up
+    if (visible && energy > 520) spill();
   }, { passive: true });
+
+  document.getElementById("mug").addEventListener("click", spill);
 </script>`,
     steps: [
-      ["Measure scroll speed, not position", "Store the previous scrollY and compare it on each event. The difference is a cheap velocity, and it filters out slow, gentle scrolling."],
-      ["Apply one class to the whole scene", "A single .spilling class drives every part of the animation. The JavaScript stays tiny while CSS owns the choreography."],
-      ["Stage the sequence with transition delays", "The puddle waits 300ms and the drips wait 650ms or longer, so everything plays in order from one trigger."],
-      ["Keep the state alive long enough", "The reset timer is 3200ms, comfortably longer than the slowest transition (about 2s). Clearing and re-arming it on every fast scroll keeps the spill on screen while the visitor keeps scrolling."],
+      ["Build the victim first", "Lay out a fake document: heading bar, text lines, a figure. The stain only means something if it lands on content."],
+      ["Measure force, not distance", "Each scroll event adds its delta to an energy value that decays by 18% per event. Gentle scrolling levels off around 300; a fling crosses 520."],
+      ["Only when it's watched", "An IntersectionObserver gates the trigger, so scrolling elsewhere never spills a mug you can't see. Single jumps over 1400px are ignored as programmatic (anchor links, Back)."],
+      ["Soak, don't paint", "The stain is a radial gradient with a darker rim (the coffee-ring effect), multiply blending so the text shows through, and backdrop-filter blur so the copy underneath looks wet."],
+      ["Give touch and keyboard a way in", "The mug is a real button. Clicking it spills too, which covers devices where a hard scroll is awkward."],
     ],
   },
   "04": {
@@ -171,48 +178,85 @@ export const caseStudies: Record<string, CaseStudy> = {
     ],
   },
   "05": {
-    concept: "A deadline tag tethered to the nav by an elastic cord. Click it and the cord overstretches, snaps, and the deadline mutates into YESTERDAY.",
-    motion: "Overshoot and recoil: the tag lurches forward 45px, whips back 220px, then settles. The cord stretches to 1.3x before collapsing.",
-    why: "Tension is a universal visual metaphor. Letting it break, instead of just bouncing, gives the piece a punchline.",
-    code: `<div id="deadline">
-  <svg viewBox="0 0 300 80" preserveAspectRatio="none">
-    <path id="cord" d="M8 42 C80 4 198 80 282 28" />
-  </svg>
-  <div id="tag"><small>DEADLINE</small><b id="when">FRIDAY, 5PM</b></div>
+    concept: "A deadline note hangs from the nav on an elastic cord. Drag it away and the cord thins and pulls taut; past the limit it snaps, the note springs home, and FRIDAY, 5PM comes back as YESTERDAY.",
+    motion: "Direct manipulation while dragging, then a per-frame damped spring on release (stiffness 0.14, damping 0.74), so the note overshoots home and settles. The cord is a quadratic curve whose sag falls from 70px to 0 and whose stroke thins from 3.2px to 0.8px as tension rises.",
+    why: "The first version played a canned panic animation on click. Letting the visitor feel the resistance and cause the snap puts the punchline in their hand instead of on a timer.",
+    code: `<div id="desk">
+  <strong id="about">ABOUT</strong>
+  <svg id="cord-svg"><path id="cord" /></svg>
+  <button id="note"><small>DEADLINE</small><b id="when">FRIDAY, 5PM</b></button>
 </div>
 
 <style>
-  #deadline { position: relative; height: 200px; background: #1d1d1b; overflow: hidden; cursor: pointer; }
-  #cord { fill: none; stroke: #dfff00; stroke-width: 2; stroke-dasharray: 4 4; }
-  #tag { position: absolute; right: 6%; top: 24%; padding: 16px 20px; background: #dfff00;
-         transform: rotate(5deg); }
-  .panic #tag  { animation: snap 1.2s cubic-bezier(.5, 0, 1, 1) forwards; }
-  .panic #cord { animation: cord 700ms ease-out; transform-origin: left; }
-  @keyframes snap {
-    35%  { transform: translateX(45px) rotate(12deg); }
-    50%  { transform: translate(-220px, 60px) rotate(-50deg); }
-    100% { transform: translateX(0) rotate(5deg); }
-  }
-  @keyframes cord { 50% { transform: scaleX(1.3); } 70% { transform: scaleX(.2); opacity: 0; } }
+  #desk { position: relative; height: 372px; background: #1d1d1b; color: #fff; touch-action: none; }
+  #about { position: absolute; top: 62px; left: 11%; font: 700 22px Manrope, sans-serif; }
+  #cord-svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  #cord { fill: none; stroke: #dfff00; stroke-dasharray: 6 6; stroke-linecap: round; }
+  #note { position: absolute; padding: 14px 20px; border: 0; background: #dfff00; cursor: grab; }
+  .late #note { background: #ff4b36; }
 </style>
 
 <script>
-  const box = document.getElementById("deadline");
-  const when = document.getElementById("when");
-  box.addEventListener("click", () => {
-    box.classList.add("panic");
-    when.textContent = "YESTERDAY";
-    setTimeout(() => {
-      box.classList.remove("panic");
-      when.textContent = "FRIDAY, 5PM";
-    }, 2200);
+  const desk = document.getElementById("desk"), note = document.getElementById("note");
+  const cord = document.getElementById("cord"), when = document.getElementById("when");
+  const W = () => desk.clientWidth;
+  const rest = () => ({ x: W() * 0.62, y: 96 });
+  const anchor = () => ({ x: W() * 0.11 + 40, y: 92 });
+  let off = { x: 0, y: 0 }, vel = { x: 0, y: 0 }, grab = null, raf;
+
+  function draw() {
+    const r = rest(), a = anchor(), n = { x: r.x + off.x, y: r.y + off.y };
+    const len = Math.hypot(n.x - a.x, n.y - a.y), base = Math.hypot(r.x - a.x, r.y - a.y);
+    const t = Math.min(1, Math.max(0, (len - base) / (W() * 0.72 - base)));
+    note.style.left = n.x + "px";
+    note.style.top = n.y + "px";
+    cord.setAttribute("d", \`M\${a.x} \${a.y} Q \${(a.x + n.x) / 2} \${(a.y + n.y) / 2 + 70 * (1 - t)} \${n.x} \${n.y + 20}\`);
+    cord.style.strokeWidth = 3.2 - t * 2.4;
+    return len;
+  }
+
+  function springHome() {
+    cancelAnimationFrame(raf);
+    (function step() {
+      vel.x = (vel.x - off.x * 0.14) * 0.74;
+      vel.y = (vel.y - off.y * 0.14) * 0.74;
+      off.x += vel.x;
+      off.y += vel.y;
+      draw();
+      if (Math.abs(off.x) + Math.abs(off.y) + Math.abs(vel.x) + Math.abs(vel.y) > 0.4) raf = requestAnimationFrame(step);
+    })();
+  }
+
+  note.addEventListener("pointerdown", (e) => {
+    cancelAnimationFrame(raf);
+    note.setPointerCapture(e.pointerId);
+    const b = desk.getBoundingClientRect(), r = rest();
+    grab = { dx: e.clientX - b.left - (r.x + off.x), dy: e.clientY - b.top - (r.y + off.y) };
   });
+
+  note.addEventListener("pointermove", (e) => {
+    if (!grab) return;
+    const b = desk.getBoundingClientRect(), r = rest();
+    off = { x: e.clientX - b.left - grab.dx - r.x, y: e.clientY - b.top - grab.dy - r.y };
+    vel = { x: 0, y: 0 };
+    if (draw() > W() * 0.72) {           // overstretched: the cord gives
+      grab = null;
+      desk.classList.add("late");
+      when.textContent = "YESTERDAY";
+      setTimeout(() => { desk.classList.remove("late"); when.textContent = "FRIDAY, 5PM"; }, 2600);
+      springHome();
+    }
+  });
+
+  note.addEventListener("pointerup", () => { if (grab) { grab = null; springHome(); } });
+  draw();
 </script>`,
     steps: [
-      ["Draw the cord as an SVG path", "A cubic Bezier with a dashed stroke looks like stitched elastic and scales to any width with preserveAspectRatio set to none."],
-      ["Animate the tag with keyframes", "Percentages define the beats: lurch at 35%, whip at 50%, settle at 100%. Rotation changes sell the sense of weight."],
-      ["Animate the cord in sync", "Scale it on X up to 1.3 and then below 0.2 with fading opacity, timed so the snap lands exactly when the tag whips back."],
-      ["Reset with a timer", "A setTimeout that matches the total duration removes the class and restores the copy so the piece is replayable."],
+      ["Anchor the joke to the nav", "ABOUT is the anchor point and the note hangs from it, so the deadline is visibly tied to the site's structure."],
+      ["Let the visitor hold it", "The note is a real button using pointer capture, so the drag keeps tracking even when the cursor slips off it."],
+      ["Show tension, not just distance", "Tension maps the stretch between the rest length and the snap limit (72% of the stage width) to 0–1. The cord's sag and stroke width both follow it, so you can see it about to give."],
+      ["Snap mid-drag", "Crossing the limit ends the drag on the spot. The visitor doesn't decide when it breaks; the material does."],
+      ["Spring home by hand", "A few lines of per-frame spring (stiffness 0.14, damping 0.74) give a natural overshoot without an animation library."],
     ],
   },
   "06": {
@@ -337,73 +381,118 @@ export const caseStudies: Record<string, CaseStudy> = {
     ],
   },
   "09": {
-    concept: "Navigation items orbiting a tiny black hole. Entering the field makes the event horizon swell and the links stretch and fade into it.",
-    motion: "Different orbital periods (1.2s and 1.8s), a scale-up on the horizon with ease-out, and links squashed on the X axis to fake gravitational stretching.",
-    why: "Squashing instead of just fading communicates direction and force, so the menu looks pulled rather than merely hidden.",
+    concept: "The nav sits in a row above a small black hole. As the cursor approaches the event horizon, each link is pulled along its own path toward it, stretching as it falls, until the whole menu is gone and the signal is lost.",
+    motion: "Pull is 1 minus the cursor's distance to the hole divided by 42% of the stage width, then squared, so the fall starts slowly and accelerates. Each link travels up to 90% of the way along its own vector, stretching to 2.6× along it and thinning to 0.25× across it.",
+    why: "Stretching along the direction of travel, rather than a flat squash, sells the gravity. Keeping the hole below the nav means nothing overlaps at rest; the original version placed the core right on top of ABOUT.",
     code: `<div id="field">
-  <div id="hole"></div>
-  <nav id="links"><span>WORK</span><span>ABOUT</span><span>NOTES</span></nav>
+  <span class="link" data-x=".16">WORK</span>
+  <span class="link" data-x=".5">ABOUT</span>
+  <span class="link" data-x=".84">NOTES</span>
+  <i id="hole"></i>
 </div>
 
 <style>
-  #field { position: relative; height: 240px; background: radial-gradient(circle, #313131, #151515 52%); }
-  #hole { position: absolute; top: calc(44% - 27px); left: calc(50% - 27px); width: 55px; height: 55px;
-          background: #000; border: 2px solid #dfff00; border-radius: 50%;
-          box-shadow: 0 0 28px rgba(223, 255, 0, .3); transition: transform 900ms cubic-bezier(.2, .8, .2, 1); }
-  #links { position: absolute; left: 7%; right: 7%; top: 41%; display: flex; justify-content: space-between;
-           color: #fbfaf5; font: 700 22px Manrope, sans-serif; }
-  #links span { transition: transform 1s cubic-bezier(.5, 0, 1, .5), opacity 1s; }
-  .active #hole { transform: scale(1.6); }
-  .active #links span:first-child { transform: translate(110px, 12px) scaleX(.2); opacity: .2; }
-  .active #links span:nth-child(2) { transform: scaleX(.1); opacity: 0; }
-  .active #links span:last-child { transform: translate(-110px, -9px) scaleX(.2); opacity: .2; }
+  #field { position: relative; height: 372px; color: #fff; overflow: hidden;
+           background: radial-gradient(circle at 50% 70%, #333, #121212 58%); }
+  .link { position: absolute; top: 24%; font: 700 21px Manrope, sans-serif; white-space: nowrap; }
+  #hole { position: absolute; left: 50%; top: 70%; width: 52px; height: 52px; border: 2px solid #dfff00;
+          border-radius: 50%; background: #000; transform: translate(-50%, -50%); }
 </style>
 
 <script>
-  const field = document.getElementById("field");
-  field.addEventListener("mouseenter", () => field.classList.add("active"));
-  field.addEventListener("mouseleave", () => field.classList.remove("active"));
+  const field = document.getElementById("field"), hole = document.getElementById("hole");
+  const links = [...field.querySelectorAll(".link")];
+  const HOLE = { x: 0.5, y: 0.7 }, ROW = 0.24;
+
+  function render(pull) {
+    const w = field.clientWidth, h = field.clientHeight, fall = pull * pull;
+    links.forEach((link) => {
+      const x = +link.dataset.x, dx = (HOLE.x - x) * w, dy = (HOLE.y - ROW) * h;
+      const a = Math.atan2(dy, dx);
+      link.style.left = x * 100 + "%";
+      link.style.opacity = 1 - fall * 0.85;
+      link.style.transform = \`translate(-50%, -50%) translate(\${dx * fall * 0.9}px, \${dy * fall * 0.9}px)
+        rotate(\${a}rad) scale(\${1 + fall * 1.6}, \${1 - fall * 0.75}) rotate(\${-a}rad)\`;
+    });
+    hole.style.transform = \`translate(-50%, -50%) scale(\${1 + pull * 0.6})\`;
+  }
+
+  field.addEventListener("pointermove", (e) => {
+    const b = field.getBoundingClientRect();
+    const d = Math.hypot(e.clientX - b.left - b.width * HOLE.x, e.clientY - b.top - b.height * HOLE.y);
+    render(Math.min(1, Math.max(0, 1 - d / (b.width * 0.42))));
+  });
+  field.addEventListener("pointerleave", () => render(0));
+  render(0);
 </script>`,
     steps: [
-      ["Build the singularity", "A black circle with an acid border and a soft box-shadow glow sits on a radial gradient that darkens toward the middle."],
-      ["Orbit with rotated containers", "Each orbit is an ellipse that rotates around its centre with a small dot on its edge. Different speeds make them feel independent."],
-      ["Pull links inward", "Translate each link toward the centre and compress it on X. Use ease-in so the motion accelerates as it falls in."],
-      ["Toggle everything with one class", "mouseenter and mouseleave add and remove .active, so the whole effect is reversible and cheap."],
+      ["Separate the nav from the hole", "Links sit in a row at 24% of the height and the hole at 70%. Nothing overlaps at rest, so the core can never sit on top of ABOUT again."],
+      ["Measure pull from the hole, not the stage", "Distance from the cursor to the hole, normalised against 42% of the stage width and clamped to 0–1."],
+      ["Square it", "fall = pull². Gravity should feel gentle at the edge of the field and violent near the centre."],
+      ["Stretch along the fall line", "rotate(angle) scale(x, y) rotate(-angle) stretches each link along its own vector toward the hole: spaghettification rather than a flat squash."],
+      ["Report the loss", "Above 92% pull the status line reads SIGNAL LOST, so the joke has words as well as motion."],
     ],
   },
   "10": {
-    concept: "A crooked menu and a crew that emerges from the browser chrome to fix it. Click to interrupt them and they measure, straighten, and put up a warning sign.",
-    motion: "Workers slide apart on a 700ms transition, the tape measure stretches to 1.7x, and the menu items snap to alignment only after a 700ms delay.",
-    why: "It acknowledges the interface as an object built by people. Delaying the fix until the workers arrive makes the sequence feel causal.",
-    code: `<div id="site">
+    concept: "A crooked menu cordoned off with caution tape. Call the crew and two workers walk out, unroll a tape measure and straighten the nav; then the tape tears and falls away and a sign asks you not to touch. Touch it, and it breaks again.",
+    motion: "Three states. Repairing lasts 1.9s: the workers walk in steps(2) to the ends of the rule, the tape measure unrolls to 68% and rewinds, and the nav straightens after an 800ms delay with a slight overshoot. When fixed, the two halves of the tape swing down from the middle and fade.",
+    why: "The caution tape was the missing piece of the original design: without it nothing showed that the menu was off-limits. A loop of break, repair and break again turns a one-shot gag into something visitors play with.",
+    code: `<button id="site" class="broken">
   <nav id="nav"><span>WORK</span><span>ABOUT</span><span>INFO</span></nav>
-  <div id="sign">DO NOT TOUCH</div>
-</div>
+  <i id="measure"></i>
+  <div id="tape">
+    <span><b>CAUTION · BREAKPOINT UNDER REPAIR · CAUTION · BREAKPOINT UNDER REPAIR ·</b></span>
+    <span><b>CAUTION · BREAKPOINT UNDER REPAIR · CAUTION · BREAKPOINT UNDER REPAIR ·</b></span>
+  </div>
+  <span id="sign">⚠ WORK IN PROGRESS</span>
+</button>
 
 <style>
-  #site { position: relative; height: 220px; background: #d8d8d1; cursor: pointer; }
-  #nav { display: flex; justify-content: space-between; padding: 80px 17% 0; border-bottom: 2px solid #121212;
-         font: 700 48px Manrope, sans-serif; }
-  #nav span:nth-child(2) { transform: translateY(13px); }
-  #nav span:nth-child(3) { transform: rotate(4deg); display: inline-block; }
-  .repairing #nav span { transform: none; transition: transform 800ms 700ms cubic-bezier(.2, .8, .2, 1); }
-  #sign { position: absolute; right: 12%; bottom: 11%; padding: 8px 12px; background: #dfff00;
-          border: 1px solid; opacity: 0; transform: rotate(-5deg) translateY(20px); }
-  .repairing #sign { opacity: 1; transform: rotate(-5deg); transition: 300ms 200ms; }
+  #site { position: relative; width: 100%; height: 372px; border: 0; background: #d8d7cf; overflow: hidden; }
+  #nav { position: absolute; top: 74px; left: 16%; right: 16%; display: flex; justify-content: space-between;
+         font: 700 56px Manrope, sans-serif; }
+  #nav span { transition: transform 900ms cubic-bezier(.34, 1.3, .64, 1); }
+  .broken #nav span:nth-child(1) { transform: translateY(-14px) rotate(-1.5deg); }
+  .broken #nav span:nth-child(2) { transform: translateY(14px) rotate(1deg); }
+  .broken #nav span:nth-child(3) { transform: translateY(-20px) rotate(-5deg); }
+  .repairing #nav span { transition-delay: 800ms; }
+  #measure { position: absolute; top: 152px; left: 16%; width: 0; height: 10px; background: #ffd23f; }
+  .repairing #measure { animation: measure 1.9s ease-in-out; }
+  @keyframes measure { 55%, 80% { width: 68%; } }
+  #tape { position: absolute; top: 214px; left: -4%; right: -4%; display: flex; transform: rotate(-3deg); }
+  #tape span { flex: 1; overflow: hidden; transition: transform 700ms, opacity 500ms 300ms;
+               background: repeating-linear-gradient(-45deg, #ffd23f 0 14px, #121212 14px 28px); }
+  #tape b { display: block; width: max-content; background: #ffd23f; font: 10px "DM Mono", monospace;
+            animation: run 9s linear infinite; }
+  @keyframes run { to { transform: translateX(-50%); } }
+  #tape span:first-child { transform-origin: 0 50%; }
+  #tape span:last-child { transform-origin: 100% 50%; }
+  .fixed #tape span:first-child { transform: rotate(38deg); opacity: 0; }
+  .fixed #tape span:last-child { transform: rotate(-38deg); opacity: 0; }
 </style>
 
 <script>
-  const site = document.getElementById("site");
+  const site = document.getElementById("site"), sign = document.getElementById("sign");
   site.addEventListener("click", () => {
-    site.classList.add("repairing");
-    setTimeout(() => site.classList.remove("repairing"), 2600);
+    if (site.className === "repairing") return;
+    if (site.className === "fixed") {
+      site.className = "broken";
+      sign.textContent = "⚠ WORK IN PROGRESS";
+      return;
+    }
+    site.className = "repairing";
+    setTimeout(() => {
+      site.className = "fixed";
+      sign.textContent = "PLEASE DON'T TOUCH";
+    }, 1900);
   });
 </script>`,
     steps: [
-      ["Start from an intentionally broken layout", "Apply odd offsets and rotations to the menu items in the default state. The fix is the transform going to none."],
-      ["Delay the fix", "The transition-delay of 700ms on the repairing state keeps the nav crooked until the workers have visibly arrived."],
-      ["Animate props as simple CSS shapes", "Workers are built from three positioned elements each (hard hat, body, legs), so no image assets are needed."],
-      ["Announce the intervention", "The warning sign fades and rises in with a 200ms delay. It is the cue that the exhibit has noticed the visitor."],
+      ["Start broken, on purpose", "The default state carries the offsets and rotations; fixing the menu is just transform: none."],
+      ["Cordon it off", "The caution tape is two halves in a flex row, each with hazard stripes and a scrolling text strip. Splitting it in two is what lets it tear in the middle later."],
+      ["Make the repair causal", "The workers walk first, the tape measure unrolls, and only then (an 800ms transition delay) does the nav straighten. The fix arrives because the crew did something."],
+      ["Tear and drop", "When fixed, each half swings down around its outer end and fades: the tape falls away instead of vanishing."],
+      ["Close the loop", "Clicking a fixed menu breaks it again and re-hangs the tape. The sign told you not to touch it."],
     ],
   },
   "11": {
@@ -556,41 +645,80 @@ export const caseStudies: Record<string, CaseStudy> = {
     ],
   },
   "15": {
-    concept: "A pixel pet follows the visitor's cursor, which leaves a trail of crumbs behind that gradually shrink and vanish.",
-    motion: "A stepped hop and chew (steps(2)) for chunky retro motion, plus crumbs that hold for 65% of their life and then shrink and rotate away.",
-    why: "Using stepped animations gives the pet a different tempo from the smooth crumbs. That contrast sells the pixel-art character.",
-    code: `<div id="field"><div id="pet"></div></div>
+    concept: "A pixel pet follows a trail of crumbs left by the cursor. Lead it over a nav link and it eats the link: it chomps, announces what it swallowed, and spits it back a few seconds later. Feed it all three and it gets full first.",
+    motion: "The pet eases 8% of the way to the next crumb every frame. A chomp is two steps(2) snaps of the mouth (190ms each). Eaten links shrink and spin out in 260ms and come back on an overshoot curve, cubic-bezier(.2, 1.8, .4, 1). When full, the pet swells in three steps and shuts its eyes for 2.2s.",
+    why: "The original pet ate crumbs and nothing else, so the nav labels were set dressing. Letting it eat the navigation closes the loop: the visitor's trail becomes a way to steer, and steering has a consequence.",
+    code: `<div id="field">
+  <nav><span>WORK</span><span>TRAIL</span><span>CONTACT</span></nav>
+  <div id="pet"><i></i><i></i><b></b></div>
+</div>
 
 <style>
-  #field { position: relative; height: 240px; background: #f2c94c; overflow: hidden; }
-  #pet { position: absolute; top: 42%; left: 50%; width: 65px; height: 55px; background: #4967ff;
-         box-shadow: -10px 10px 0 #4967ff, 10px 10px 0 #4967ff; transform: translate(-50%, -50%);
-         animation: hop 1.1s steps(2) infinite; }
-  .crumb { position: absolute; width: 6px; height: 6px; background: #121212; pointer-events: none;
-           animation: fade 3s forwards; }
-  @keyframes hop { 50% { transform: translate(-50%, calc(-50% - 8px)); } }
-  @keyframes fade { 0%, 65% { opacity: 1; transform: none; } 100% { opacity: 0; transform: scale(0) rotate(90deg); } }
+  #field { position: relative; height: 372px; background: #f3c64a; overflow: hidden; cursor: crosshair; }
+  nav { position: absolute; top: 50px; left: 8%; right: 8%; display: flex; justify-content: space-between;
+        font: 10px "DM Mono", monospace; pointer-events: none; }
+  nav span { padding: 6px 8px; border: 1px solid; background: #fbfaf5; transition: transform 260ms, opacity 200ms; }
+  nav span.eaten { opacity: 0; transform: scale(.2) rotate(-25deg); }
+  .crumb { position: absolute; width: 6px; height: 6px; margin: -3px; background: #121212; pointer-events: none; }
+  #pet { position: absolute; top: 0; left: 0; width: 86px; height: 66px; background: #4967ff; pointer-events: none; }
+  #pet b { position: absolute; left: 33px; top: 44px; width: 20px; height: 4px; background: #121212; }
+  #pet.chomp b { animation: chomp 190ms steps(2) 2; }
+  @keyframes chomp { 50% { height: 16px; } }
 </style>
 
 <script>
-  const field = document.getElementById("field");
-  let n = 0;
-  field.addEventListener("mousemove", (e) => {
-    if (n++ % 3) return;
-    const box = field.getBoundingClientRect();
-    const crumb = document.createElement("span");
+  const field = document.getElementById("field"), pet = document.getElementById("pet");
+  const links = [...field.querySelectorAll("nav span")];
+  const eaten = new Set(), crumbs = [];
+  const p = { x: field.clientWidth / 2, y: field.clientHeight * 0.62 };
+  let last = 0;
+
+  field.addEventListener("pointermove", (e) => {
+    if (performance.now() - last < 90) return;
+    last = performance.now();
+    const b = field.getBoundingClientRect(), crumb = document.createElement("i");
     crumb.className = "crumb";
-    crumb.style.left = e.clientX - box.left + "px";
-    crumb.style.top = e.clientY - box.top + "px";
-    crumb.addEventListener("animationend", () => crumb.remove());
+    crumb.x = e.clientX - b.left;
+    crumb.y = e.clientY - b.top;
+    crumb.style.left = crumb.x + "px";
+    crumb.style.top = crumb.y + "px";
     field.appendChild(crumb);
+    crumbs.push(crumb);
+    if (crumbs.length > 14) crumbs.shift().remove();
   });
+
+  function eat(i) {
+    eaten.add(i);
+    links[i].classList.add("eaten");
+    pet.classList.add("chomp");
+    setTimeout(() => pet.classList.remove("chomp"), 380);
+    setTimeout(() => { eaten.delete(i); links[i].classList.remove("eaten"); }, 5500);
+  }
+
+  (function tick() {
+    const target = crumbs[0];
+    if (target) {
+      p.x += (target.x - p.x) * 0.08;
+      p.y += (target.y - p.y) * 0.08;
+      if (Math.hypot(target.x - p.x, target.y - p.y) < 22) crumbs.shift().remove();
+    }
+    const b = field.getBoundingClientRect();
+    links.forEach((link, i) => {
+      if (eaten.has(i)) return;
+      const r = link.getBoundingClientRect();
+      const cx = r.left - b.left + r.width / 2, cy = r.top - b.top + r.height / 2;
+      if (Math.abs(p.x - cx) < r.width / 2 + 18 && Math.abs(p.y - cy) < r.height / 2 + 22) eat(i);
+    });
+    pet.style.transform = \`translate(\${p.x - 43}px, \${p.y - 33}px)\`;
+    requestAnimationFrame(tick);
+  })();
 </script>`,
     steps: [
-      ["Throttle the trail", "Only every third mousemove creates a crumb. Without throttling you would spawn hundreds of nodes per second."],
-      ["Position crumbs in local coordinates", "Subtract the container's bounding box from the pointer position so crumbs stay in the right place wherever the card sits."],
-      ["Clean up automatically", "Listen for animationend and remove the node, so the DOM never accumulates stale crumbs."],
-      ["Use steps() for retro motion", "steps(2) turns a smooth hop into two discrete frames, instantly giving the pet a pixel-art feel."],
+      ["Turn the trail into steering", "Crumbs drop at most every 90ms, capped at 14. The pet always heads for the oldest one, so the visitor draws the path it will walk."],
+      ["Ease, don't teleport", "Each frame the pet covers 8% of the remaining distance: fast when far, careful when close, which reads as an animal sniffing its way along."],
+      ["Hit-test the links", "Every frame, compare the pet's centre with each link's box, padded by 18px and 22px. Overlap means dinner."],
+      ["Close the loop", "An eaten link shrinks out, the status line announces it, and it is spat back 5.5s later with a springy overshoot. A 3s grace period stops the pet re-eating a link it is still standing on."],
+      ["Reward the completionist", "Eat all three before any come back and the pet swells, shuts its eyes, reports NAVIGATION DIGESTED, then returns everything at once."],
     ],
   },
   "16": {

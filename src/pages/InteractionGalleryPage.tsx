@@ -1,13 +1,34 @@
-import { useRef, useState } from "react";
-import { Link } from "react-router";
+import { useEffect, useRef, useState } from "react";
+import { Link, useLocation } from "react-router";
 import "@/styles/lab.css";
 import { labCaseId, labCasePath, labCases } from "@/data/lab/labCases";
-import { CleanupCloth, InkLayer, InkTip, useInkTraces } from "@/features/lab/InkTraces";
+import { CleanupCloth, InkLayer, InkTip, useInkTraces, WetWipePacket } from "@/features/lab/InkTraces";
+import LabManifesto from "@/features/lab/LabManifesto";
 
 export default function InteractionGalleryPage() {
   const [resets, setResets] = useState<number[]>(() => labCases.map(() => 0));
   const pageRef = useRef<HTMLElement>(null);
+  const manifestoRef = useRef<HTMLElement>(null);
   const ink = useInkTraces(pageRef);
+  const { touchWetPaint } = ink;
+  const location = useLocation();
+  const [pastIntro, setPastIntro] = useState(false);
+
+  // Touching the wet LAB tag in the header (even while already here) re-inks the fingers.
+  useEffect(() => {
+    if ((location.state as { wetPaint?: boolean } | null)?.wetPaint) touchWetPaint(location.key);
+  }, [location.key, location.state, touchWetPaint]);
+
+  // The wet-wipe packet only turns up once the hero and manifesto are behind you.
+  useEffect(() => {
+    const manifesto = manifestoRef.current;
+    if (!manifesto) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      setPastIntro(!entry.isIntersecting && entry.boundingClientRect.bottom < 0);
+    });
+    observer.observe(manifesto);
+    return () => observer.disconnect();
+  }, []);
 
   const reset = (index: number) =>
     setResets((current) => current.map((value, i) => (i === index ? value + 1 : value)));
@@ -33,6 +54,8 @@ export default function InteractionGalleryPage() {
           </a>
         </div>
       </section>
+
+      <LabManifesto ref={manifestoRef} inked={ink.inked} />
 
       <nav className="lx-directory" aria-label="All sixteen interaction concepts">
         <div className="lx-directory-head">
@@ -104,6 +127,7 @@ export default function InteractionGalleryPage() {
 
       <InkLayer traces={ink.traces} wiping={ink.wiping} />
       <InkTip tip={ink.tip} />
+      <WetWipePacket show={pastIntro && ink.inked} onClean={ink.cleanFingers} />
     </main>
   );
 }

@@ -168,6 +168,7 @@ export default function Header() {
                 <Link
                   className={`injected-lab ${phase === "painted" || phase === "settled" ? "is-active" : ""}`}
                   to="/lab"
+                  state={{ wetPaint: true }}
                   aria-label="Open the Live Lab interaction gallery"
                   aria-disabled={phase !== "painted" && phase !== "settled"}
                   tabIndex={phase === "painted" || phase === "settled" ? 0 : -1}
@@ -198,7 +199,7 @@ export default function Header() {
         </div>
 
         {/* Touch screens can't hover to spray the LAB link in, so phones get it plainly. */}
-        <Link className="nav-lab-compact" to="/lab">LAB</Link>
+        <Link className="nav-lab-compact" to="/lab" state={{ wetPaint: true }}>LAB</Link>
 
         <div className="nav-push">
           <Link to="/about">ABOUT</Link>

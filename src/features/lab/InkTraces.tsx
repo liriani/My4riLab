@@ -46,22 +46,15 @@ const RED = "#ff4b36";
 const BLUE = "#4967ff";
 
 const TIPS = {
-  stage: [
+  manifesto: [
     "Getting things dirty is part of the process.",
-    "Break it properly. That's how you learn the system.",
-    "Prodding is a research method.",
-    "Cause, meet effect.",
-    "Every exhibit resets. Your curiosity doesn't have to.",
+    "Read the rules, then break one.",
+    "The fourth wall is load-bearing. Lean on it.",
   ],
   directory: [
     "Pick a door. Any door.",
     "Index first, chaos second.",
     "Sixteen ways to misbehave. Choose one.",
-  ],
-  label: [
-    "Read the notes, then ignore them.",
-    "The label explains it. Touching it proves it.",
-    "Footnotes are for people who already played.",
   ],
   hero: [
     "The header is not safe. Neither is the page.",
@@ -84,10 +77,31 @@ const TIPS = {
 
 type Zone = keyof typeof TIPS;
 
+const CLEAN_TIP = "Clean hands now. Touch the wet LAB paint in the header to get messy again.";
+
+/** Fingers stay clean across visits to the case studies until the LAB tag is touched again. */
+const CLEAN_KEY = "lab:clean-fingers";
+/** History entry of the last LAB-tag touch already counted, so Back doesn't re-ink. */
+const PAINT_KEY = "lab:paint-touch";
+const readClean = () => {
+  try {
+    return window.sessionStorage.getItem(CLEAN_KEY) === "1";
+  } catch {
+    return false;
+  }
+};
+const writeClean = (clean: boolean) => {
+  try {
+    if (clean) window.sessionStorage.setItem(CLEAN_KEY, "1");
+    else window.sessionStorage.removeItem(CLEAN_KEY);
+  } catch {
+    /* storage unavailable: the state just won't outlive this page */
+  }
+};
+
 function zoneOf(target: Element): Zone {
-  if (target.closest(".lx-frame")) return "stage";
+  if (target.closest(".lx-manifesto")) return "manifesto";
   if (target.closest(".lx-directory")) return "directory";
-  if (target.closest(".lx-label")) return "label";
   if (target.closest(".lx-hero")) return "hero";
   if (target.closest(".lx-footer")) return "footer";
   return "any";
@@ -104,6 +118,9 @@ export function useInkTraces(containerRef: RefObject<HTMLElement | null>) {
   const [traces, setTraces] = useState<Trace[]>([]);
   const [tip, setTip] = useState<Tip | null>(null);
   const [wiping, setWiping] = useState(false);
+  // Inked = the visitor touched the wet LAB paint and hasn't cleaned up yet.
+  const [inked, setInked] = useState(() => !readClean());
+  const cleanNoticeShown = useRef(false);
   const nextId = useRef(1);
   const lastTip = useRef("");
   const tracesRef = useRef(traces);
@@ -131,11 +148,11 @@ export function useInkTraces(containerRef: RefObject<HTMLElement | null>) {
     [containerRef],
   );
 
-  const showTip = (zone: Zone, x: number, y: number) => {
+  const showTip = (zone: Zone, x: number, y: number, fixedText?: string) => {
     // Zone tips most of the time, a general line now and then; never the same line twice running.
     const pool: readonly string[] = zone !== "any" && Math.random() < 0.7 ? TIPS[zone] : TIPS.any;
     const options = pool.filter((text) => text !== lastTip.current);
-    const text = options[Math.floor(Math.random() * options.length)];
+    const text = fixedText ?? options[Math.floor(Math.random() * options.length)];
     lastTip.current = text;
     setTip({ id: nextId.current++, x, y, text });
     if (tipTimer.current) window.clearTimeout(tipTimer.current);
@@ -147,7 +164,15 @@ export function useInkTraces(containerRef: RefObject<HTMLElement | null>) {
     // detail === 0 means a keyboard "click" (Enter/Space): no finger, no print.
     if (event.detail === 0 || wiping) return;
     const target = event.target as Element;
-    if (target.closest("[data-ink-ignore]")) return;
+    // Exhibits own their clicks: no prints or tips inside a card.
+    if (target.closest(".lx-card, [data-ink-ignore]")) return;
+    if (!inked) {
+      if (!cleanNoticeShown.current) {
+        cleanNoticeShown.current = true;
+        showTip("any", event.clientX, event.clientY, CLEAN_TIP);
+      }
+      return;
+    }
     const point = toLocal(event.clientX, event.clientY);
     if (!point) return;
 
@@ -186,14 +211,40 @@ export function useInkTraces(containerRef: RefObject<HTMLElement | null>) {
     }, WIPE_MS);
   };
 
+  /** Wet wipe: clears every mark and stops new ones until the LAB paint is touched again. */
+  const cleanFingers = () => {
+    wipeAll();
+    setInked(false);
+    writeClean(true);
+    cleanNoticeShown.current = false;
+  };
+
+  /**
+   * The visitor arrived via the wet LAB tag. Each touch (one history entry)
+   * counts once: returning to the same entry with Back leaves clean hands clean.
+   */
+  const touchWetPaint = useCallback((entryKey: string) => {
+    try {
+      if (window.sessionStorage.getItem(PAINT_KEY) === entryKey) return;
+      window.sessionStorage.setItem(PAINT_KEY, entryKey);
+    } catch {
+      /* storage unavailable: treat every arrival as a fresh touch */
+    }
+    setInked(true);
+    writeClean(false);
+  }, []);
+
   return {
     traces,
     tip,
     wiping,
+    inked,
     markCount: traces.filter((trace) => !trace.wiped).length,
     onPageClick,
     eraseAt,
     wipeAll,
+    cleanFingers,
+    touchWetPaint,
   };
 }
 
@@ -321,5 +372,96 @@ export function CleanupCloth({ markCount, wiping, onWipeAll, onEraseAt }: ClothP
       )}
       {wiping && <span className="lx-cloth-sweep" aria-hidden="true" />}
     </div>
+  );
+}
+
+type PacketProps = {
+  /** Scrolled past the intro and still has paint on their fingers. */
+  show: boolean;
+  onClean: () => void;
+};
+
+const PULL_MS = 650;
+const DONE_MS = 1600;
+const NOTE_MS = 7000;
+
+/**
+ * Floating wet-wipe packet. It turns up once the visitor is past the intro,
+ * explains itself, and cleans their fingers: every mark goes, and no new ones
+ * appear until they touch the wet LAB tag again.
+ */
+export function WetWipePacket({ show, onClean }: PacketProps) {
+  const [phase, setPhase] = useState<"idle" | "pulling" | "done">("idle");
+  const [noteOpen, setNoteOpen] = useState(false);
+  const shownOnce = useRef(false);
+  const timers = useRef<number[]>([]);
+
+  useEffect(() => () => timers.current.forEach(window.clearTimeout), []);
+
+  // First appearance: let the note speak for a few seconds before it tucks away.
+  useEffect(() => {
+    if (!show || shownOnce.current) return;
+    shownOnce.current = true;
+    setNoteOpen(true);
+    timers.current.push(window.setTimeout(() => setNoteOpen(false), NOTE_MS));
+  }, [show]);
+
+  // Re-inked after a clean: the packet comes back ready.
+  useEffect(() => {
+    if (show && phase === "done") setPhase("idle");
+  }, [show, phase]);
+
+  const pull = () => {
+    if (phase !== "idle") return;
+    setNoteOpen(false);
+    setPhase("pulling");
+    timers.current.push(
+      window.setTimeout(() => {
+        onClean();
+        setPhase("done");
+      }, PULL_MS),
+    );
+  };
+
+  const visible = show || phase !== "idle";
+  // Once done, it lingers just long enough to confirm, then leaves.
+  const [lingering, setLingering] = useState(false);
+  useEffect(() => {
+    if (phase !== "done") return;
+    setLingering(true);
+    const timer = window.setTimeout(() => setLingering(false), DONE_MS);
+    return () => window.clearTimeout(timer);
+  }, [phase]);
+
+  if (!visible || (phase === "done" && !lingering && !show)) return null;
+
+  return (
+    <aside
+      className={`lx-wipes is-${phase} ${noteOpen ? "is-note-open" : ""}`}
+      data-ink-ignore
+      aria-label="Wet wipes"
+    >
+      <p className="lx-wipes-note" id="lx-wipes-note">
+        <span>STAFF NOTICE</span>
+        That LAB sign in the header was wet, and you touched it. Wipe your fingers
+        before they smudge the exhibits.
+      </p>
+      <button
+        type="button"
+        className="lx-wipes-packet"
+        onClick={pull}
+        onMouseEnter={() => phase === "idle" && setNoteOpen(true)}
+        onMouseLeave={() => setNoteOpen(false)}
+        onFocus={() => phase === "idle" && setNoteOpen(true)}
+        onBlur={() => setNoteOpen(false)}
+        aria-describedby="lx-wipes-note"
+        disabled={phase !== "idle"}
+      >
+        <i className="lx-wipes-tissue" aria-hidden="true" />
+        <span className="lx-wipes-flap" aria-hidden="true">PEEL</span>
+        <b>LAB·WIPES</b>
+        <small>{phase === "done" ? "FINGERS CLEAN ✓" : "10 WET TISSUES · FOR PAINTED FINGERS"}</small>
+      </button>
+    </aside>
   );
 }
