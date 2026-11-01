@@ -6,7 +6,7 @@ import {
   type CSSProperties,
   type PointerEvent,
 } from "react";
-import { loadImage } from "./imageUtils";
+import { loadImage, makeDemoImage } from "./imageUtils";
 import {
   GlitchSettings,
   useGlitchEngine,
@@ -91,13 +91,17 @@ export default function HeroGlitch({ src, scrolledSrc, alt }: HeroGlitchProps) {
   const previousImage = useRef<HTMLImageElement | null>(null);
 
   // Preload both portraits up front so the swap never waits on the network.
+  // If a photo fails to load, fall back to the other one, then to the generated
+  // demo image, so the frame never sits on an empty black canvas.
   useEffect(() => {
     let active = true;
-    Promise.all([loadImage(src), loadImage(scrolledSrc ?? src)]).then(
-      ([rest, scrolled]) => {
-        if (active) setImages({ rest, scrolled });
-      },
-    );
+    const load = (source: string) => loadImage(source).catch(() => null);
+    Promise.all([load(src), scrolledSrc ? load(scrolledSrc) : Promise.resolve(null)])
+      .then(async ([rest, scrolled]) => {
+        const base = rest ?? scrolled ?? (await makeDemoImage());
+        if (active) setImages({ rest: base, scrolled: scrolled ?? base });
+      })
+      .catch(() => undefined);
     return () => {
       active = false;
     };
