@@ -198,8 +198,20 @@ export default function Header() {
           </Link>
         </div>
 
-        {/* Touch screens can't hover to spray the LAB link in, so phones get it plainly. */}
-        <Link className="nav-lab-compact" to="/lab" state={{ wetPaint: true }}>LAB</Link>
+        {/* Touch screens can't hover to spray the LAB link in, so phones get it already
+            painted, still wet, with the fresh-paint sign hung beside it. */}
+        <Link className="nav-lab-compact" to="/lab" state={{ wetPaint: true }}>
+          LAB
+          <i aria-hidden="true" />
+        </Link>
+        <Link
+          className="nav-paint-compact"
+          to="/souvenir"
+          state={{ from: "paint" }}
+          aria-label="Sorry, fresh paint! (something is hidden behind this sign)"
+        >
+          <span>SORRY,<br /><strong>FRESH PAINT!</strong></span>
+        </Link>
 
         <div className="nav-push">
           <Link to="/about">ABOUT</Link>

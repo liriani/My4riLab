@@ -130,8 +130,89 @@ a {
   gap: 34px;
 }
 
-.nav-lab-compact {
+.nav-lab-compact,
+.nav-paint-compact {
   display: none;
+}
+
+/* Phones: LAB arrives already sprayed on, with one drip that hasn't dried. */
+.nav-lab-compact {
+  position: relative;
+  padding: 3px 6px;
+  color: var(--ink);
+  background: var(--acid);
+  box-shadow: 0 0 0 1px var(--ink);
+}
+
+.nav-lab-compact i {
+  position: absolute;
+  top: 100%;
+  right: 7px;
+  width: 4px;
+  height: 9px;
+  border-radius: 0 0 3px 3px;
+  background: var(--acid);
+  box-shadow: 1px 0 0 var(--ink), -1px 0 0 var(--ink), 0 1px 0 var(--ink);
+  transform-origin: top;
+  animation: compact-drip 2.6s 600ms ease-in both;
+}
+
+@keyframes compact-drip {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+
+/* The phone-sized fresh-paint sign: same door to /souvenir, hung from the header's
+   right edge on two strings and dropped in shortly after the page loads. */
+.nav-paint-compact {
+  position: absolute;
+  top: 50%;
+  right: calc(3vw + 36px);
+  z-index: 2;
+  place-items: center;
+  width: 62px;
+  height: 30px;
+  color: var(--ink);
+  background: var(--acid);
+  border: 1px solid var(--ink);
+  box-shadow: 2px 2px 0 rgba(17, 17, 15, 0.16);
+  font-size: 5.5px;
+  line-height: 1.2;
+  text-align: center;
+  transform: translateY(-50%) rotate(4deg);
+  animation: compact-sign-drop 900ms 900ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* Strings, and an invisible padding box so the tap target is a full 44 px. */
+.nav-paint-compact::before,
+.nav-paint-compact::after {
+  position: absolute;
+  bottom: 100%;
+  width: 1px;
+  height: 40px;
+  background: var(--ink);
+  content: "";
+}
+
+.nav-paint-compact::before { left: 10px; }
+.nav-paint-compact::after { right: 10px; }
+
+.nav-paint-compact span::after {
+  position: absolute;
+  inset: -8px -4px;
+  content: "";
+}
+
+.nav-paint-compact:active {
+  color: var(--acid);
+  background: var(--ink);
+}
+
+@keyframes compact-sign-drop {
+  0% { transform: translateY(-260%) rotate(4deg); }
+  72% { transform: translateY(-40%) rotate(-7deg); }
+  86% { transform: translateY(-56%) rotate(6deg); }
+  100% { transform: translateY(-50%) rotate(4deg); }
 }
 
 .nav-push {
@@ -1916,6 +1997,16 @@ a {
   font-size: 9px;
 }
 
+.site-footer div a {
+  border-bottom: 1px solid currentColor;
+  transition: color 160ms ease;
+}
+
+.site-footer div a:hover,
+.site-footer div a:focus-visible {
+  color: var(--orange);
+}
+
 .projects-page {
   min-height: 100vh;
   background: var(--paper);
@@ -2102,6 +2193,20 @@ a {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  opacity: 0;
+  transition: opacity 320ms ease;
+}
+
+.project-image.is-loaded {
+  opacity: 1;
+}
+
+/* Screenshots and covers: the whole image, pinned over the artwork with a hard
+   shadow that follows its own edges (the covers have transparent corners). */
+.project-image--contain {
+  padding: clamp(18px, 5cqw, 56px);
+  object-fit: contain;
+  filter: drop-shadow(5px 5px 0 var(--ink));
 }
 
 .project-visual {
@@ -2871,6 +2976,11 @@ a {
   container-type: inline-size;
 }
 
+/* Room under a contained screenshot for the caption tab. */
+.detail-figures .project-image--contain {
+  padding-bottom: 46px;
+}
+
 .detail-figures figcaption {
   position: absolute;
   z-index: 2;
@@ -3377,10 +3487,41 @@ a {
 }
 
 .creative-copy {
+  position: relative;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
   padding: 74px 3vw 46px;
+  overflow: hidden;
   border-right: 1px solid rgba(243, 240, 230, 0.3);
+}
+
+/* The Berlin Wall mural, faded in behind "COLOR IS A VERB" with the same
+   vignette language as the About hero portrait: strongest low and to the
+   right, gone before it reaches the headline. */
+.creative-copy-wall {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  -webkit-mask-image:
+    radial-gradient(ellipse 80% 62% at 72% 78%, #000 0%, rgba(0, 0, 0, 0.6) 42%, transparent 76%),
+    linear-gradient(to bottom, transparent 8%, #000 52%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    radial-gradient(ellipse 80% 62% at 72% 78%, #000 0%, rgba(0, 0, 0, 0.6) 42%, transparent 76%),
+    linear-gradient(to bottom, transparent 8%, #000 52%);
+  mask-composite: intersect;
+}
+
+.creative-copy-wall img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 32%;
+  opacity: 0.34;
+  filter: saturate(1.15) contrast(1.05);
 }
 
 .creative-copy h2 {
@@ -3548,6 +3689,97 @@ a {
   line-height: 1.55;
 }
 
+/* Field prints: four photos pinned like contact prints, each with the same
+   soft vignette as the About hero so they sit in the page, not on it. */
+.about-field {
+  margin: 0 0 80px;
+}
+
+.about-field-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 0 22px;
+  padding-bottom: 10px;
+  border-bottom: var(--line);
+  font-family: "DM Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+}
+
+.about-field ul {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(14px, 2vw, 28px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.about-field li {
+  transform: rotate(var(--tilt, 0deg));
+  transition: transform 220ms ease;
+}
+
+.about-field li:nth-child(odd) { --tilt: -1.2deg; }
+.about-field li:nth-child(even) { --tilt: 1deg; }
+
+.about-field li:hover {
+  transform: rotate(0deg) translateY(-4px);
+}
+
+.about-field figure {
+  margin: 0;
+  padding: 10px 10px 0;
+  border: var(--line);
+  background: var(--paper);
+  box-shadow: 5px 5px 0 var(--ink);
+}
+
+.about-field-photo {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: var(--ink);
+}
+
+.about-field-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.78) contrast(1.06);
+  transition: filter 260ms ease, transform 600ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* Vignette: corners burn down, the centre stays clean. */
+.about-field-photo::after {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 72% 68% at 50% 46%, transparent 56%, rgba(17, 17, 15, 0.55) 100%);
+  pointer-events: none;
+  content: "";
+}
+
+.about-field li:hover .about-field-photo img {
+  filter: saturate(1.05) contrast(1.04);
+  transform: scale(1.03);
+}
+
+.about-field figcaption {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 0 12px;
+  font-family: "DM Mono", monospace;
+  font-size: 8.5px;
+  letter-spacing: 0.06em;
+}
+
+.about-field figcaption span {
+  color: var(--orange);
+}
+
 .analog-cards {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -3623,7 +3855,8 @@ a {
 
 .about-manifesto > div {
   display: flex;
-  gap: 35px;
+  flex-wrap: wrap;
+  gap: 18px 35px;
   margin-top: 70px;
 }
 
@@ -3779,6 +4012,14 @@ a {
     --header-h: 64px;
   }
 
+  .about-field ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .about-field-head span:last-child {
+    text-align: right;
+  }
+
   /* Same three-column header on phones: wordmark / WORK·LAB·ABOUT / status dot. */
   .site-nav {
     grid-template-columns: auto 1fr auto;
@@ -3798,6 +4039,52 @@ a {
 
   .nav-lab-compact {
     display: block;
+  }
+
+  .nav-paint-compact {
+    display: grid;
+  }
+
+  @media (max-width: 360px) {
+    .nav-paint-compact {
+      right: calc(3vw + 34px);
+      width: 50px;
+      font-size: 5px;
+    }
+  }
+
+  /* 44 px tap targets without changing how the header looks. */
+  .wordmark,
+  .nav-links > a:not(.nav-paint-compact),
+  .nav-push a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .wordmark,
+  .nav-links > a:not(.nav-lab-compact, .nav-paint-compact),
+  .nav-push a {
+    padding-inline: 9px;
+    margin-inline: -9px;
+  }
+
+  /* The painted box stays small; an invisible margin makes the target 44 px. */
+  .nav-links > .nav-lab-compact {
+    min-height: 0;
+  }
+
+  .nav-lab-compact::before {
+    position: absolute;
+    inset: -12px -8px;
+    content: "";
+  }
+
+  .availability {
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    margin-right: -3vw;
   }
 
   .site-header--painted .nav-push,
@@ -4181,6 +4468,8 @@ a {
   .paint-spray circle,
   .paint-drips path,
   .header-fresh-paint-sign,
+  .nav-paint-compact,
+  .nav-lab-compact i,
   .availability i,
   .visual-state i,
   .shader-orb,

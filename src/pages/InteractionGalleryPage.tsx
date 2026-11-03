@@ -13,6 +13,10 @@ export default function InteractionGalleryPage() {
   const { touchWetPaint } = ink;
   const location = useLocation();
   const [pastIntro, setPastIntro] = useState(false);
+  // Touch cues tuck away once that exhibit has been touched.
+  const [touched, setTouched] = useState<ReadonlySet<number>>(() => new Set());
+  const markTouched = (index: number) =>
+    setTouched((current) => (current.has(index) ? current : new Set(current).add(index)));
 
   // Touching the wet LAB tag in the header (even while already here) re-inks the fingers.
   useEffect(() => {
@@ -82,13 +86,22 @@ export default function InteractionGalleryPage() {
           >
             <div className="lx-card-top">
               <span className="lx-card-number">{labCaseId(i)}</span>
-              <span className="lx-card-prompt">{item.prompt}</span>
+              <span className="lx-card-prompt lx-card-prompt--mouse">{item.prompt}</span>
+              <span className="lx-card-prompt lx-card-prompt--touch">{item.touch}</span>
               <button type="button" className="lx-reset" onClick={() => reset(i)} aria-label={`Reset ${item.title}`}>
                 <img src={`${import.meta.env.BASE_URL}assets/lab/reset-${item.dark ? "light" : "dark"}.svg`} alt="" />
               </button>
             </div>
 
-            <div className="lx-frame">{item.stage(resets[i])}</div>
+            <div className="lx-frame" onPointerDown={(e) => e.pointerType !== "mouse" && markTouched(i)}>
+              {item.stage(resets[i])}
+              {item.gesture && (
+                <span className={`lx-touch-cue ${touched.has(i) ? "is-gone" : ""}`} aria-hidden="true">
+                  <i />
+                  {item.touch}
+                </span>
+              )}
+            </div>
 
             <Link className="lx-card-title" to={labCasePath(i)}>
               <h2>{item.title}</h2>

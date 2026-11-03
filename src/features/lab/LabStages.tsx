@@ -5,6 +5,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { useCoarsePointer } from "./useCoarsePointer";
 
 const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
 
@@ -64,7 +65,8 @@ export function ShyVoyeur() {
   };
 
   return (
-    <div className="lx-stage lx-shy" onPointerMove={moved} onPointerLeave={() => setWatching(false)}>
+    // A tap counts as movement too, so on touch screens the stillness after it summons the observer.
+    <div className="lx-stage lx-shy" onPointerMove={moved} onPointerDown={moved} onPointerLeave={() => setWatching(false)}>
       <span className="lx-stage-hint lx-shy-hint">DON’T MOVE.</span>
       <div className={`lx-shy-creature ${watching ? "is-watching" : ""}`} aria-hidden="true">
         <span className="lx-shy-head"><i /><i /></span>
@@ -311,13 +313,15 @@ export function ElasticDeadline() {
 /* 06 ─ Typographic Wildlife ───────────────────────────────────────────── */
 export function TypographicWildlife() {
   const [off, setOff] = useState({ x: 0, y: 0 });
+  const approach = (e: ReactPointerEvent<HTMLDivElement>) => {
+    const p = localPoint(e);
+    setOff({ x: clamp((p.x - p.w / 2) * 0.12, -60, 60), y: clamp((p.y - p.h / 2) * 0.18, -45, 45) });
+  };
   return (
     <div
       className="lx-stage lx-wildlife"
-      onPointerMove={(e) => {
-        const p = localPoint(e);
-        setOff({ x: clamp((p.x - p.w / 2) * 0.12, -60, 60), y: clamp((p.y - p.h / 2) * 0.18, -45, 45) });
-      }}
+      onPointerMove={approach}
+      onPointerDown={approach}
       onPointerLeave={() => setOff({ x: 0, y: 0 })}
     >
       <div className="lx-wildlife-word" aria-label="PORTFOLIO">
@@ -416,16 +420,19 @@ const LINK_ROW = 0.24;
 export function BlackHole() {
   const [pull, setPull] = useState(0);
   const [size, setSize] = useState({ w: 645, h: 372 });
+  const approach = (e: ReactPointerEvent<HTMLDivElement>) => {
+    const p = localPoint(e);
+    if (p.w !== size.w || p.h !== size.h) setSize({ w: p.w, h: p.h });
+    const d = Math.hypot(p.x - p.w * HOLE.x, p.y - p.h * HOLE.y);
+    setPull(clamp(1 - d / (p.w * 0.42), 0, 1));
+  };
 
   return (
     <div
       className={`lx-stage lx-hole ${pull > 0.92 ? "is-lost" : ""}`}
-      onPointerMove={(e) => {
-        const p = localPoint(e);
-        if (p.w !== size.w || p.h !== size.h) setSize({ w: p.w, h: p.h });
-        const d = Math.hypot(p.x - p.w * HOLE.x, p.y - p.h * HOLE.y);
-        setPull(clamp(1 - d / (p.w * 0.42), 0, 1));
-      }}
+      // Pressing counts as approaching, so a held finger works where a vertical drag would scroll.
+      onPointerMove={approach}
+      onPointerDown={approach}
       onPointerLeave={() => setPull(0)}
     >
       <nav className="lx-hole-nav" aria-label="Navigation being pulled into a black hole">
@@ -469,6 +476,7 @@ type CrewState = "broken" | "repairing" | "fixed";
 const REPAIR_MS = 1900;
 
 export function MaintenanceCrew({ resetKey }: { resetKey: number }) {
+  const coarse = useCoarsePointer();
   const [state, setState] = useState<CrewState>("broken");
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => { setState("broken"); }, [resetKey]);
@@ -502,7 +510,7 @@ export function MaintenanceCrew({ resetKey }: { resetKey: number }) {
         {state === "fixed" ? "PLEASE DON’T TOUCH" : "⚠ WORK IN PROGRESS"}
       </span>
       <span className="lx-stage-hint lx-crew-hint">
-        {state === "broken" ? "CLICK TO CALL THE CREW" : state === "repairing" ? "BREAKPOINT UNDER REPAIR…" : "FIXED. YOU’RE GOING TO TOUCH IT, AREN’T YOU?"}
+        {state === "broken" ? coarse ? "TAP TO CALL THE CREW" : "CLICK TO CALL THE CREW" : state === "repairing" ? "BREAKPOINT UNDER REPAIR…" : "FIXED. YOU’RE GOING TO TOUCH IT, AREN’T YOU?"}
       </span>
     </button>
   );
@@ -511,6 +519,7 @@ export function MaintenanceCrew({ resetKey }: { resetKey: number }) {
 /* 11 ─ Undo Poltergeist ───────────────────────────────────────────────── */
 const mistakes = ["WORK", "WORRK", "WOK", "WORK", "W0RK", "WROK", "WORKK"];
 export function UndoPoltergeist({ resetKey }: { resetKey: number }) {
+  const coarse = useCoarsePointer();
   const [step, setStep] = useState(0);
   const [ghost, setGhost] = useState<string | null>(null);
   useEffect(() => { setStep(0); setGhost(null); }, [resetKey]);
@@ -533,13 +542,14 @@ export function UndoPoltergeist({ resetKey }: { resetKey: number }) {
         {ghost && <span className="lx-undo-ghost" aria-hidden="true">{ghost}</span>}
         <span>{mistakes[step]}</span>
       </div>
-      <span className="lx-stage-hint lx-undo-hint">CLICK TO MAKE A MISTAKE</span>
+      <span className="lx-stage-hint lx-undo-hint">{coarse ? "TAP TO MAKE A MISTAKE" : "CLICK TO MAKE A MISTAKE"}</span>
     </div>
   );
 }
 
 /* 12 ─ Overworked Browser Tab ─────────────────────────────────────────── */
 export function OverworkedTab({ resetKey }: { resetKey: number }) {
+  const coarse = useCoarsePointer();
   const [awake, setAwake] = useState(false);
   useEffect(() => { setAwake(false); }, [resetKey]);
   return (
@@ -555,7 +565,7 @@ export function OverworkedTab({ resetKey }: { resetKey: number }) {
         <span className="lx-tab-z" aria-hidden="true">z<br />z</span>
         <span className="lx-tab-link lx-tab-link--left">ABOUT WORK</span>
         <span className="lx-tab-link lx-tab-link--right">CONTACT</span>
-        <span className="lx-stage-hint lx-tab-hint">{awake ? "LOOKING BUSY" : "CLICK TO RETURN TO THE TAB"}</span>
+        <span className="lx-stage-hint lx-tab-hint">{awake ? "LOOKING BUSY" : coarse ? "TAP TO RETURN TO THE TAB" : "CLICK TO RETURN TO THE TAB"}</span>
       </button>
     </div>
   );
@@ -563,6 +573,7 @@ export function OverworkedTab({ resetKey }: { resetKey: number }) {
 
 /* 13 ─ Magnetic Kerning ───────────────────────────────────────────────── */
 export function MagneticKerning() {
+  const coarse = useCoarsePointer();
   const letters = "MAGNETIC".split("");
   const refs = useRef<(HTMLSpanElement | null)[]>([]);
   const [mx, setMx] = useState<number | null>(null);
@@ -587,7 +598,7 @@ export function MagneticKerning() {
   const leave = () => { setMx(null); setOffsets(letters.map(() => ({ x: 0, y: 0 }))); };
 
   return (
-    <div className="lx-stage lx-kern" onPointerMove={move} onPointerLeave={leave}>
+    <div className="lx-stage lx-kern" onPointerMove={move} onPointerDown={move} onPointerLeave={leave}>
       <div className="lx-kern-magnet" style={{ left: mx === null ? "50%" : `${mx}px` }} aria-hidden="true"><span>S</span><span>N</span></div>
       <div className="lx-kern-word" aria-label="MAGNETIC">
         {letters.map((l, i) => (
@@ -595,13 +606,14 @@ export function MagneticKerning() {
         ))}
       </div>
       <i className="lx-kern-rule" aria-hidden="true"><b style={{ left: mx === null ? "50%" : `${mx}px` }} /></i>
-      <span className="lx-stage-hint lx-kern-hint">MOVE CURSOR TO RE-KERN</span>
+      <span className="lx-stage-hint lx-kern-hint">{coarse ? "SLIDE A FINGER TO RE-KERN" : "MOVE CURSOR TO RE-KERN"}</span>
     </div>
   );
 }
 
 /* 14 ─ Navigation Wormhole ────────────────────────────────────────────── */
 export function Wormhole({ resetKey }: { resetKey: number }) {
+  const coarse = useCoarsePointer();
   const [side, setSide] = useState<"a" | "b">("a");
   const [traveling, setTraveling] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -620,7 +632,7 @@ export function Wormhole({ resetKey }: { resetKey: number }) {
       <div className="lx-portal lx-portal--a" aria-hidden="true"><i /><i /><i /></div>
       <div className="lx-portal lx-portal--b" aria-hidden="true"><i /><i /><i /></div>
       <span className={`lx-worm-link ${side === "b" ? "is-right" : ""} ${traveling ? "is-traveling" : ""}`}>WORK</span>
-      <span className="lx-stage-hint lx-worm-hint">CLICK TO BEND THE SITEMAP</span>
+      <span className="lx-stage-hint lx-worm-hint">{coarse ? "TAP TO BEND THE SITEMAP" : "CLICK TO BEND THE SITEMAP"}</span>
     </button>
   );
 }
@@ -735,17 +747,21 @@ export function CrumbTrail({ resetKey }: { resetKey: number }) {
     // eat() only touches refs and state setters, so the loop can stay mounted.
   }, []);
 
-  const move = (e: ReactPointerEvent<HTMLDivElement>) => {
-    const now = performance.now();
-    if (now - lastDrop.current < 90) return;
-    lastDrop.current = now;
+  const drop = (e: ReactPointerEvent<HTMLDivElement>) => {
     const p = localPoint(e);
     crumbs.current = [...crumbs.current, { id: id.current++, x: p.x, y: p.y }].slice(-14);
     setView(crumbs.current);
   };
+  const move = (e: ReactPointerEvent<HTMLDivElement>) => {
+    const now = performance.now();
+    if (now - lastDrop.current < 90) return;
+    lastDrop.current = now;
+    drop(e);
+  };
 
   return (
-    <div className="lx-stage lx-crumbs" ref={stage} onPointerMove={move}>
+    // Taps drop a crumb where the finger lands: touch screens get a trail without dragging.
+    <div className="lx-stage lx-crumbs" ref={stage} onPointerMove={move} onPointerDown={drop}>
       <nav aria-hidden="true">
         {PET_LINKS.map((label, index) => (
           <span
@@ -774,6 +790,7 @@ export function CrumbTrail({ resetKey }: { resetKey: number }) {
 
 /* 16 ─ Gravity Override ───────────────────────────────────────────────── */
 export function GravityOverride({ resetKey }: { resetKey: number }) {
+  const coarse = useCoarsePointer();
   const [gravity, setGravity] = useState(true);
   useEffect(() => { setGravity(true); }, [resetKey]);
   return (
@@ -787,7 +804,7 @@ export function GravityOverride({ resetKey }: { resetKey: number }) {
         {["WORK", "ABOUT", "INFO"].map((l, i) => <span key={l} style={{ "--i": i } as CSSProperties}>{l}</span>)}
       </nav>
       <i className="lx-gravity-rule" aria-hidden="true" />
-      <span className="lx-stage-hint lx-gravity-hint">{gravity ? "CLICK TO REVOKE PHYSICS" : "PHYSICS REVOKED"}</span>
+      <span className="lx-stage-hint lx-gravity-hint">{gravity ? coarse ? "TAP TO REVOKE PHYSICS" : "CLICK TO REVOKE PHYSICS" : "PHYSICS REVOKED"}</span>
       <div className="lx-gravity-floor">TOP OF PAGE</div>
     </div>
   );

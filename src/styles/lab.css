@@ -239,7 +239,7 @@
 .lx-reset:hover, .lx-reset:focus-visible { opacity: 1; transform: rotate(-120deg); outline: 0; }
 .lx-reset img { width: 15px; height: 15px; }
 
-.lx-frame { margin: 18px 0; border: 1px solid currentColor; overflow: hidden; }
+.lx-frame { position: relative; margin: 18px 0; border: 1px solid currentColor; overflow: hidden; }
 .lx-card-title { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .lx-card-title img { flex: none; transition: transform 200ms ease; }
 .lx-card-title:hover img, .lx-card-title:focus-visible img { transform: translateX(6px); }
@@ -956,6 +956,22 @@ html:has(.cs-toolbar) { scroll-padding-top: calc(var(--header-h) + 56px); }
     -16px -12px 0 -9px var(--ink);
 }
 
+/* Tap (touch screens): a ring and a dot that spread, then dry away on their own. */
+.lx-trace--tap {
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--ink) 0 4px, transparent 4.5px);
+  animation: lx-tap-ripple 2.2s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+}
+@keyframes lx-tap-ripple {
+  0% { opacity: 0.7; transform: scale(0.4); }
+  18% { opacity: 0.55; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.35); }
+}
+
 .lx-trace.is-wiped,
 .lx-ink-layer.is-wiping .lx-trace { animation: lx-ink-smear 420ms ease-in forwards; }
 .lx-ink-layer.is-wiping .lx-trace { animation-duration: 700ms; animation-delay: 120ms; }
@@ -1207,6 +1223,55 @@ html:has(.cs-toolbar) { scroll-padding-top: calc(var(--header-h) + 56px); }
   100% { opacity: 0; transform: translate(-30%, -90px) rotate(14deg) scale(1.05); }
 }
 
+/* ───────── touch screens ─────────
+   Touch is indirect (the finger hides what it presses), so phones and tablets get
+   finger-worded prompts and, for exhibits that need more than a tap, a cue in the
+   frame that tucks away after the first touch. */
+.lx-card-prompt--touch,
+.lx-touch-cue { display: none; }
+
+.lx-touch-cue {
+  /* Top edge: the stages keep their own hints along the bottom. */
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  z-index: 5;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 11px 7px 8px;
+  color: var(--lx-ink);
+  background: var(--lx-lime);
+  border: 1px solid var(--lx-ink);
+  box-shadow: 3px 3px 0 var(--lx-ink);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  pointer-events: none;
+  transform: translateX(-50%);
+  transition: opacity 260ms ease, transform 260ms ease;
+}
+/* A fingertip that keeps pressing. */
+.lx-touch-cue i {
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid var(--lx-ink);
+  border-radius: 50%;
+  animation: lx-cue-press 1.4s ease-in-out infinite;
+}
+@keyframes lx-cue-press {
+  0%, 100% { background: transparent; transform: scale(1); }
+  45% { background: var(--lx-ink); transform: scale(0.72); }
+}
+.lx-touch-cue.is-gone { opacity: 0; transform: translate(-50%, -8px); }
+
+@media (hover: none) and (pointer: coarse) {
+  .lx-card-prompt--mouse { display: none; }
+  .lx-card-prompt--touch { display: block; }
+  .lx-touch-cue { display: inline-flex; }
+  /* Long-presses are a gesture here, not a request for the copy/share menu. */
+  .lx-stage { -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
+}
+
 /* responsive — same breakpoints as the portfolio (960 tablet / 640 phone) so the
    shared header and the lab change layout together. */
 @media (max-width: 1100px) {
@@ -1239,8 +1304,18 @@ html:has(.cs-toolbar) { scroll-padding-top: calc(var(--header-h) + 56px); }
   .lx-directory-grid { grid-template-columns: repeat(2, 1fr); }
   .lx-directory-grid button { min-height: 84px; }
   .lx-card { padding: 16px; }
-  .lx-card-prompt { display: none; }
-  .lx-reset { margin-left: auto; }
+  .lx-card-prompt--mouse { display: none; }
+  .lx-card-prompt--touch { min-width: 0; margin-left: auto; overflow: hidden; font-size: 9px; text-align: right; text-overflow: ellipsis; white-space: nowrap; }
+  .lx-reset { flex: none; width: 44px; height: 44px; margin-left: auto; }
+  .lx-card-prompt--touch + .lx-reset { margin-left: 0; }
+  .lx-card-title { min-height: 44px; }
+  .lx-label-cta { min-height: 44px; display: inline-flex; align-items: center; }
+  .lx-undo-key { min-width: 44px; min-height: 44px; }
+  .lx-gravity-toggle { top: 14px; min-height: 44px; padding: 0 8px; }
+  /* Field notes sit under the header instead of chasing a finger off a narrow screen. */
+  .lx-tip,
+  .lx-tip.is-flip-x,
+  .lx-tip.is-flip-y { --tx: 0px; --ty: 0px; top: calc(var(--header-h) + 14px) !important; left: 16px !important; max-width: calc(100vw - 32px); }
   .lx-frame { margin: 14px 0; }
   .lx-spill-doc { right: 18%; padding: 18px; }
   .lx-spill-mug { right: calc(18% - 30px); }

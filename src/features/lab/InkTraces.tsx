@@ -8,10 +8,12 @@ import {
   type PointerEvent,
   type RefObject,
 } from "react";
+import { useCoarsePointer } from "./useCoarsePointer";
 
 /* ───────── tactile layer for /lab: wet-paint traces, tips, and a cleanup cloth ───────── */
 
-type TraceShape = "print" | "smudge" | "splat";
+/** "tap" is the touch-screen mark: a light ripple that fades on its own. */
+type TraceShape = "print" | "smudge" | "splat" | "tap";
 
 export type Trace = {
   id: number;
@@ -39,6 +41,10 @@ const TIP_MS = 2800;
 const SMEAR_MS = 420;
 const WIPE_MS = 900;
 const CLOTH_RADIUS = 70;
+/** On touch screens every tap would be a print, so marks dry and vanish instead of piling up. */
+const TAP_FADE_MS = 2200;
+/** …and field notes wait their turn instead of popping up on every tap. */
+const TOUCH_TIP_GAP_MS = 7000;
 
 const INK = "#121212";
 const LIME = "#dfff00";
@@ -120,6 +126,8 @@ export function useInkTraces(containerRef: RefObject<HTMLElement | null>) {
   const [wiping, setWiping] = useState(false);
   // Inked = the visitor touched the wet LAB paint and hasn't cleaned up yet.
   const [inked, setInked] = useState(() => !readClean());
+  const coarse = useCoarsePointer();
+  const lastTipAt = useRef(0);
   const cleanNoticeShown = useRef(false);
   const nextId = useRef(1);
   const lastTip = useRef("");
@@ -180,12 +188,17 @@ export function useInkTraces(containerRef: RefObject<HTMLElement | null>) {
     const trace: Trace = {
       id: nextId.current++,
       ...point,
-      shape: roll < 0.62 ? "print" : roll < 0.86 ? "smudge" : "splat",
+      shape: coarse ? "tap" : roll < 0.62 ? "print" : roll < 0.86 ? "smudge" : "splat",
       color: colorFor(target),
       rotation: Math.round(Math.random() * 70 - 35),
       scale: 0.85 + Math.random() * 0.35,
     };
     setTraces((current) => [...current.slice(-(MAX_TRACES - 1)), trace]);
+    if (coarse) later(() => setTraces((current) => current.filter((t) => t.id !== trace.id)), TAP_FADE_MS);
+
+    const now = performance.now();
+    if (coarse && now - lastTipAt.current < TOUCH_TIP_GAP_MS) return;
+    lastTipAt.current = now;
     showTip(zoneOf(target), event.clientX, event.clientY);
   };
 
