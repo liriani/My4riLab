@@ -84,7 +84,7 @@ export default function MotionProjectCard({ project }: MotionProjectCardProps) {
         >
           <ProjectArtwork type={project.visual} />
         </motion.div>
-        <ProjectImage src={project.thumbnail} alt="" />
+        <ProjectImage src={project.thumbnail} alt="" fit={project.thumbnailFit} />
         <span className="project-figure">FIG / {project.number}</span>
         <span className="project-category">{project.badge ?? project.category}</span>
       </div>

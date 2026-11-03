@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import AboutSkills from "@/components/sections/AboutSkills";
 import HeroGlitch from "@/features/glitch/HeroGlitch";
+import { cv } from "@/data/cv";
 
 export default function HomePage() {
   return (
@@ -71,6 +72,7 @@ export default function HomePage() {
         <a href="mailto:its.liriani@gmail.com">ITS.LIRIANI@GMAIL.COM ↗</a>
         <div>
           <span>© {new Date().getFullYear()} 4RI / LIRI</span>
+          <a href={cv.href} download={cv.download}>{cv.label} ↓</a>
           <span>LOCAL SIGNAL / WORLDWIDE</span>
         </div>
       </footer>

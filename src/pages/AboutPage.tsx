@@ -1,5 +1,7 @@
 import { Link } from "react-router";
 import SouvenirTeaser from "@/features/glitch/SouvenirTeaser";
+import { assetUrl } from "@/components/ui/ProjectImage";
+import { cv } from "@/data/cv";
 import {
   CSSProperties,
   PointerEvent as ReactPointerEvent,
@@ -21,6 +23,42 @@ const tools: Tool[] = [
   { name: "GLSL", code: "GL", kind: "creative" },
   { name: "TouchDesigner", code: "TD", kind: "creative" },
   { name: "Figma", code: "FG", kind: "design" },
+];
+
+type FieldPrint = {
+  src: string;
+  alt: string;
+  caption: string;
+  /** Where the crop holds on narrow frames. */
+  focus?: string;
+};
+
+/** Photos from away from the screen. Files live in public/assets/about/. */
+const fieldPrints: FieldPrint[] = [
+  {
+    src: "assets/about/berlin-wall.webp",
+    alt: "Liri in front of a colorful street-art mural on the Berlin Wall",
+    caption: "BERLIN WALL / COLOR IN PUBLIC",
+    focus: "50% 62%",
+  },
+  {
+    src: "assets/about/inline-skate.webp",
+    alt: "Liri in inline skates at night, office towers lit up behind",
+    caption: "INLINE SKATES / AFTER DARK",
+    focus: "50% 64%",
+  },
+  {
+    src: "assets/about/tennis.webp",
+    alt: "Liri holding a tennis racket on a clay court",
+    caption: "TENNIS / FOOTWORK",
+    focus: "44% 40%",
+  },
+  {
+    src: "assets/about/lakeside.webp",
+    alt: "Liri laughing, wearing headphones, on a walk by a lake",
+    caption: "LAKESIDE / OFFLINE",
+    focus: "40% 45%",
+  },
 ];
 
 export default function AboutPage() {
@@ -163,6 +201,10 @@ export default function AboutPage() {
 
       <section className="creative-vision">
         <div className="creative-copy">
+          {/* Decorative: the Berlin Wall mural bleeds through behind the copy. */}
+          <div className="creative-copy-wall" aria-hidden="true">
+            <img src={assetUrl("assets/about/berlin-wall.webp")} alt="" loading="lazy" decoding="async" />
+          </div>
           <p className="about-role-index">04 / COLOR &amp; MOTION</p>
           <h2>
             COLOR IS
@@ -236,6 +278,34 @@ export default function AboutPage() {
             part of the job I love most.
           </p>
         </div>
+        <div className="about-field" aria-labelledby="about-field-title">
+          <p className="about-field-head">
+            <span id="about-field-title">FIELD PRINTS</span>
+            <span>AWAY FROM THE SCREEN / {String(fieldPrints.length).padStart(2, "0")} FRAMES</span>
+          </p>
+          <ul>
+            {fieldPrints.map((print, index) => (
+              <li key={print.src}>
+                <figure>
+                  <div className="about-field-photo">
+                    <img
+                      src={assetUrl(print.src)}
+                      alt={print.alt}
+                      loading="lazy"
+                      decoding="async"
+                      style={print.focus ? { objectPosition: print.focus } : undefined}
+                    />
+                  </div>
+                  <figcaption>
+                    <span>FIG. {String.fromCharCode(65 + index)}</span>
+                    {print.caption}
+                  </figcaption>
+                </figure>
+              </li>
+            ))}
+          </ul>
+        </div>
+
         <div className="analog-cards">
           <article>
             <span>A</span>
@@ -271,6 +341,7 @@ export default function AboutPage() {
         <div>
           <Link to="/projects">SEE SELECTED WORK ↗</Link>
           <a href="mailto:its.liriani@gmail.com">START A CONVERSATION ↗</a>
+          <a href={cv.href} download={cv.download}>{cv.label} ↓</a>
         </div>
       </section>
 

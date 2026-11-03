@@ -1,8 +1,12 @@
+import type { ImageFit } from "@/components/ui/ProjectImage";
+
 export type ProjectCategory = "Product" | "Creative" | "Tool";
 
 export type ProjectFigure = {
   src: string;
   caption: string;
+  /** Defaults to "contain": case study figures are mostly screenshots. Use "cover" for photos. */
+  fit?: ImageFit;
 };
 
 export type Project = {
@@ -19,8 +23,13 @@ export type Project = {
   /**
    * Local image under public/, without a leading slash (assetUrl() adds the
    * site base). Until the file exists the card falls back to its CSS artwork.
+   *
+   * Convention: public/assets/work/<slug>/cover.webp for the cover, plus one
+   * kebab-case file per figure. A path can be listed before its file exists.
    */
   thumbnail: string;
+  /** Defaults to "cover". Use "contain" for covers whose edges carry the content. */
+  thumbnailFit?: ImageFit;
   featured?: boolean;
   private?: boolean;
   visual: string;
@@ -47,7 +56,8 @@ export const projects: Project[] = [
     type: "Product / Platform / Monetization",
     featured: true,
     visual: "creators",
-    thumbnail: "assets/work/creators-fit/thumbnail.jpg",
+    thumbnail: "assets/work/creators-fit/cover.webp",
+    thumbnailFit: "contain",
     log: [
       "PROBLEM STATE — International creator platforms charged high fees, buried settings in complex flows, and ignored the payment methods Brazilians actually use. The friction was not technical. It was local.",
       "FIELD WORK — 50+ interviews with creators across niches. Every screen traces back to a stated pain: how creators price, how fans pay, where their audience already lives.",
@@ -62,10 +72,11 @@ export const projects: Project[] = [
       ["OUTPUT", "R$1M+ processed"],
     ],
     figures: [
-      { src: "assets/work/creators-fit/figure-01.jpg", caption: "Creator persona research" },
-      { src: "assets/work/creators-fit/figure-02.jpg", caption: "Custom profile builder" },
-      { src: "assets/work/creators-fit/figure-03.jpg", caption: "Private content feed" },
-      { src: "assets/work/creators-fit/figure-04.jpg", caption: "Instagram integration" },
+      { src: "assets/work/creators-fit/creator-persona.webp", caption: "Creator persona research" },
+      { src: "assets/work/creators-fit/custom-profile.webp", caption: "Custom profile builder" },
+      { src: "assets/work/creators-fit/private-feed.webp", caption: "Private content feed" },
+      { src: "assets/work/creators-fit/instagram-bridge.webp", caption: "Instagram integration" },
+      { src: "assets/work/creators-fit/brand-inspiration.webp", caption: "Brand inspiration board" },
     ],
   },
   {
@@ -81,7 +92,8 @@ export const projects: Project[] = [
     type: "Product / Health / Mobile",
     featured: true,
     visual: "healthhub",
-    thumbnail: "assets/work/fiap-healthhub/thumbnail.jpg",
+    thumbnail: "assets/work/fiap-healthhub/cover.webp",
+    thumbnailFit: "contain",
     log: [
       "PROBLEM STATE — In Brazil's public health system (SUS), long-term treatment still runs on paper. Patients miss critical dates with no reminder; clinics absorb no-show rates near 40% and an average 72h to reschedule.",
       "FIELD WORK — 10 patients, 3 clinic administrators. Core finding: intent was never the problem. The physical appointment card was lost or damaged. The failure point was an object, not a person.",
@@ -96,9 +108,11 @@ export const projects: Project[] = [
       ["RESULT", "2nd place, FIAP Startup Challenge"],
     ],
     figures: [
-      { src: "assets/work/fiap-healthhub/figure-01.jpg", caption: "Patient persona & journey map" },
-      { src: "assets/work/fiap-healthhub/figure-02.jpg", caption: "Appointment reminder interface" },
-      { src: "assets/work/fiap-healthhub/figure-03.jpg", caption: "Digital health record" },
+      { src: "assets/work/fiap-healthhub/patient-persona.webp", caption: "Patient persona & journey map" },
+      { src: "assets/work/fiap-healthhub/doctor-persona.webp", caption: "Doctor persona" },
+      { src: "assets/work/fiap-healthhub/appointment-history.webp", caption: "Appointment history" },
+      { src: "assets/work/fiap-healthhub/health-information.webp", caption: "Digital health record" },
+      { src: "assets/work/fiap-healthhub/patient-management.webp", caption: "Patient management" },
     ],
   },
   {
@@ -114,7 +128,8 @@ export const projects: Project[] = [
     type: "Product / Civic / Map-based",
     featured: true,
     visual: "nohs",
-    thumbnail: "assets/work/nohs-somos/thumbnail.jpg",
+    thumbnail: "assets/work/nohs-somos/cover.webp",
+    thumbnailFit: "contain",
     log: [
       "PROBLEM STATE — Moving through public space as an LGBTQ+ person in Brazil carries real risk, and existing maps said nothing about which places truly welcome the community. A pin on a map is not a guarantee.",
       "FIELD WORK — Interviews with community members, advocacy groups, and business owners, run alongside LGBTQ+ advocacy partners from day one.",
@@ -129,10 +144,10 @@ export const projects: Project[] = [
       ["SIGNAL", "Featured in Forbes"],
     ],
     figures: [
-      { src: "assets/work/nohs-somos/figure-01.jpg", caption: "Neighborhood safety map" },
-      { src: "assets/work/nohs-somos/figure-02.jpg", caption: "Community review system" },
-      { src: "assets/work/nohs-somos/figure-03.jpg", caption: "Secure onboarding" },
-      { src: "assets/work/nohs-somos/figure-04.jpg", caption: "Forbes feature" },
+      { src: "assets/work/nohs-somos/neighbourhood-map.webp", caption: "Neighborhood safety map" },
+      { src: "assets/work/nohs-somos/community-reviews.webp", caption: "Community review system" },
+      { src: "assets/work/nohs-somos/secure-onboarding.webp", caption: "Secure onboarding" },
+      { src: "assets/work/nohs-somos/forbes-feature.webp", caption: "Forbes feature" },
     ],
   },
   {

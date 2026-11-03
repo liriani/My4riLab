@@ -42,7 +42,7 @@ export default function ProjectDetail() {
 
       <section className={`detail-media visual-${project.visual}`}>
         <ProjectArtwork type={project.visual} />
-        <ProjectImage src={project.thumbnail} alt={`${project.title}: cover image`} />
+        <ProjectImage src={project.thumbnail} alt={`${project.title}: cover image`} fit={project.thumbnailFit} />
         <span className="project-figure">MEDIA / PRIMARY</span>
         <span className="project-category">{project.badge ?? project.category}</span>
       </section>
@@ -121,7 +121,7 @@ export default function ProjectDetail() {
       <section className="detail-media-grid">
         <div className={`detail-media-small visual-${project.visual}`}>
           <ProjectArtwork type={project.visual} />
-          {leadFigure && <ProjectImage src={leadFigure.src} alt={leadFigure.caption} />}
+          {leadFigure && <ProjectImage src={leadFigure.src} alt={leadFigure.caption} fit={leadFigure.fit ?? "contain"} />}
           <span>{leadFigure ? `FIG 1 / ${leadFigure.caption}` : "DETAIL / INTERACTION"}</span>
         </div>
         <div className="detail-media-note">
@@ -145,7 +145,7 @@ export default function ProjectDetail() {
           {moreFigures.map((figure, index) => (
             <figure key={figure.src} className={`visual-${project.visual}`}>
               <ProjectArtwork type={project.visual} />
-              <ProjectImage src={figure.src} alt={figure.caption} />
+              <ProjectImage src={figure.src} alt={figure.caption} fit={figure.fit ?? "contain"} />
               <figcaption>FIG {index + 2} / {figure.caption}</figcaption>
             </figure>
           ))}
