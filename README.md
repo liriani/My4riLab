@@ -1,12 +1,11 @@
-# My4riLab
+# By4ri
 
 Portfolio and creative-coding playground of **4ri (Liri)** — Product Designer and Creative Front-End Developer.
 
 A neo-brutalist, highly interactive site where the interface is treated as a material: it drips, glitches, falls, snaps back and reacts to every pointer movement.
 
 ## Overview
-
-My4riLab is a single-page application that doubles as a portfolio and a lab. Instead of static case-study pages, most surfaces are small experiments in motion and interaction:
+By4ri is a single-page application that doubles as a portfolio and a lab. Instead of static case-study pages, most surfaces are small experiments in motion and interaction:
 
 - **Paint-drip header** — a viscous, physics-driven drip that "paints" the Live Lab link into the navigation.
 - **Glitch engine** — a canvas-based slice-displacement and scanline engine powering the hero portrait and the Souvenir Studio, where you can glitch your own image and export it.
