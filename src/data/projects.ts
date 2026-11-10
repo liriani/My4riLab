@@ -2,11 +2,41 @@ import type { ImageFit } from "@/components/ui/ProjectImage";
 
 export type ProjectCategory = "Product" | "Creative" | "Tool";
 
+/**
+ * The design reasoning behind one figure: which phase of the work it records,
+ * what the research or screen shows, and the calls made because of it.
+ */
+/**
+ * Editorial layout for a figure's block on the detail page:
+ * - wide: full-width image band, notes in two columns, pains vs calls side by side.
+ * - split: image beside the argument, decisions as a row of cards.
+ * - quote: oversized offset callout with a tilted image, decisions as newspaper columns.
+ * - ledger: metadata row, text beside image, decisions as a data table.
+ */
+export type StudyLayout = "wide" | "split" | "quote" | "ledger";
+
+export type FigureStudy = {
+  /** Defaults to a rotation that keeps neighbouring figures from sharing a layout. */
+  layout?: StudyLayout;
+  /** Process phase, e.g. "UX DISCOVERY", "INFORMATION ARCHITECTURE". */
+  phase: string;
+  /** One-line headline for the figure's argument. */
+  title: string;
+  /** Lab-note paragraphs: what the figure shows and why it matters. */
+  notes: string[];
+  /** [decision, rationale] pairs. */
+  decisions: [string, string][];
+  /** Pain points (from the personas) this phase answers. */
+  solves?: string[];
+};
+
 export type ProjectFigure = {
   src: string;
   caption: string;
   /** Defaults to "contain": case study figures are mostly screenshots. Use "cover" for photos. */
   fit?: ImageFit;
+  /** With a study, the figure gets a full process-log row instead of a bare grid tile. */
+  study?: FigureStudy;
 };
 
 export type Project = {
@@ -72,11 +102,95 @@ export const projects: Project[] = [
       ["OUTPUT", "R$1M+ processed"],
     ],
     figures: [
-      { src: "assets/work/creators-fit/creator-persona.webp", caption: "Creator persona research" },
-      { src: "assets/work/creators-fit/custom-profile.webp", caption: "Custom profile builder" },
-      { src: "assets/work/creators-fit/private-feed.webp", caption: "Private content feed" },
-      { src: "assets/work/creators-fit/instagram-bridge.webp", caption: "Instagram integration" },
-      { src: "assets/work/creators-fit/brand-inspiration.webp", caption: "Brand inspiration board" },
+      {
+        src: "assets/work/creators-fit/creator-persona.webp",
+        caption: "Creator persona research",
+        study: {
+          phase: "UX DISCOVERY / SYNTHESIS",
+          title: "SHE HAS AN AUDIENCE. SHE NEEDS A CASH REGISTER.",
+          notes: [
+            "50+ creator interviews, compressed into one working persona: Michelle Torres, 20–32, an existing following, publishing daily across photos, video, live streams and 1:1 chats with fans. Audience was never her problem. Getting paid by it was.",
+            "The pain-point quadrant reads like a spec written by the user: no time for menial tasks like tracking who paid for what; international platforms like OnlyFans are hard to set up and pay out with currency conversion and up to three days of waiting.",
+          ],
+          decisions: [
+            ["Admin is the enemy", "“Who paid is in, who didn't pay is out” became a hard rule: access is granted and revoked by the system, never by hand. Every later screen was checked against it."],
+            ["Payout speed is a headline, not a settings page", "The three-day, currency-converted withdrawal was the most emotionally loaded complaint in the research. Fast withdrawal in reais moved from back-office detail to core promise."],
+            ["Sit on top of her channels, don't replace them", "“Managing more than one platform is complicated.” The product had to reach the audience where it already lived instead of asking it to move."],
+          ],
+          solves: ["Manual subscriber tracking", "Slow foreign-currency payouts", "Too many platforms"],
+        },
+      },
+      {
+        src: "assets/work/creators-fit/custom-profile.webp",
+        caption: "Custom profile builder",
+        study: {
+          phase: "INFORMATION ARCHITECTURE → UI",
+          title: "THE PROFILE IS THE STOREFRONT.",
+          notes: [
+            "One screen carries three jobs: brand page, price list and sales funnel. Pricing, Edit Profile and the share link sit together in the profile header, one tap from the content they monetize.",
+            "Every post is one of two types: promotional, visible to everyone, or private, visible only to paying members. That single flag is the entire paywall model, set at the moment of posting rather than configured somewhere else.",
+          ],
+          decisions: [
+            ["Plans as toggles, not a pricing wizard", "Set Plan Prices is one modal: 1, 3, 6 and 12-month plans, each switched on or off with its own price in reais and a R$4.90 floor. Pricing becomes a thirty-second decision instead of a setup project."],
+            ["Let duration do the selling", "Longer plans sit next to the monthly one, so creators can price commitment below the monthly rate (in the mock, R$79.90 for three months against R$34.90 for one). The fan is anchored on the better deal without a discount banner."],
+            ["Promotional posts as the trailer", "Public posts are previews that point at private ones. The curiosity gap does the conversion work, so the creator never has to hard-sell."],
+          ],
+          solves: ["Pricing buried in settings", "No visible reason to subscribe", "Unbranded, generic profiles"],
+        },
+      },
+      {
+        src: "assets/work/creators-fit/private-feed.webp",
+        caption: "Private content feed",
+        study: {
+          phase: "CONVERSION FLOW / ENGAGEMENT LOOP",
+          title: "A FEED THAT PAYS THE CREATOR TWICE.",
+          notes: [
+            "The subscriber's side of the product: one feed of every creator they pay for, recommendations of similar creators beside it, direct messages, and a way to send money without buying anything.",
+            "Send a Gift is a small modal: a message of up to 140 characters and a value with a R$5.00 minimum. Income that doesn't wait for the next post.",
+          ],
+          decisions: [
+            ["Recommendations inside the paid feed", "Suggesting similar creators to people who already pay someone turns every subscriber into organic traffic for the next account. The network grows from inside instead of from ads."],
+            ["Gifts as their own low-friction action", "Tipping runs on reciprocity and the bond fans already feel. A 140-character cap keeps it a gesture rather than a conversation, and keeps moderation light."],
+            ["Messages next to the feed", "The persona already sold 1:1 conversations. Keeping DMs one tab away holds that income inside the platform instead of leaking it to other apps."],
+          ],
+          solves: ["Revenue tied only to new posts", "Discovery that depends on ads", "1:1 sales happening off-platform"],
+        },
+      },
+      {
+        src: "assets/work/creators-fit/instagram-bridge.webp",
+        caption: "Instagram integration",
+        study: {
+          phase: "SYSTEM DESIGN / LOCALIZATION",
+          title: "MEET THE AUDIENCE WHERE IT ALREADY SCROLLS.",
+          notes: [
+            "Instead of asking fans to move, Privi wraps Instagram private groups. Subscribers are created and managed in the group automatically, and the creator broadcasts premium posts inside the app fans already open every day.",
+            "The Creator Area turns that into accounting: Overview, My Sales, Financial. Every transaction is logged with date, buyer, value and type: a normal purchase or a present.",
+          ],
+          decisions: [
+            ["Automate membership, not just billing", "Payment status drives who is in the group. The persona's “who paid is in, who didn't pay is out” stopped being a weekly chore and became a system rule."],
+            ["PIX for instant withdrawal", "Balance is redeemed through PIX, Brazil's instant payment system: the direct answer to the three-day, currency-converted payout of international platforms. Here, localization meant payment behaviour, not translation."],
+            ["One ledger for every income type", "Subscriptions and gifts share one transactions table with a type column, so earnings read as a single number and the creator never reconciles two systems."],
+          ],
+          solves: ["Audience stranded on another platform", "Manual group admin", "Slow international payouts"],
+        },
+      },
+      {
+        src: "assets/work/creators-fit/brand-inspiration.webp",
+        caption: "Brand inspiration board",
+        study: {
+          phase: "BRAND / REBRAND",
+          title: "FROM PRIVATE VIEW TO CREATOR STUDIO.",
+          notes: [
+            "The mood board behind the move from Privi to Creators Fit: creators shot in their own setups, with ring lights, tripods, neon and warm interiors, framed by the red-to-magenta gradient and a family of keyhole marks.",
+            "The keyhole is the original thesis in one shape: exclusive access, a private view, something behind the door worth paying for.",
+          ],
+          decisions: [
+            ["Show the work, not just the content", "The imagery centres creators producing (lighting, framing, recording) so the brand can stretch toward fitness and lifestyle without disowning where it started."],
+            ["Stress-test the mark", "Solid, outlined and colour-filled keyhole variations test how far the symbol can flex across new verticals while staying recognisable."],
+          ],
+          solves: ["A name tied to one niche", "A brand that couldn't stretch to new verticals"],
+        },
+      },
     ],
   },
   {
@@ -108,11 +222,96 @@ export const projects: Project[] = [
       ["RESULT", "2nd place, FIAP Startup Challenge"],
     ],
     figures: [
-      { src: "assets/work/fiap-healthhub/patient-persona.webp", caption: "Patient persona & journey map" },
-      { src: "assets/work/fiap-healthhub/doctor-persona.webp", caption: "Doctor persona" },
-      { src: "assets/work/fiap-healthhub/appointment-history.webp", caption: "Appointment history" },
-      { src: "assets/work/fiap-healthhub/health-information.webp", caption: "Digital health record" },
-      { src: "assets/work/fiap-healthhub/patient-management.webp", caption: "Patient management" },
+      {
+        src: "assets/work/fiap-healthhub/patient-persona.webp",
+        caption: "Patient persona & journey map",
+        study: {
+          phase: "UX DISCOVERY",
+          title: "THE RECORD ISN'T MISSING. IT'S SCATTERED.",
+          notes: [
+            "Jessica Medeiros, 28–50, a working professional on a 9-to-5 with a long-term condition such as surgery recovery or diabetes. She picks doctors by distance from work and clinic shift hours, so her care is spread across several of them.",
+            "Every pain point is paper or fragmentation: prescriptions and records lost at home, notes from different doctors that contradict each other, and no direct way to ask a doctor what she forgot.",
+          ],
+          decisions: [
+            ["One place for the whole history", "Her first expressed need, a centralized place to check previous exams and prescriptions, became the home screen rather than a feature buried inside it."],
+            ["Treatment as the unit, not the appointment", "Long-term care is a timeline. Organizing the record by treatment matches how she thinks about her health, not how a clinic schedules it."],
+            ["Push the time-sensitive things to her", "She asked to be told when the next appointment is due and when new results arrive, so those surface to her instead of waiting to be found."],
+          ],
+          solves: ["Lost prescriptions and records", "Contradicting doctor notes", "No reminders"],
+        },
+      },
+      {
+        src: "assets/work/fiap-healthhub/doctor-persona.webp",
+        caption: "Doctor persona",
+        study: {
+          phase: "UX DISCOVERY / THE OTHER SIDE",
+          title: "THREE CLINICS. THREE SYSTEMS. NONE OF THEM TALK.",
+          notes: [
+            "William Costa, 32–48, a specialist contracted across two or three clinics, seeing dozens to hundreds of patients a week. Each clinic runs its own offline system, so a test done in one is invisible in the next.",
+            "He calls clinic admins to get results, can rarely reach colleagues between shifts, and watches patients struggle to follow the prescriptions he writes.",
+          ],
+          decisions: [
+            ["Two-sided from day one", "A patient record only stops getting lost if doctors write to it. Without a doctor persona, the product would have been a prettier filing cabinet."],
+            ["Portable by default", "His need to check profiles and new results on the go, from any clinic, ruled out anything tied to a single clinic's software."],
+            ["Plain language as a requirement", "“Patient communication that's simple and understandable” set the copy bar for every clinical screen that followed."],
+          ],
+          solves: ["Disconnected clinic systems", "Admin calls for test results", "Unreachable colleagues"],
+        },
+      },
+      {
+        src: "assets/work/fiap-healthhub/appointment-history.webp",
+        caption: "Appointment history",
+        study: {
+          phase: "INFORMATION ARCHITECTURE",
+          title: "THREE DOORS, ONE PATIENT.",
+          notes: [
+            "The patient dashboard opens on three large entry points (Appointments, Test Results, Prescriptions), then lists her medical treatments as cards with specialty, start date and a single status: Active or Complete.",
+            "Sign-up is four fields: name, email, password, confirmation. Nothing clinical at the door.",
+          ],
+          decisions: [
+            ["Oversized tiles for the three jobs that matter", "The persona has intermediate tech literacy. Three big targets answer “where do I go?” before any menu has to."],
+            ["Status as one word", "Active and Complete let someone with years of history see what needs attention without opening anything."],
+            ["Short intake, data from doctors", "Medical detail arrives later from the doctors' side (results, prescriptions, notes), so onboarding stays a minute long instead of becoming a health questionnaire."],
+          ],
+          solves: ["Past exams impossible to find", "Treatments blurring together", "Heavy onboarding"],
+        },
+      },
+      {
+        src: "assets/work/fiap-healthhub/health-information.webp",
+        caption: "Digital health record",
+        study: {
+          phase: "CONTENT DESIGN / CLINICAL UX",
+          title: "MAKE THE DIAGNOSIS READABLE AND SHARED.",
+          notes: [
+            "A treatment page reads like a case file: the patient, every doctor involved (here a dermatologist and a general practitioner), the diagnosis in full, and each test result with who requested it and when.",
+            "Two doctors on one page is the point. The record is shared between colleagues, so notes build on each other instead of contradicting each other.",
+          ],
+          decisions: [
+            ["Name every doctor on the record", "Showing who wrote what and who requested which test attacks the persona's “different notes from different doctors” problem at the source."],
+            ["Results as cards with one action", "Each test is a card with a single CHECK RESULTS button, plus an empty card to add the next one. No tables, no lab codes."],
+            ["Discuss inside the record", "Colleagues read and discuss the same diagnosis in place, replacing the phone calls that fail between shifts."],
+          ],
+          solves: ["Contradicting notes", "Results scattered across clinics", "Colleagues out of reach"],
+        },
+      },
+      {
+        src: "assets/work/fiap-healthhub/patient-management.webp",
+        caption: "Patient management",
+        study: {
+          phase: "DOCTOR WORKFLOW",
+          title: "52 PATIENTS ON ONE SCREEN.",
+          notes: [
+            "The doctor's home: active patients as a grid of faces and names, an Add New action, and a path into each patient's history, past diagnoses and follow-ups.",
+            "On mobile, Create Prescription is five fields: patient, treatment, date of issue, medicine (searchable) and dosage & frequency.",
+          ],
+          decisions: [
+            ["Faces before record numbers", "A doctor seeing hundreds of patients a week across clinics recognises people faster than IDs."],
+            ["Prescriptions written into the record", "A prescription created here lands in the patient's history, where it can't be lost the way the paper one was."],
+            ["Search, not free text, for medicine", "Picking from search keeps prescriptions consistent and legible on the patient's side."],
+          ],
+          solves: ["Patient profiles split across clinics", "Lost prescriptions", "Time lost to admin"],
+        },
+      },
     ],
   },
   {
@@ -144,10 +343,79 @@ export const projects: Project[] = [
       ["SIGNAL", "Featured in Forbes"],
     ],
     figures: [
-      { src: "assets/work/nohs-somos/neighbourhood-map.webp", caption: "Neighborhood safety map" },
-      { src: "assets/work/nohs-somos/community-reviews.webp", caption: "Community review system" },
-      { src: "assets/work/nohs-somos/secure-onboarding.webp", caption: "Secure onboarding" },
-      { src: "assets/work/nohs-somos/forbes-feature.webp", caption: "Forbes feature" },
+      {
+        src: "assets/work/nohs-somos/neighbourhood-map.webp",
+        caption: "Neighborhood safety map",
+        study: {
+          layout: "wide",
+          phase: "DISCOVERY → INFORMATION ARCHITECTURE",
+          title: "SAFETY AS A MAP LAYER.",
+          notes: [
+            "The home screen is the neighbourhood itself: venues as rainbow pins carrying their community rating and distance. Filter chips sit above the map: Amigáveis (friendly), Voucher, Bares e Baladas.",
+            "Browsing splits into Entertainment and Businesses, then categories (bars, clubs, events) with filters for audience, service, price and distance, scoped to a city: Florianópolis.",
+          ],
+          decisions: [
+            ["The score lives on the pin", "Safety is the first question, so the community rating is visible before tapping, not two screens deep."],
+            ["“Recomendados para você”", "A personal list beside the map turns a search tool into a feed of places that people like you rated well."],
+            ["Vouchers as a map filter", "Partner discounts are findable on the map itself, which gives businesses a reason to be listed and users a reason to come back."],
+          ],
+          solves: ["Maps that don't say who is welcome", "Safe places shared only by word of mouth"],
+        },
+      },
+      {
+        src: "assets/work/nohs-somos/community-reviews.webp",
+        caption: "Community review system",
+        study: {
+          layout: "ledger",
+          phase: "TRUST & SAFETY UX",
+          title: "ONE AVERAGE CAN HIDE A LOT.",
+          notes: [
+            "A venue has five tabs: Destaques, Comentários, Denúncias, Sobre, Menu. Highlights carry the score (4.9 from 15 reviews), active discounts and community badges.",
+            "Comments filter by LGBTI+ letter (in the mock: lesbians 4.8, gays 4.6, bisexuals 4.0) and by how people felt there: à vontade, bem, mais ou menos.",
+          ],
+          decisions: [
+            ["Split the rating by letter", "A place can welcome gay men and still be hostile to lesbians. Breaking the score down by letter stops one average from hiding that."],
+            ["Measure comfort, not quality", "“How did you feel?” answers what the user actually came to learn: will I be at ease here? Stars alone can't say that."],
+            ["Reports as a first-class tab", "Denúncias sits beside Comentários instead of in an overflow menu. Reporting unsafe treatment is part of the product, not an edge case."],
+          ],
+          solves: ["Uneven safety hidden by one score", "Ratings that ignore comfort", "No visible way to report"],
+        },
+      },
+      {
+        src: "assets/work/nohs-somos/secure-onboarding.webp",
+        caption: "Secure onboarding",
+        study: {
+          layout: "split",
+          phase: "ONBOARDING / CONSENT",
+          title: "ASK ONCE. MAKE IT COUNT.",
+          notes: [
+            "Registration opens with the value exchange, “sign up, rate LGBTI places and earn coupons for partner stores”, then offers Facebook, Google or email.",
+            "A short illustrated stepper follows: sexual orientation (lésbica, bissexual, gay, hétero, outro), then CPF and password, closing on explicit consent to the terms and privacy policy.",
+          ],
+          decisions: [
+            ["Lead with the reward", "Coupons for rating places give people a reason to create an account before they have a reason to trust the app."],
+            ["One sensitive question, with a purpose", "Orientation is asked once, in a single step, and it is what allows every review to be counted under its letter on each venue."],
+            ["Illustration over interrogation", "Hand-drawn people instead of form icons keep a sensitive question feeling like a conversation rather than a census."],
+          ],
+          solves: ["Cold, form-like onboarding", "Reviews with no context about the reviewer"],
+        },
+      },
+      {
+        src: "assets/work/nohs-somos/forbes-feature.webp",
+        caption: "Forbes feature",
+        study: {
+          layout: "quote",
+          phase: "IMPACT",
+          title: "FROM A STATE MAP TO NATIONAL PRESS.",
+          notes: [
+            "Regional coverage came first: in July 2020, NSC Total reported that Nohs Somos was mapping LGBTI+-safe places in Santa Catarina. In July 2021, Forbes featured the project in its ESG section.",
+            "The platform later merged with TODXS to extend its reach across Brazil.",
+          ],
+          decisions: [
+            ["Start local, prove it, then scale", "One city with dense, trustworthy data beat a national map with thin coverage: the community score only means something when enough people have rated the same places."],
+          ],
+        },
+      },
     ],
   },
   {

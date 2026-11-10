@@ -2,6 +2,7 @@ import { Fragment } from "react";
 import { Link, useParams } from "react-router";
 import ProjectArtwork from "@/components/ui/ProjectArtwork";
 import ProjectImage from "@/components/ui/ProjectImage";
+import FigureStudies, { hasStudy } from "@/components/case/FigureStudies";
 import { getProjectBySlug, projects } from "@/data/projects";
 
 export default function ProjectDetail() {
@@ -21,7 +22,12 @@ export default function ProjectDetail() {
 
   const projectIndex = projects.findIndex((item) => item.slug === project.slug);
   const nextProject = projects[(projectIndex + 1) % projects.length];
-  const [leadFigure, ...moreFigures] = project.figures ?? [];
+  const figures = project.figures ?? [];
+  // Figures with a study get the process log; any others close the page as a grid.
+  const studied = figures.filter(hasStudy);
+  const [leadFigure, ...restFigures] = studied.length ? [] : figures;
+  const moreFigures = studied.length ? figures.filter((figure) => !hasStudy(figure)) : restFigures;
+  const firstGridFigure = studied.length ? studied.length + 1 : 2;
 
   return (
     <main className="project-detail">
@@ -118,27 +124,39 @@ export default function ProjectDetail() {
         </aside>
       </section>
 
-      <section className="detail-media-grid">
-        <div className={`detail-media-small visual-${project.visual}`}>
-          <ProjectArtwork type={project.visual} />
-          {leadFigure && <ProjectImage src={leadFigure.src} alt={leadFigure.caption} fit={leadFigure.fit ?? "contain"} />}
-          <span>{leadFigure ? `FIG 1 / ${leadFigure.caption}` : "DETAIL / INTERACTION"}</span>
-        </div>
-        <div className="detail-media-note">
-          <span>04 / {project.lesson ? "LESSON LOGGED" : "SYSTEM NOTE"}</span>
-          {project.lesson ? (
-            <p className="detail-lesson">{project.lesson}</p>
-          ) : (
-            <p>
-              BUILT TO BALANCE
-              <br />
-              <strong>UTILITY</strong> WITH
-              <br />
-              VISUAL CHARACTER.
-            </p>
+      {studied.length > 0 ? (
+        <>
+          <FigureStudies figures={studied} visual={project.visual} index="04" />
+          {project.lesson && (
+            <section className="detail-media-note detail-lesson-block">
+              <span>05 / LESSON LOGGED</span>
+              <p className="detail-lesson">{project.lesson}</p>
+            </section>
           )}
-        </div>
-      </section>
+        </>
+      ) : (
+        <section className="detail-media-grid">
+          <div className={`detail-media-small visual-${project.visual}`}>
+            <ProjectArtwork type={project.visual} />
+            {leadFigure && <ProjectImage src={leadFigure.src} alt={leadFigure.caption} fit={leadFigure.fit ?? "contain"} />}
+            <span>{leadFigure ? `FIG 1 / ${leadFigure.caption}` : "DETAIL / INTERACTION"}</span>
+          </div>
+          <div className="detail-media-note">
+            <span>04 / {project.lesson ? "LESSON LOGGED" : "SYSTEM NOTE"}</span>
+            {project.lesson ? (
+              <p className="detail-lesson">{project.lesson}</p>
+            ) : (
+              <p>
+                BUILT TO BALANCE
+                <br />
+                <strong>UTILITY</strong> WITH
+                <br />
+                VISUAL CHARACTER.
+              </p>
+            )}
+          </div>
+        </section>
+      )}
 
       {moreFigures.length > 0 && (
         <section className="detail-figures" aria-label="Case study figures">
@@ -146,7 +164,7 @@ export default function ProjectDetail() {
             <figure key={figure.src} className={`visual-${project.visual}`}>
               <ProjectArtwork type={project.visual} />
               <ProjectImage src={figure.src} alt={figure.caption} fit={figure.fit ?? "contain"} />
-              <figcaption>FIG {index + 2} / {figure.caption}</figcaption>
+              <figcaption>FIG {String(firstGridFigure + index).padStart(2, "0")} / {figure.caption}</figcaption>
             </figure>
           ))}
         </section>

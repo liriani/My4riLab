@@ -3030,6 +3030,496 @@ a {
   font-weight: 400;
 }
 
+/* ───────── process log: one block per figure, four editorial layouts ───────── */
+.figure-studies {
+  border-bottom: var(--line);
+}
+
+.figure-studies-head {
+  display: grid;
+  grid-template-columns: 0.6fr 2fr;
+  gap: 6vw;
+  padding: 90px 3vw 60px;
+}
+
+.figure-studies-head h2 {
+  margin: 0;
+  font-size: clamp(34px, 4.6vw, 70px);
+  font-weight: 600;
+  line-height: 0.92;
+  letter-spacing: -0.055em;
+}
+
+.figure-studies-head h2 span {
+  color: var(--orange);
+}
+
+.study {
+  display: grid;
+  gap: clamp(32px, 4vw, 56px);
+  padding: 72px 3vw 84px;
+  border-top: var(--line);
+}
+
+.study h3 {
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: -0.05em;
+}
+
+/* Shared: the framed figure. */
+.study-plate {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border: 2px solid var(--ink);
+  box-shadow: 7px 7px 0 var(--ink);
+  container-type: inline-size;
+}
+
+.study-plate .project-image--contain {
+  padding-bottom: 48px;
+}
+
+.study-plate figcaption {
+  position: absolute;
+  z-index: 2;
+  left: 12px;
+  bottom: 12px;
+  max-width: calc(100% - 24px);
+  padding: 6px 8px;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "DM Mono", monospace;
+  font-size: 8px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Shared: phase kicker, prose, struck-out pain points. */
+.study-kicker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  margin: 0 0 18px;
+  font-family: "DM Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+}
+
+.study-kicker span {
+  padding: 3px 6px;
+  color: var(--ink);
+  background: var(--acid);
+}
+
+.study-notes p {
+  max-width: 640px;
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.study-notes p + p {
+  margin-top: 12px;
+}
+
+.study-solved {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.study-solved span {
+  margin-right: 4px;
+  font-family: "DM Mono", monospace;
+  font-size: 8px;
+  letter-spacing: 0.08em;
+}
+
+.study-solved ul {
+  display: contents;
+  list-style: none;
+}
+
+/* Struck through: problems this phase took off the table. */
+.study-solved li {
+  padding: 5px 8px;
+  border: 1px solid currentColor;
+  font-family: "DM Mono", monospace;
+  font-size: 8.5px;
+  text-decoration: line-through;
+  text-decoration-color: var(--orange);
+  text-decoration-thickness: 2px;
+  text-transform: uppercase;
+}
+
+/* ── WIDE: a dark band. Full-bleed image, two-column notes, pains vs calls. ── */
+.study--wide {
+  color: var(--paper);
+  background: var(--ink);
+}
+
+.study-wide-head {
+  display: grid;
+  grid-template-columns: 0.6fr 2fr;
+  gap: 6vw;
+  align-items: end;
+}
+
+.study-wide-head .study-kicker {
+  margin: 0;
+}
+
+.study--wide h3 {
+  font-size: clamp(40px, 5.6vw, 88px);
+  line-height: 0.9;
+}
+
+.study-plate--band {
+  aspect-ratio: 21 / 9;
+  margin-inline: -3vw;
+  border-inline: 0;
+  border-color: var(--paper);
+  box-shadow: none;
+}
+
+.study-notes--columns {
+  column-count: 2;
+  column-gap: 5vw;
+  column-rule: 1px solid rgba(243, 240, 230, 0.28);
+}
+
+.study-notes--columns p {
+  max-width: none;
+  break-inside: avoid;
+}
+
+.study-compare {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  border: 2px solid var(--paper);
+}
+
+.study-compare > div > span {
+  display: block;
+  margin-bottom: 22px;
+  font-family: "DM Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+}
+
+.study-compare-pains {
+  padding: 26px;
+  border-right: 2px solid var(--paper);
+}
+
+.study-compare-pains ul {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.study-compare-pains li {
+  font-size: clamp(20px, 2vw, 28px);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  text-decoration: line-through;
+  text-decoration-color: var(--orange);
+  text-decoration-thickness: 3px;
+}
+
+.study-compare-calls {
+  display: grid;
+  align-content: start;
+  gap: 20px;
+  padding: 26px;
+  color: var(--ink);
+  background: var(--acid);
+}
+
+.study-compare-calls b {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  font-size: 17px;
+  line-height: 1.2;
+}
+
+.study-compare-calls b i {
+  font: normal 500 9px "DM Mono", monospace;
+}
+
+.study-compare-calls p {
+  margin: 6px 0 0;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+/* ── SPLIT: image beside the argument, decisions as a staggered row of cards. ── */
+.study-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  grid-template-areas: "plate text";
+  gap: clamp(28px, 4vw, 64px);
+  align-items: start;
+}
+
+.study-split.is-flipped {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  grid-template-areas: "text plate";
+}
+
+.study-split .study-plate {
+  grid-area: plate;
+}
+
+.study-split.is-flipped .study-plate {
+  box-shadow: -7px 7px 0 var(--ink);
+}
+
+.study-split-text {
+  display: grid;
+  gap: 22px;
+  grid-area: text;
+}
+
+.study-split-text .study-kicker {
+  margin: 0;
+}
+
+.study--split h3 {
+  font-size: clamp(28px, 2.8vw, 44px);
+  line-height: 0.98;
+}
+
+.study-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 22px;
+  margin: 0;
+  padding: 0 0 18px;
+  list-style: none;
+}
+
+.study-cards li {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 22px;
+  border: var(--line);
+  background: var(--paper);
+  box-shadow: 6px 6px 0 var(--ink);
+}
+
+/* Break the row: the middle card drops, so the cards read as pinned, not tiled. */
+.study-cards li:nth-child(2) {
+  transform: translateY(18px);
+}
+
+.study-cards span {
+  color: var(--orange);
+  font-size: 40px;
+  font-weight: 600;
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+}
+
+.study-cards b {
+  font-size: 18px;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.study-cards p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+/* ── QUOTE: oversized offset callout, a tilted plate breaking into it, newspaper columns. ── */
+.study-quote {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  align-items: start;
+}
+
+.study-quote-callout {
+  position: relative;
+  grid-column: 1 / 9;
+  grid-row: 1;
+  padding: clamp(28px, 4vw, 56px);
+  padding-right: clamp(60px, 14vw, 220px);
+  background: var(--acid);
+  box-shadow: 10px 10px 0 var(--ink);
+  transform: rotate(-1deg);
+}
+
+.study--quote h3 {
+  font-size: clamp(42px, 6vw, 96px);
+  line-height: 0.88;
+}
+
+.study-plate--tilted {
+  z-index: 1;
+  grid-column: 7 / 13;
+  grid-row: 1;
+  margin-top: clamp(70px, 9vw, 140px);
+  background-color: var(--paper);
+  transform: rotate(2deg);
+}
+
+.study-lead {
+  max-width: 900px;
+  margin: 0 0 0 16%;
+  font-size: clamp(21px, 2.3vw, 31px);
+  line-height: 1.25;
+  letter-spacing: -0.03em;
+}
+
+.study-notes--indent {
+  margin-left: 16%;
+}
+
+.study-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.study-columns li {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 4px 24px;
+  border-left: 1px solid var(--ink);
+}
+
+.study-columns span {
+  font-size: clamp(36px, 3.6vw, 52px);
+  font-style: italic;
+  font-weight: 300;
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+}
+
+.study-columns b {
+  font-size: 17px;
+  line-height: 1.2;
+}
+
+.study-columns p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ── LEDGER: metadata row, text beside image, decision / rationale table. ── */
+.study-ledger-meta {
+  display: grid;
+  grid-template-columns: auto auto auto minmax(0, 1fr);
+  margin: 0;
+  border: 2px solid var(--ink);
+}
+
+.study-ledger-meta div {
+  display: grid;
+  gap: 6px;
+  padding: 12px 18px;
+  border-right: 1px solid var(--ink);
+}
+
+.study-ledger-meta div:last-child {
+  border-right: 0;
+}
+
+.study-ledger-meta dt {
+  font-family: "DM Mono", monospace;
+  font-size: 8px;
+  letter-spacing: 0.08em;
+  opacity: 0.6;
+}
+
+.study-ledger-meta dd {
+  margin: 0;
+  font-family: "DM Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.study-ledger-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: clamp(28px, 4vw, 64px);
+  align-items: start;
+}
+
+.study-ledger-body h3 {
+  margin-bottom: 22px;
+  font-size: clamp(30px, 3.2vw, 50px);
+  line-height: 0.95;
+}
+
+.study-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.study-table th,
+.study-table td {
+  padding: 16px 14px 16px 0;
+  border-top: 1px solid rgba(17, 17, 15, 0.35);
+  text-align: left;
+  vertical-align: top;
+}
+
+.study-table tbody tr:last-child > * {
+  border-bottom: 1px solid rgba(17, 17, 15, 0.35);
+}
+
+.study-table thead th {
+  padding-block: 10px;
+  border-top: 2px solid var(--ink);
+  font-family: "DM Mono", monospace;
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+}
+
+.study-table td:first-child {
+  width: 52px;
+  color: var(--orange);
+  font-family: "DM Mono", monospace;
+  font-size: 9px;
+}
+
+.study-table tbody th {
+  width: 30%;
+  font-size: 17px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.study-table td:last-child {
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.detail-lesson-block {
+  gap: 40px;
+  min-height: 300px;
+  border-bottom: var(--line);
+}
+
 .next-project {
   position: relative;
   display: flex;
@@ -4564,6 +5054,127 @@ a {
 
   .detail-media {
     min-height: 72vw;
+  }
+
+  .figure-studies-head,
+  .study-wide-head,
+  .study-split,
+  .study-split.is-flipped,
+  .study-compare,
+  .study-ledger-body {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: none;
+  }
+
+  .figure-studies-head {
+    gap: 28px;
+    padding: 60px 16px 40px;
+  }
+
+  .study {
+    padding: 52px 16px 60px;
+  }
+
+  .study-split .study-plate {
+    grid-area: auto;
+  }
+
+  .study-split-text {
+    grid-area: auto;
+  }
+
+  .study-split.is-flipped .study-plate {
+    box-shadow: 7px 7px 0 var(--ink);
+  }
+
+  .study-plate--band {
+    aspect-ratio: 16 / 10;
+    margin-inline: -16px;
+  }
+
+  .study-notes--columns {
+    column-count: 1;
+  }
+
+  .study-compare-pains {
+    border-right: 0;
+    border-bottom: 2px solid var(--paper);
+  }
+
+  .study-cards li:nth-child(2) {
+    transform: none;
+  }
+
+  /* The quote stacks; the plate still tucks under the callout's corner. */
+  .study-quote-callout,
+  .study-plate--tilted {
+    grid-column: 1 / -1;
+  }
+
+  .study-quote-callout {
+    padding-right: clamp(28px, 4vw, 56px);
+  }
+
+  .study-plate--tilted {
+    grid-row: 2;
+    margin: -14px 6px 0 18px;
+    transform: rotate(1.5deg);
+  }
+
+  .study-lead,
+  .study-notes--indent {
+    margin-left: 0;
+  }
+
+  .study-columns li {
+    padding: 16px 0 0;
+    border-top: 1px solid var(--ink);
+    border-left: 0;
+  }
+
+  .study-columns {
+    gap: 22px;
+  }
+
+  .study-ledger-meta {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .study-ledger-meta .is-wide {
+    grid-column: 1 / -1;
+    border-top: 1px solid var(--ink);
+  }
+
+  .study-ledger-meta div:nth-child(3) {
+    border-right: 0;
+  }
+
+  /* Table rows become stacked records. */
+  .study-table thead {
+    display: none;
+  }
+
+  .study-table tr {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    border-top: 1px solid rgba(17, 17, 15, 0.35);
+    padding: 14px 0;
+  }
+
+  .study-table th,
+  .study-table td,
+  .study-table tbody tr:last-child > * {
+    padding: 0;
+    border: 0;
+  }
+
+  .study-table tbody th {
+    width: auto;
+  }
+
+  .study-table td:last-child {
+    grid-column: 2;
+    margin-top: 6px;
   }
 
   .detail-overview,
