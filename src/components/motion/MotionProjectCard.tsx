@@ -9,7 +9,6 @@ import { useState } from "react";
 import { Link } from "react-router";
 import { Project } from "@/data/projects";
 import ProjectArtwork from "@/components/ui/ProjectArtwork";
-import ProjectImage from "@/components/ui/ProjectImage";
 
 const spring = { stiffness: 300, damping: 20, mass: 0.7 };
 
@@ -84,7 +83,6 @@ export default function MotionProjectCard({ project }: MotionProjectCardProps) {
         >
           <ProjectArtwork type={project.visual} />
         </motion.div>
-        <ProjectImage src={project.thumbnail} alt="" fit={project.thumbnailFit} />
         <span className="project-figure">FIG / {project.number}</span>
         <span className="project-category">{project.badge ?? project.category}</span>
       </div>
