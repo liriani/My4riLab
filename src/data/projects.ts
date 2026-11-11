@@ -50,6 +50,8 @@ export type Project = {
   badge?: string;
   type: string;
   repository?: string;
+  /** Public deployment (GitHub Pages / Vercel). Shown as a LIVE BUILD link when set. */
+  live?: string;
   /**
    * Local image under public/, without a leading slash (assetUrl() adds the
    * site base). Until the file exists the card falls back to its CSS artwork.
@@ -100,6 +102,7 @@ export const projects: Project[] = [
       ["TIMELINE", "8 months"],
       ["TEAM", "6 people"],
       ["OUTPUT", "R$1M+ processed"],
+      ["STACK", "React · Django · PostgreSQL · Stripe · AWS S3 · PIX"],
     ],
     figures: [
       {
@@ -424,14 +427,65 @@ export const projects: Project[] = [
     title: "PIXELATOR",
     subtitle: "IMAGE DECONSTRUCTION ENGINE",
     description:
-      "Browser-based image editor that transforms photos into retro, glitchy pixel art with live canvas preview and client-side GIF export.",
-    stack: ["React", "Vite", "Tailwind CSS", "JavaScript", "gif.js", "Sharp"],
+      "A CRT-styled instrument that turns any uploaded image into animated retro pixel art in real time, then records it to a GIF without leaving the browser.",
+    stack: ["React 18", "Vite", "Tailwind CSS", "Lucide React", "gif.js", "Canvas 2D", "Sharp (build)"],
     category: "Creative",
     type: "Dynamic / Interactive",
     repository: "https://github.com/liriani/Pixelator",
+    // live: "TODO: GitHub Pages / Vercel URL",
     featured: true,
     visual: "pixelator",
-    thumbnail: "assets/work/pixelator/thumbnail.jpg",
+    thumbnail: "assets/work/pixelator/cover.webp",
+    log: [
+      "PROBLEM STATE — Pixel-art filters are usually a single slider and a static result. The interesting part, the degradation itself, is never visible while it happens.",
+      "SYSTEM — A requestAnimationFrame loop on a 640×480 canvas. Each frame: draw the image downscaled offscreen, posterize RGB, scale back up with nearest-neighbour (smoothing off), then composite glitch slices, scanlines and a vignette.",
+      "INTERFACE — Hardware-style controls sit beside the viewport: pixel size, colour depth, glitch probability, scanline opacity, view bobbing, zoom. Uploading an image starts the animation immediately; there is no apply button.",
+      "OUTPUT — Still-frame export plus GIF recording. Frames are sampled straight from the rendered canvas into gif.js workers, so encoding runs client-side and nothing is uploaded.",
+    ],
+    lesson: "When the process is the aesthetic, render the process. A live loop is a better editor than a preview button.",
+    credits: [
+      ["ROLE", "Design & Development"],
+      ["CANVAS", "640 × 480 / nearest-neighbour"],
+      ["EXPORT", "PNG frame · client-side GIF"],
+      ["CREDIT", "4RI / LIRI"],
+    ],
+    figures: [
+      {
+        src: "assets/work/pixelator/crt-interface.webp",
+        caption: "CRT viewport and hardware controls",
+        study: {
+          phase: "INTERFACE / CONTROL SURFACE",
+          title: "A FILTER YOU OPERATE, NOT APPLY.",
+          notes: [
+            "The viewport and its controls are one instrument. Every parameter is exposed at once (resolution, colour depth, glitch rate, scanlines, bobbing, zoom), and every change lands on the next frame.",
+            "Uploading an image is the only setup step. The animation pipeline starts the moment the file is read.",
+          ],
+          decisions: [
+            ["No apply button", "The loop is always running, so a slider is feedback rather than a request. Tuning becomes play instead of trial and error."],
+            ["Hardware vocabulary", "Scanlines, bobbing and colour depth are named like monitor settings, so the controls explain the look they produce."],
+            ["Export inline with playback", "Record, stop and save sit next to the play state instead of in a menu, so capturing a good moment never interrupts it."],
+          ],
+          solves: ["Static, one-slider pixel filters", "Effects you can only judge after export"],
+        },
+      },
+      {
+        src: "assets/work/pixelator/render-pipeline.webp",
+        caption: "Live render loop and GIF capture",
+        study: {
+          phase: "RENDER PIPELINE / EXPORT",
+          title: "DOWNSCALE, POSTERIZE, BREAK, RECORD.",
+          notes: [
+            "Per frame: the source is drawn small onto an offscreen canvas, its RGB values are posterized, and it is scaled back up with image smoothing off so every pixel stays a hard square.",
+            "Glitch slices, scanline overlays and a vignette are composited on top. The GIF recorder samples these finished frames and hands them to gif.js web workers for encoding.",
+          ],
+          decisions: [
+            ["Nearest-neighbour on purpose", "Turning smoothing off is the whole aesthetic. Interpolation would blur the grid the piece is about."],
+            ["Glitch as probability, not a preset", "A rate parameter means no two frames break the same way, which is what makes the animation read as a signal rather than a loop."],
+            ["Encode in the browser", "Client-side workers keep the image on the visitor's machine and keep the UI responsive while a GIF builds."],
+          ],
+        },
+      },
+    ],
   },
   {
     slug: "visado-assessment-board",
@@ -439,101 +493,495 @@ export const projects: Project[] = [
     title: "VISADO",
     subtitle: "VISUAL ASSESSMENT BOARD",
     description:
-      "Interactive canvas for mapping assessments and workflows with draggable nodes, pan and zoom, custom boards, and inline edge labeling.",
-    stack: ["React", "Vite", "Tailwind CSS", "JavaScript", "Canvas interactions"],
+      "Static assessment diagrams rebuilt as a navigable canvas: draggable nodes, labelled edges, Post-its and question cards, with pan and cursor-anchored zoom on mouse and touch.",
+    stack: ["React 18", "Vite", "Tailwind CSS", "JavaScript", "DOM + SVG canvas", "Pointer events"],
     category: "Tool",
     type: "Dynamic / Interactive / Data-driven",
     repository: "https://github.com/liriani/VisadoAssessmentBoard",
+    // live: "TODO: GitHub Pages / Vercel URL",
     featured: true,
     visual: "visado",
-    thumbnail: "assets/work/visado-assessment-board/thumbnail.jpg",
+    thumbnail: "assets/work/visado-assessment-board/cover.webp",
+    log: [
+      "PROBLEM STATE — Assessments and workflows were documented as static diagrams. They could be read but not worked in: nothing moved, nothing could be annotated, and big maps stopped being legible.",
+      "SYSTEM — Two modes on one engine: preset assessment models and custom boards. Nodes are absolutely positioned HTML elements; edges are SVG paths drawn between them.",
+      "STATE — One React tree holds node coordinates, connections, viewport offset, scale, link mode and board settings. Everything on screen derives from it.",
+      "INTERACTION — Drag, connect, label, annotate. Pan and pinch/scroll zoom keep large boards readable, with mouse and touch handled through the same pointer path.",
+    ],
+    lesson: "A diagram becomes a tool the moment it can be rearranged. Editing is how people think on a canvas.",
+    credits: [
+      ["ROLE", "Design & Development"],
+      ["RENDERING", "DOM nodes / SVG edges"],
+      ["INPUT", "Mouse · touch · pinch"],
+      ["CREDIT", "4RI / LIRI"],
+    ],
+    figures: [
+      {
+        src: "assets/work/visado-assessment-board/canvas-navigation.webp",
+        caption: "Pan and cursor-anchored zoom",
+        study: {
+          phase: "INTERACTION MODEL / NAVIGATION",
+          title: "ZOOM WHERE YOU ARE LOOKING.",
+          notes: [
+            "Zoom is anchored to the canvas point under the cursor, so the thing being inspected stays put while the board scales around it.",
+            "Drag deltas are divided by the current scale, so a node follows the pointer one-to-one whether the board is zoomed in or out.",
+          ],
+          decisions: [
+            ["Cursor-anchored zoom", "Zooming toward the origin makes people hunt for what they were reading. Anchoring to the cursor keeps their place."],
+            ["Scale-corrected dragging", "Without dividing by scale, nodes drift faster or slower than the hand at any zoom level other than 1."],
+            ["One pointer path for mouse and touch", "Pinch and scroll zoom resolve to the same state change, so the board behaves the same on a trackpad and a tablet."],
+          ],
+          solves: ["Large diagrams that stop being legible", "Navigation that loses the reader's place"],
+        },
+      },
+      {
+        src: "assets/work/visado-assessment-board/nodes-and-edges.webp",
+        caption: "Nodes, labelled edges and question cards",
+        study: {
+          phase: "ARCHITECTURE / RENDERING",
+          title: "HTML FOR THINGS, SVG FOR LINES.",
+          notes: [
+            "Nodes, Post-it notes and question cards are real HTML elements: they hold text, inputs and focus. Connections are SVG paths with direction and an inline label.",
+            "Preset assessment models load as ready-made boards; custom boards start empty on the same engine.",
+          ],
+          decisions: [
+            ["Hybrid DOM/SVG instead of one canvas", "Text editing and accessibility come free with HTML, while SVG gives crisp, restyleable edges. A pure canvas would have meant rebuilding both."],
+            ["Labels live on the edge", "Relationships are named where they are drawn, so a map explains itself without a legend."],
+            ["Presets and blanks share a model", "A preset is just a starting state, so anything learned from a template carries over to a custom board."],
+          ],
+        },
+      },
+    ],
   },
   {
     slug: "spccse-project",
     number: "006",
     title: "CCSE PROJECT",
-    subtitle: "MOTION-DRIVEN PRODUCT UI",
+    subtitle: "GAMIFIED EXAM PREP / ES",
     description:
-      "A modern TypeScript React app focused on polished UI and motion-driven UX, built as a production-ready component system for a course project.",
-    stack: ["React 19", "TypeScript", "Vite", "Tailwind CSS", "Framer Motion", "Vitest"],
+      "CCSE exam preparation rebuilt as modular learning tracks with reward loops, interactive exercises and a map of Spain you answer by touching it.",
+    stack: ["React 19", "TypeScript", "Vite", "Tailwind CSS 4", "Framer Motion", "Vitest", "React Testing Library"],
     category: "Product",
     type: "Dynamic / Interactive",
     repository: "https://github.com/liriani/spccseProject",
+    // live: "TODO: GitHub Pages / Vercel URL",
     visual: "ccse",
-    thumbnail: "assets/work/spccse-project/thumbnail.jpg",
+    thumbnail: "assets/work/spccse-project/cover.webp",
+    log: [
+      "PROBLEM STATE — The CCSE is a memorisation exam about Spanish civic and cultural life. Studying for it from a question bank is dry, and retention fades between sessions.",
+      "SYSTEM — Learning is split into modular tracks: reference material, stateful exercises, completion screens. An onboarding flow sets the learner up once.",
+      "RETENTION — A reward loop wraps every track: XP, hearts, streaks and badge unlocks. Progress and score multipliers live in app state; onboarding flags persist to localStorage.",
+      "OUTPUT — Exercises that use space and objects, not just text: a document wallet, a daily-schedule slider, and a map of Spain where regions are targets to hit.",
+    ],
+    lesson: "Memorisation sticks when the answer has a place. Put facts on a map, a clock or a card, and recall gets a location.",
+    credits: [
+      ["ROLE", "Design & Development"],
+      ["TESTING", "Vitest · React Testing Library"],
+      ["MOTION", "Framer Motion"],
+      ["CREDIT", "4RI / LIRI"],
+    ],
+    figures: [
+      {
+        src: "assets/work/spccse-project/onboarding.webp",
+        caption: "Onboarding flow",
+        study: {
+          phase: "ONBOARDING / FIRST RUN",
+          title: "SET UP ONCE. NEVER AGAIN.",
+          notes: [
+            "First launch walks the learner into the system before the first question: what the tracks are, how rewards work, where progress shows.",
+            "Completing it writes a flag to localStorage, so returning learners land straight on their module tree.",
+          ],
+          decisions: [
+            ["Persist only the onboarding flag", "The one thing that must survive a reload is \"don't show me this again\". Everything else can live in app state."],
+            ["Explain the rewards before using them", "Hearts and streaks only motivate if their rules are known up front."],
+          ],
+        },
+      },
+      {
+        src: "assets/work/spccse-project/document-wallet.webp",
+        caption: "Tu Cartera de Documentos: document wallet exercise",
+        study: {
+          phase: "INTERACTIVE EXERCISE / OBJECTS",
+          title: "STUDY THE PAPERWORK BY HOLDING IT.",
+          notes: [
+            "Residency documents are presented as cards in a wallet rather than a list of definitions. The learner flips through the objects the exam asks about.",
+            "Framer Motion handles the card transitions, so moving between documents reads as handling them.",
+          ],
+          decisions: [
+            ["Objects over glossary", "A document you have \"held\" is easier to recall than a paragraph describing it."],
+            ["Motion as affordance", "Card movement signals that each item can be picked up and examined, without instructions."],
+          ],
+        },
+      },
+      {
+        src: "assets/work/spccse-project/horario-espanol.webp",
+        caption: "El Horario Español: daily schedule slider",
+        study: {
+          phase: "INTERACTIVE EXERCISE / TIME",
+          title: "SPANISH TIME, ON A SLIDER.",
+          notes: [
+            "Spain's daily rhythm (late lunch, late dinner, shop hours) is taught with a time-of-day slider and a moving sun. Dragging through the day surfaces what happens when.",
+            "The same module card continues into practical reference, such as emergency phone numbers.",
+          ],
+          decisions: [
+            ["Teach a schedule as a timeline", "The facts are about when, so the input is time itself. The answer has a position."],
+            ["A visual sun, not a timestamp", "The light changes with the hour, so the cultural point (Spain eats late) is felt before it is read."],
+          ],
+        },
+      },
+      {
+        src: "assets/work/spccse-project/spain-map.webp",
+        caption: "Map of Spain spatial recall exercise",
+        study: {
+          phase: "SPATIAL RECALL / SVG",
+          title: "THE ANSWER IS A PLACE.",
+          notes: [
+            "Geography questions become a map you tap. Target zones are percentage-based hitboxes projected over a custom SVG of Spain, so they stay aligned at any size.",
+            "Correct and wrong hits feed the same XP, hearts and streak loop as every other exercise.",
+          ],
+          decisions: [
+            ["Percentage hitboxes", "Relative zones scale with the SVG, so the exercise works the same on a phone and a desktop without remapping."],
+            ["One reward loop for every format", "The map isn't a mini-game on the side; it pays into the same progress, so it counts."],
+          ],
+          solves: ["Geography memorised as a list", "Exercises that only test text recall"],
+        },
+      },
+      { src: "assets/work/spccse-project/progression.webp", caption: "Mi Progresión: XP-gated monument badges" },
+      { src: "assets/work/spccse-project/exercise-feedback.webp", caption: "Mixed exercise formats with inline feedback" },
+    ],
   },
   {
     slug: "potentia-lab",
     number: "007",
     title: "POTENTIA LAB",
-    subtitle: "FIGMA TO PRODUCT SYSTEM",
+    subtitle: "FIGMA TO LEARNING SYSTEM",
     description:
-      "Figma-derived product front-end showcasing a themeable, componentized UI and deployment-ready build pipeline.",
-    stack: ["React", "TypeScript", "Vite", "Tailwind CSS", "shadcn-style theming"],
+      "A Figma design bundle translated into a working learning platform: theory modules, validated exercises with explanations, and visual boards that step through mathematical transformations.",
+    stack: ["React 18", "TypeScript", "Vite", "Tailwind CSS 4", "Radix UI", "MUI / Emotion", "Framer Motion", "React Hook Form", "React Router", "Recharts", "React DnD"],
     category: "Product",
     type: "Interactive",
     repository: "https://github.com/liriani/PotentiaLab",
+    // live: "TODO: GitHub Pages / Vercel URL",
     visual: "potentia",
-    thumbnail: "assets/work/potentia-lab/thumbnail.jpg",
+    thumbnail: "assets/work/potentia-lab/cover.webp",
+    log: [
+      "PROBLEM STATE — A complete Figma bundle described the product, but a design file cannot check an answer or animate a proof.",
+      "SYSTEM — Three module types share one shell: theory, practice and visual demonstration. Radix primitives carry accessibility; Tailwind 4 carries the theme.",
+      "ENGINE — ExerciseSet takes multilingual payloads and renders multiple-choice, true/false and typed-input questions with correctness, step-by-step explanation, live score and completion tracking.",
+      "OUTPUT — VisualBoard, a state-driven sequence engine that renders each geometric or mathematical stage deterministically, so a transformation can be stepped forward and back.",
+    ],
+    lesson: "A design handoff is a spec for behaviour, not just layout. The work is deciding what each screen does when someone is wrong.",
+    credits: [
+      ["ROLE", "Frontend Development"],
+      ["SOURCE", "Figma design bundle"],
+      ["ENGINES", "ExerciseSet · VisualBoard"],
+      ["CREDIT", "4RI / LIRI"],
+    ],
+    figures: [
+      {
+        src: "assets/work/potentia-lab/exercise-set.webp",
+        caption: "ExerciseSet: validation and explanations",
+        study: {
+          phase: "EXERCISE ENGINE / FEEDBACK",
+          title: "WRONG ANSWERS GET THE MOST UI.",
+          notes: [
+            "One engine renders three question types (multiple choice, true/false, typed input) from multilingual payloads.",
+            "Every response returns structure, not just a tick: correctness, a step-by-step explanation, the running score and completion state.",
+          ],
+          decisions: [
+            ["Content as payload", "Questions arrive as data, so new exercises and languages are added without touching components."],
+            ["Explain on every answer", "The explanation is the lesson. Showing it only on failure would hide it from people who guessed right."],
+            ["Score visible throughout", "Live scoring turns a set of questions into a run with stakes."],
+          ],
+        },
+      },
+      {
+        src: "assets/work/potentia-lab/visual-board.webp",
+        caption: "VisualBoard: step-driven transformations",
+        study: {
+          phase: "VISUAL DEMONSTRATION / STATE",
+          title: "A PROOF YOU CAN STEP THROUGH.",
+          notes: [
+            "VisualBoard renders a mathematical or geometric transformation as a sequence of distinct stages. React state holds the current step; each step renders deterministically.",
+            "Moving forward and back replays exactly the same frames, so a learner can rewind to the step where it stopped making sense.",
+          ],
+          decisions: [
+            ["Deterministic stages over free animation", "A transformation that always looks the same at step 3 can be referred to, explained and revisited."],
+            ["State-driven, not timeline-driven", "The learner controls the pace. Nothing advances on a timer while they are still reading."],
+          ],
+        },
+      },
+    ],
   },
   {
     slug: "puma-protocol",
     number: "008",
     title: "PUMA PROTOCOL",
-    subtitle: "BRAND & PROTOCOL EXPERIENCE",
+    subtitle: "TACTICAL ROUTINE TERMINAL",
     description:
-      "Clean landing and demo UI for a protocol product showcasing modern front-end patterns and brand-forward presentation.",
-    stack: ["React", "Vite", "Tailwind CSS", "JavaScript"],
-    category: "Product",
-    type: "Interactive",
+      "Household chores, pet care and daily routines reframed as missions in a branching terminal RPG, with typewriter dialogue, CRT scanlines and a full step-back history.",
+    stack: ["React 18 (CRA)", "Tailwind CSS 3", "Lucide React", "JSON dialogue trees", "Custom typewriter engine"],
+    category: "Creative",
+    type: "Interactive / Narrative",
     repository: "https://github.com/liriani/thepumaprotocol",
+    // live: "TODO: GitHub Pages / Vercel URL",
     visual: "puma",
-    thumbnail: "assets/work/puma-protocol/thumbnail.jpg",
+    thumbnail: "assets/work/puma-protocol/cover.webp",
+    log: [
+      "PROBLEM STATE — Routine tasks have no story. A checklist records that the cat was fed; it gives no reason to want to do it.",
+      "SYSTEM — Missions are grouped into categories behind a hub. Each mission is a JSON dialogue tree: nodes, branches, objectives and metadata.",
+      "STATE — React tracks the active node, completed flags, a history stack and the selected hub category. Every choice pushes to history, so any step can be walked back.",
+      "OUTPUT — A terminal that talks back: a custom Typewriter component prints each line on an interval with strict cleanup, over CRT scanlines and location-specific colourways.",
+    ],
+    lesson: "Narrative is an interface. The same task list reads differently when it is briefed instead of listed.",
+    credits: [
+      ["ROLE", "Writing, Design & Development"],
+      ["DATA", "JSON dialogue trees"],
+      ["ENGINE", "Branching terminal + typewriter"],
+      ["CREDIT", "4RI / LIRI"],
+    ],
+    figures: [
+      {
+        src: "assets/work/puma-protocol/mission-hub.webp",
+        caption: "Mission category hub",
+        study: {
+          phase: "INFORMATION ARCHITECTURE / NARRATIVE",
+          title: "CHORES, CLASSIFIED.",
+          notes: [
+            "The hub sorts routines into mission categories (household, pet care, personal). Each category has its own colourway, so the terminal tells you where you are before you read.",
+            "Choosing a category loads its mission trees; completion flags show which objectives are already cleared.",
+          ],
+          decisions: [
+            ["Category as location", "Colour shifts per area turn a list of chores into places to visit."],
+            ["Status on the briefing, not in a report", "Completed flags sit on the mission itself, so verification is part of the story."],
+          ],
+        },
+      },
+      {
+        src: "assets/work/puma-protocol/dialogue-engine.webp",
+        caption: "Branching dialogue and history playback",
+        study: {
+          phase: "DIALOGUE ENGINE / STATE",
+          title: "EVERY CHOICE IS REVERSIBLE.",
+          notes: [
+            "Dialogue nodes and branch logic are plain JSON. The engine resolves the active node, renders its choices and pushes each decision onto a history stack.",
+            "Step-back replays the history, so a wrong branch is a detour instead of a dead end.",
+          ],
+          decisions: [
+            ["Content as JSON", "Missions are written as data, so adding a routine never touches a component."],
+            ["A history stack, not a back button", "Keeping the full path lets the player retrace the conversation, not just undo the last click."],
+          ],
+        },
+      },
+      {
+        src: "assets/work/puma-protocol/typewriter-terminal.webp",
+        caption: "Typewriter output over CRT scanlines",
+        study: {
+          phase: "MOTION / TEXT RENDERING",
+          title: "THE TERMINAL TYPES. YOU WAIT. IT MATTERS.",
+          notes: [
+            "A custom Typewriter component prints characters on an interval hook. Moving to a new node clears the interval before the next line starts.",
+            "Scanlines and retro terminal styling frame the text as a transmission rather than a notification.",
+          ],
+          decisions: [
+            ["Strict interval cleanup", "Fast clicking through nodes would otherwise stack timers and garble lines. Cleanup on every change keeps one voice at a time."],
+            ["Pacing as tone", "Character-by-character output slows the reader just enough for a chore to sound like a briefing."],
+          ],
+        },
+      },
+    ],
   },
   {
     slug: "photography-course",
     number: "009",
     title: "PHOTO COURSE",
-    subtitle: "EDITORIAL LEARNING EXPERIENCE",
+    subtitle: "SELF-GUIDED CAMERA CURRICULUM",
     description:
-      "Visual-first course landing that emphasizes editorial layout, imagery, and a clear learner flow for photography lessons.",
-    stack: ["HTML", "CSS", "JavaScript"],
+      "A week-by-week photography course in plain HTML and JavaScript, with technique guides, comprehension checks and an exposure simulator that makes the aperture / shutter / ISO trade-off visible.",
+    stack: ["HTML5", "CSS3", "Vanilla JavaScript (ES6+)", "Tailwind CSS (CDN)", "Lucide (CDN)"],
     category: "Creative",
     type: "Interactive / Static",
     repository: "https://github.com/liriani/PhotographyCourse",
+    // live: "TODO: GitHub Pages / Vercel URL",
     visual: "photo",
-    thumbnail: "assets/work/photography-course/thumbnail.jpg",
+    thumbnail: "assets/work/photography-course/cover.webp",
+    log: [
+      "PROBLEM STATE — The exposure triangle is usually taught as a diagram. Beginners can recite it and still not predict what a change will do to the photo.",
+      "SYSTEM — A progressive curriculum, one week at a time: theory, step-by-step technique, common mistakes, pro tips, an assignment and a comprehension check per module.",
+      "ENGINE — No framework. Course content and translation tables live in modular JS objects; vanilla DOM handlers render modules, progress meters, simulator feedback, composition challenges and drag-and-drop quizzes.",
+      "OUTPUT — An exposure simulator where aperture, shutter speed and ISO move together, so each trade-off is seen rather than memorised.",
+    ],
+    lesson: "Simulate the trade-off and the theory explains itself.",
+    credits: [
+      ["ROLE", "Curriculum, Design & Development"],
+      ["RUNTIME", "Vanilla JS / no build"],
+      ["CREDIT", "4RI / LIRI"],
+    ],
+    figures: [
+      {
+        src: "assets/work/photography-course/exposure-simulator.webp",
+        caption: "Real-time exposure simulator",
+        study: {
+          phase: "SIMULATION / LEARNING BY CONSEQUENCE",
+          title: "SEE THE TRIANGLE BEND.",
+          notes: [
+            "Aperture, shutter speed and ISO are live controls. Changing one updates the simulated image immediately: depth of field, motion blur, noise and brightness.",
+            "The point is the trade-off. Brightening by ISO looks different from brightening by shutter, and the simulator shows exactly how.",
+          ],
+          decisions: [
+            ["Show the side effect, not just the exposure", "Every setting has a cost (blur, noise, focus). Rendering the cost is what turns a rule into intuition."],
+            ["Instant feedback", "No submit step: the learner experiments the way they would with a real camera."],
+          ],
+          solves: ["Theory that doesn't transfer to the camera", "Trade-offs learned as a diagram"],
+        },
+      },
+      {
+        src: "assets/work/photography-course/curriculum.webp",
+        caption: "Week-by-week modules and progress sidebar",
+        study: {
+          phase: "CURRICULUM ARCHITECTURE",
+          title: "ONE WEEK, ONE SKILL, ONE CHECK.",
+          notes: [
+            "Each module repeats the same structure: theory, technique, mistakes, tips, assignment, check. The sidebar tracks progress across the whole course.",
+            "Content lives in JS objects alongside translation tables, so the course can be extended or localised without rewriting the renderer.",
+          ],
+          decisions: [
+            ["A fixed module shape", "Predictable structure means the learner's attention goes to the photography, not to finding their way around."],
+            ["Vanilla over framework", "A course is mostly content. Plain JS keeps it fast, buildless and easy to host anywhere."],
+          ],
+        },
+      },
+    ],
   },
   {
     slug: "glsl-shader-visualizer",
     number: "010",
     title: "GLSL VISUALIZER",
-    subtitle: "REAL-TIME GENERATIVE GRAPHICS",
+    subtitle: "SHADER BENCH FOR TOUCHDESIGNER",
     description:
-      "Real-time shader and generative-graphics experiment exploring motion, light, and texture through GLSL-powered visuals and interactive controls.",
-    stack: ["GLSL", "WebGL", "JavaScript", "HTML", "CSS"],
+      "An in-browser bench for writing and previewing animated fragment shaders, with presets, live compile errors and one-click copy into TouchDesigner.",
+    stack: ["React 19", "Vite 8", "Three.js", "WebGL", "GLSL", "Lucide React"],
     category: "Creative",
     badge: "Shader",
     type: "Dynamic / Interactive",
     repository: "https://github.com/liriani/glslshadervisualizer",
+    // live: "TODO: GitHub Pages / Vercel URL",
     private: true,
     visual: "shader",
-    thumbnail: "assets/work/glsl-shader-visualizer/thumbnail.jpg",
+    thumbnail: "assets/work/glsl-shader-visualizer/cover.webp",
+    log: [
+      "PROBLEM STATE — Iterating on a shader inside TouchDesigner means a heavy project open for every small edit. Sketching is faster in a lighter loop.",
+      "SYSTEM — Three panes: a preset browser, a live code editor and a WebGL viewport. Three.js owns the context, a fullscreen plane, an orthographic camera and the shader material.",
+      "PIPELINE — uTime and uRes are injected continuously. TouchDesigner-style fragColor output is rewritten to gl_FragColor, and the material is disposed and rebuilt on every edit.",
+      "OUTPUT — Compile errors land in a collapsible status overlay instead of the console, and finished code is one click from the clipboard.",
+    ],
+    lesson: "The fastest tool is the one that speaks the destination's dialect. Normalise once, and the handoff disappears.",
+    credits: [
+      ["ROLE", "Design & Development"],
+      ["TARGET", "TouchDesigner GLSL TOP"],
+      ["UNIFORMS", "uTime · uRes"],
+      ["CREDIT", "4RI / LIRI"],
+    ],
+    figures: [
+      {
+        src: "assets/work/glsl-shader-visualizer/live-coding.webp",
+        caption: "Editor, preview and live compile feedback",
+        study: {
+          phase: "LIVE CODING / FEEDBACK LOOP",
+          title: "TYPE, COMPILE, SEE. NO CONSOLE.",
+          notes: [
+            "Every edit disposes the old shader material and builds a new one, so the viewport is always running the code on screen.",
+            "When compilation fails, the error appears in a collapsible panel over the preview. Uniforms such as uTime are shown in the UI, not hidden in boilerplate.",
+          ],
+          decisions: [
+            ["Errors where the eyes are", "Developer tools are a context switch. An overlay keeps the fix and the result in one view."],
+            ["Dispose on every edit", "Rebuilding the material avoids stale programs and GPU leaks during long sessions."],
+            ["Uniforms made visible", "Seeing uTime tick explains why the shader moves and what to multiply."],
+          ],
+        },
+      },
+      {
+        src: "assets/work/glsl-shader-visualizer/touchdesigner-handoff.webp",
+        caption: "Presets and TouchDesigner-ready export",
+        study: {
+          phase: "PIPELINE / HANDOFF",
+          title: "WRITTEN HERE. RUNS THERE.",
+          notes: [
+            "Code is authored in TouchDesigner's style, with fragColor output. The app normalises it to gl_FragColor for WebGL, so the same text works in both places.",
+            "A preset browser provides starting points; copy-to-clipboard moves the result into the TouchDesigner network.",
+          ],
+          decisions: [
+            ["Normalise the dialect, not the author", "Translating fragColor at load means nobody has to edit code before pasting it into TouchDesigner."],
+            ["One-click copy", "The handoff is the product. It should cost one action."],
+          ],
+        },
+      },
+    ],
   },
   {
     slug: "uncut-engine",
     number: "011",
     title: "UNCUT ENGINE",
-    subtitle: "EXPERIMENTAL INTERACTION ENGINE",
+    subtitle: "VECTOR GRAFFITI LAB",
     description:
-      "A private engine experiment exploring game and interactive-system concepts through custom creative tooling and browser-based demo assets.",
-    stack: ["HTML", "JavaScript", "CSS"],
+      "A browser lettering lab for graffiti wordmarks: scroll-drawn strokes, per-letter path and drip controls, procedural roughness, and clean SVG export.",
+    stack: ["HTML", "CSS", "Vanilla JavaScript", "SVG", "feTurbulence / feDisplacementMap", "Tailwind CSS (CDN)"],
     category: "Tool",
     type: "Interactive / Experimental",
     repository: "https://github.com/liriani/uncut-engine",
+    // live: "TODO: GitHub Pages / Vercel URL",
     private: true,
     visual: "uncut",
-    thumbnail: "assets/work/uncut-engine/thumbnail.jpg",
+    thumbnail: "assets/work/uncut-engine/cover.webp",
+    log: [
+      "PROBLEM STATE — Digital lettering tools produce clean, finished type. Graffiti is about the opposite: rough edges, paint that runs, letters drawn in a gesture.",
+      "SYSTEM — Wordmarks are SVG paths. Edge roughness comes from feTurbulence and feDisplacementMap filters, and paint drips are their own vector shapes.",
+      "INTERACTION — Scroll position is converted to a progress percentage that drives stroke-dasharray / stroke-dashoffset tracing and drip thresholds. Selecting a letter isolates its own path and drip controls.",
+      "OUTPUT — Export clones the live SVG, inlines computed styles and filter primitives, and downloads a raw vector that looks the same outside the browser.",
+    ],
+    lesson: "Imperfection can be a parameter. Roughness, spacing and drips are design decisions once they have sliders.",
+    credits: [
+      ["ROLE", "Design & Development"],
+      ["GRAPHICS", "SVG paths + filter primitives"],
+      ["EXPORT", "Self-contained SVG"],
+      ["CREDIT", "4RI / LIRI"],
+    ],
+    figures: [
+      {
+        src: "assets/work/uncut-engine/scroll-reveal.webp",
+        caption: "Scroll-driven stroke tracing",
+        study: {
+          phase: "MOTION / SCROLL AS BRUSH",
+          title: "SCROLLING IS THE SPRAY CAN.",
+          notes: [
+            "Native scroll listeners convert page position into a progress value. That value sets each stroke's dash offset, so letters are drawn in as the visitor scrolls.",
+            "Past set thresholds, the drips switch on and run.",
+          ],
+          decisions: [
+            ["Dash offset for drawing", "stroke-dasharray / dashoffset traces any path with no per-letter animation code."],
+            ["Thresholds for drips", "Drips appear only after the stroke lands, the way paint would."],
+          ],
+        },
+      },
+      {
+        src: "assets/work/uncut-engine/letter-controls.webp",
+        caption: "Per-letter controls, drips and roughness",
+        study: {
+          phase: "CONTROL SURFACE / RESPONSIVE",
+          title: "ONE LETTER AT A TIME, OR ALL OF THEM.",
+          notes: [
+            "Global controls (roughness, spacing, stroke weight) sit in a floating dock on desktop and reflow into an in-page stack on mobile.",
+            "Selecting a single character isolates its path geometry and drip parameters, so one letter can run while its neighbours stay clean.",
+          ],
+          decisions: [
+            ["Filters, not hand-drawn noise", "feTurbulence + feDisplacementMap make roughness procedural and adjustable instead of baked into the outline."],
+            ["Dock that becomes a stack", "A floating panel would cover the artwork on a phone, so the controls fall into the page flow there."],
+            ["Export what you see", "Cloning the live node and inlining computed styles and filters means the downloaded SVG matches the screen."],
+          ],
+          solves: ["Lettering tools that are too clean", "Exports that lose their effects"],
+        },
+      },
+    ],
   },
 ];
 

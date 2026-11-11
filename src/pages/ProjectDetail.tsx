@@ -93,6 +93,15 @@ export default function ProjectDetail() {
             <span>03</span>
             <p>PROJECT LINKS</p>
           </div>
+          {project.live && (
+            <a href={project.live} target="_blank" rel="noreferrer">
+              <span>
+                LIVE BUILD
+                <small>Open the deployment</small>
+              </span>
+              <strong>↗</strong>
+            </a>
+          )}
           {project.repository && (
             <a href={project.repository} target="_blank" rel="noreferrer">
               <span>
