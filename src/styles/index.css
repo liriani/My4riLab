@@ -5239,3 +5239,454 @@ a {
     font-size: 14vw;
   }
 }
+
+/* ───────── deep cases: editorial chapters ───────── */
+.chapters {
+  border-bottom: var(--line);
+}
+
+.chapter {
+  padding: 80px 3vw;
+  border-top: var(--line);
+}
+
+.chapter:first-child {
+  border-top: 0;
+}
+
+.chapter-label {
+  font-family: "DM Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--orange);
+}
+
+/* ESSAY: kicker + headline on the left, body flowing in columns on the right. */
+.chapter--essay {
+  display: grid;
+  grid-template-columns: 0.8fr 2fr;
+  gap: 6vw;
+}
+
+.chapter--essay h2 {
+  margin: 28px 0 0;
+  font-size: clamp(30px, 3.6vw, 56px);
+  font-weight: 600;
+  line-height: 0.95;
+  letter-spacing: -0.05em;
+}
+
+.chapter-body {
+  columns: 2 320px;
+  column-gap: clamp(28px, 4vw, 64px);
+  column-rule: 1px solid rgba(17, 17, 15, 0.25);
+}
+
+.chapter-body p {
+  margin: 0 0 1.1em;
+  font-size: 16px;
+  line-height: 1.65;
+  break-inside: avoid-column;
+}
+
+.chapter-body.has-dropcap p:first-child::first-letter {
+  float: left;
+  margin: 6px 10px 0 0;
+  font-family: "Rajdhani", sans-serif;
+  font-size: 84px;
+  font-weight: 700;
+  line-height: 0.7;
+  color: var(--orange);
+}
+
+/* PULL: oversized blockquote pushed off the grid to the right. */
+.chapter--pull {
+  margin: 0;
+  padding: 100px 3vw 100px 22vw;
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.chapter--pull blockquote {
+  position: relative;
+  margin: 0;
+  padding-left: clamp(24px, 3vw, 48px);
+  border-left: 6px solid var(--acid);
+}
+
+.chapter--pull blockquote::before {
+  content: "“";
+  position: absolute;
+  top: -0.32em;
+  left: -0.62em;
+  font-family: "Rajdhani", sans-serif;
+  font-size: clamp(140px, 16vw, 260px);
+  line-height: 1;
+  color: var(--acid);
+}
+
+.chapter--pull blockquote p {
+  margin: 0;
+  font-size: clamp(30px, 4.2vw, 68px);
+  font-weight: 500;
+  line-height: 1.02;
+  letter-spacing: -0.045em;
+}
+
+.chapter--pull figcaption {
+  margin-top: 32px;
+  padding-left: clamp(30px, 3.4vw, 54px);
+  font-family: "DM Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+/* VERSUS: two positions set against each other. */
+.chapter--versus {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 18px clamp(20px, 3vw, 48px);
+  align-items: start;
+}
+
+.chapter--versus .chapter-label {
+  grid-column: 1 / -1;
+}
+
+.chapter--versus > div {
+  padding: 28px;
+  border: var(--line);
+}
+
+.chapter--versus > div:first-of-type {
+  background: repeating-linear-gradient(-45deg, transparent 0 9px, rgba(17, 17, 15, 0.06) 9px 10px);
+}
+
+.chapter--versus > div:first-of-type h3 {
+  text-decoration: line-through;
+  text-decoration-color: var(--orange);
+  text-decoration-thickness: 3px;
+}
+
+.chapter--versus > div:last-of-type {
+  background: var(--acid);
+  box-shadow: 8px 8px 0 var(--ink);
+}
+
+.chapter--versus h3 {
+  margin: 0 0 14px;
+  font-size: clamp(22px, 2.2vw, 32px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.chapter--versus p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.chapter--versus > i {
+  align-self: center;
+  font-family: "Rajdhani", sans-serif;
+  font-size: 64px;
+  font-style: normal;
+  font-weight: 700;
+}
+
+/* FIGURES: the numbers, big, in a ruled row. */
+.chapter--figures dl {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  margin: 24px 0 0;
+  border-top: var(--line);
+}
+
+.chapter--figures dl div {
+  padding: 22px 22px 0 0;
+  border-right: 1px solid rgba(17, 17, 15, 0.3);
+}
+
+.chapter--figures dl div:last-child {
+  border-right: 0;
+}
+
+.chapter--figures dt {
+  font-family: "DM Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.chapter--figures dd {
+  margin: 10px 0 0;
+  font-family: "Rajdhani", sans-serif;
+  font-size: clamp(56px, 7vw, 120px);
+  font-weight: 700;
+  line-height: 0.8;
+  letter-spacing: -0.05em;
+}
+
+/* ───────── experiments: lab log ───────── */
+.detail-hero--log > p {
+  margin-top: 48px;
+}
+
+.detail-hero--log h1 {
+  margin-bottom: 40px;
+  font-size: clamp(56px, 9vw, 140px);
+}
+
+.lablog {
+  padding: 48px 3vw;
+  border-bottom: var(--line);
+  background: var(--paper);
+}
+
+.lablog-bar {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 14px;
+  background: var(--acid);
+  border: var(--line);
+  border-bottom: 0;
+  font-family: "DM Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.lablog-screen {
+  padding: clamp(22px, 3vw, 44px);
+  border: var(--line);
+  background: var(--ink);
+  color: var(--paper);
+  box-shadow: 12px 12px 0 var(--ink);
+  font-family: "DM Mono", monospace;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.lablog-cmd {
+  margin: 30px 0 10px;
+  color: var(--acid);
+}
+
+.lablog-cmd:first-child {
+  margin-top: 0;
+}
+
+.lablog-cmd::before {
+  content: "$ ";
+  opacity: 0.6;
+}
+
+.lablog-spark {
+  max-width: 900px;
+  margin: 0;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: clamp(22px, 2.6vw, 38px);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+}
+
+.lablog-tree,
+.lablog-stdout,
+.lablog-warn {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lablog-tree li {
+  padding-left: 2.6em;
+  text-indent: -2.6em;
+}
+
+.lablog-tree li::before {
+  content: "├── ";
+  opacity: 0.5;
+}
+
+.lablog-tree li:last-child::before {
+  content: "└── ";
+}
+
+.lablog-stdout li {
+  display: grid;
+  grid-template-columns: 4.2em 1fr;
+  opacity: 0.85;
+}
+
+.lablog-stdout li span {
+  color: var(--violet);
+  filter: brightness(1.5);
+}
+
+.lablog-stdout li.is-ok,
+.lablog-stdout li.is-ok span {
+  color: var(--acid);
+  filter: none;
+  opacity: 1;
+}
+
+.lablog-warn li {
+  color: var(--orange);
+}
+
+.lablog-warn li::before {
+  content: "WARN  ";
+  opacity: 0.7;
+}
+
+.lablog-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin: 34px 0 0;
+  padding-top: 18px;
+  border-top: 1px dashed rgba(243, 240, 230, 0.3);
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.lablog-media {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  border-bottom: var(--line);
+}
+
+.lablog-media.is-single {
+  grid-template-columns: 1fr;
+}
+
+.lablog-media figure {
+  position: relative;
+  min-height: clamp(280px, 38vw, 620px);
+  margin: 0;
+  overflow: hidden;
+  container-type: inline-size;
+  border-right: var(--line);
+}
+
+.lablog-media figure:nth-child(3n) {
+  grid-column: 1 / -1;
+  border-top: var(--line);
+}
+
+.lablog-media figure:last-child {
+  border-right: 0;
+}
+
+.lablog-media figcaption {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  z-index: 2;
+  padding: 6px 9px;
+  background: var(--ink);
+  color: var(--acid);
+  font-family: "DM Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.lablog-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: end;
+  gap: 28px;
+  padding: 48px 3vw;
+  border-bottom: var(--line);
+}
+
+.lablog-lesson {
+  max-width: 760px;
+  margin: 0;
+  font-size: clamp(22px, 2.4vw, 34px);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+}
+
+.lablog-lesson span {
+  display: block;
+  margin-bottom: 12px;
+  font-family: "DM Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--orange);
+}
+
+.lablog-links {
+  display: flex;
+  gap: 10px;
+}
+
+.lablog-links a {
+  padding: 12px 16px;
+  border: var(--line);
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  font-family: "DM Mono", monospace;
+  font-size: 11px;
+  text-decoration: none;
+}
+
+.lablog-links a:hover {
+  background: var(--acid);
+}
+
+@media (max-width: 960px) {
+  .chapter--essay {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .chapter--pull {
+    padding: 80px 16px 80px 48px;
+  }
+
+  .chapter--versus {
+    grid-template-columns: 1fr;
+  }
+
+  .chapter--versus > i {
+    justify-self: center;
+    transform: rotate(90deg);
+  }
+
+  .lablog-media {
+    grid-template-columns: 1fr;
+  }
+
+  .lablog-media figure {
+    border-right: 0;
+    border-bottom: var(--line);
+  }
+}
+
+@media (max-width: 640px) {
+  .chapter,
+  .lablog,
+  .lablog-foot {
+    padding-inline: 16px;
+  }
+
+  .lablog-bar span:last-child {
+    display: none;
+  }
+
+  .lablog-screen {
+    font-size: 12px;
+    box-shadow: 6px 6px 0 var(--ink);
+  }
+}
