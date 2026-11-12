@@ -1,0 +1,7 @@
+# by4ri.com
+# Portfolio of 4RI / Liri. Everything here is public and meant to be found.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://by4ri.com/sitemap.xml

@@ -1,5 +1,6 @@
 import { Outlet, ScrollRestoration } from "react-router";
 import Header from "./Header";
+import { usePageMeta } from "./usePageMeta";
 
 /**
  * Every route renders inside this shell, so the header mounts once and never
@@ -7,6 +8,8 @@ import Header from "./Header";
  * #hash target) on navigation and restores the old position on Back.
  */
 export default function SiteLayout() {
+  usePageMeta();
+
   return (
     <>
       <Header />
