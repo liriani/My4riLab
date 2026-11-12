@@ -1704,16 +1704,20 @@ a {
   font-weight: 500;
 }
 
+/* The input is a tall, easy-to-grab strip; the visible track stays a 2px line
+   painted through its middle. */
 .slider input {
   width: 100%;
-  height: 2px;
-  margin: 0;
+  height: 24px;
+  margin: -11px 0;
   appearance: none;
   background: linear-gradient(
-    to right,
-    var(--acid) var(--progress),
-    rgba(243, 240, 230, 0.25) var(--progress)
-  );
+      to right,
+      var(--acid) var(--progress),
+      rgba(243, 240, 230, 0.25) var(--progress)
+    )
+    center / 100% 2px no-repeat;
+  cursor: pointer;
 }
 
 .slider input::-webkit-slider-thumb {
@@ -2228,7 +2232,11 @@ a {
   grid-template-areas: "text media";
   gap: var(--panel-gap);
   min-width: 0;
-  transform-style: preserve-3d;
+  /* Flat on purpose: the tilt is one transform on the card, and the panels
+     don't need their own depth. With preserve-3d, a tilted card hit-tests by
+     3D depth instead of z-index, so the artwork and title letters rose above
+     the full-card link and swallowed clicks. */
+  transform-style: flat;
   will-change: transform;
 }
 
@@ -4571,7 +4579,7 @@ a {
 
   @media (max-width: 360px) {
     .nav-paint-compact {
-      right: calc(3vw + 34px);
+      right: calc(3vw + 36px);
       width: 50px;
       font-size: 5px;
     }
@@ -6273,5 +6281,64 @@ a {
   .qa-table tbody th,
   .qa-table td:first-child {
     width: auto;
+  }
+}
+
+/* ───────── touch targets: 44px on phones and touch screens ───────── */
+@media (max-width: 760px), (pointer: coarse) {
+  /* Controls that look like buttons simply grow. */
+  .project-filters button,
+  .transport button,
+  .segmented-control button,
+  .download-button,
+  .reset-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .project-link {
+    min-height: 44px;
+    align-items: center;
+    padding-top: 0;
+  }
+
+  /* Text links keep their look; an invisible box around them takes the tap. */
+  .projects-footer a,
+  .site-footer > a,
+  .site-footer div a,
+  .about-manifesto > div a,
+  .hero-bottom a,
+  .micro-actions button {
+    position: relative;
+  }
+
+  .projects-footer a::after,
+  .site-footer > a::after,
+  .site-footer div a::after,
+  .about-manifesto > div a::after,
+  .hero-bottom a::after,
+  .micro-actions button::after {
+    position: absolute;
+    inset: -16px -10px;
+    content: "";
+  }
+
+  .wordmark {
+    min-width: 44px;
+  }
+
+  .slider input {
+    height: 44px;
+    margin: -21px 0;
+  }
+
+  .slider input::-webkit-slider-thumb {
+    width: 20px;
+    height: 20px;
+  }
+
+  .slider input::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
   }
 }

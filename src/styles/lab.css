@@ -1358,6 +1358,25 @@ html:has(.cs-toolbar) { scroll-padding-top: calc(var(--header-h) + 56px); }
   .cs-footer-link--next { align-items: flex-start; border-left: 0; border-top: 1px solid var(--lx-ink); text-align: left; }
 }
 
+/* Case study toolbar and code bar: 44px targets on phones and touch screens. */
+@media (max-width: 760px), (pointer: coarse) {
+  .cs-back,
+  .cs-replay,
+  .cs-code-bar button {
+    min-height: 44px;
+  }
+
+  .cs-back {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .cs-pager > * {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .lx-page *, .lx-page *::before, .lx-page *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }
