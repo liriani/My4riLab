@@ -1,9 +1,9 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, useParams } from "react-router";
-import "@/styles/lab.css";
 import { caseDetails } from "@/data/lab/caseDetails";
 import { caseStudies } from "@/data/lab/caseStudies";
 import { getLabCaseIndex, labCaseId, labCasePath, labCases } from "@/data/lab/labCases";
+import "@/styles/lab.css";
 
 const TOKEN =
   /(\/\*[\s\S]*?\*\/)|("(?:[^"\\]|\\.)*")|(<\/?[a-zA-Z][\w-]*|\/?>)|(@keyframes|\b(?:const|let|function|return|if|new|true|false)\b)|(#[0-9a-fA-F]{3,8}\b)|((?<![\w#.-])-?\d*\.?\d+(?:px|ms|s|deg|em|%|vh|vw)?)|([a-z-]+(?=\s*:))/g;

@@ -7,10 +7,7 @@ import {
   type PointerEvent,
 } from "react";
 import { loadImage, makeDemoImage } from "./imageUtils";
-import {
-  GlitchSettings,
-  useGlitchEngine,
-} from "./useGlitchEngine";
+import { useGlitchEngine, type GlitchSettings } from "./useGlitchEngine";
 
 const HERO_SETTINGS: GlitchSettings = {
   pixelSize: 13,

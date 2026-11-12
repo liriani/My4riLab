@@ -1,9 +1,9 @@
 import {
-  CSSProperties,
-  PointerEvent as ReactPointerEvent,
   useEffect,
   useRef,
   useState,
+  type CSSProperties,
+  type PointerEvent as ReactPointerEvent,
 } from "react";
 import { useCoarsePointer } from "./useCoarsePointer";
 
@@ -729,7 +729,6 @@ export function CrumbTrail({ resetKey }: { resetKey: number }) {
             setFed((f) => f + 1);
           }
         }
-        // Did the pet walk over a link?
         const box = el.getBoundingClientRect();
         linkRefs.current.forEach((link, index) => {
           if (!link || eatenRef.current.has(index) || performance.now() < (immuneUntil.current[index] ?? 0)) return;

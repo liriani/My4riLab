@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
-import "@/styles/lab.css";
-import { labCaseId, labCasePath, labCases } from "@/data/lab/labCases";
 import { CleanupCloth, InkLayer, InkTip, useInkTraces, WetWipePacket } from "@/features/lab/InkTraces";
 import LabManifesto from "@/features/lab/LabManifesto";
+import { labCaseId, labCasePath, labCases } from "@/data/lab/labCases";
+import "@/styles/lab.css";
 
 export default function InteractionGalleryPage() {
   const [resets, setResets] = useState<number[]>(() => labCases.map(() => 0));

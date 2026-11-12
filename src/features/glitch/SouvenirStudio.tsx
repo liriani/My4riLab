@@ -1,19 +1,19 @@
 import {
-  ChangeEvent,
-  CSSProperties,
-  PointerEvent as ReactPointerEvent,
   useEffect,
   useRef,
   useState,
+  type ChangeEvent,
+  type CSSProperties,
+  type PointerEvent as ReactPointerEvent,
 } from "react";
 import { makeDemoImage } from "./imageUtils";
 import {
   DEFAULT_GLITCH_SETTINGS,
   GLITCH_HEIGHT,
   GLITCH_WIDTH,
-  GlitchSettings,
-  MaskPreset,
   useGlitchEngine,
+  type GlitchSettings,
+  type MaskPreset,
 } from "./useGlitchEngine";
 
 type TargetMode = "brush" | "half" | "scatter";

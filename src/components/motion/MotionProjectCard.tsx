@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { Link } from "react-router";
 import {
   motion,
   useMotionValue,
@@ -5,10 +7,8 @@ import {
   useSpring,
   useTransform,
 } from "framer-motion";
-import { useState } from "react";
-import { Link } from "react-router";
-import { Project } from "@/data/projects";
 import ProjectArtwork from "@/components/ui/ProjectArtwork";
+import type { Project } from "@/data/projects";
 
 const spring = { stiffness: 300, damping: 20, mass: 0.7 };
 

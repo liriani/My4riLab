@@ -116,8 +116,9 @@ export type Project = {
   /** Public deployment (GitHub Pages / Vercel). Shown as a LIVE BUILD link when set. */
   live?: string;
   /**
-   * Local image under public/, without a leading slash (assetUrl() adds the
-   * site base). Until the file exists the card falls back to its CSS artwork.
+   * Cover for the detail page: a local image under public/, without a leading
+   * slash (assetUrl() adds the site base). Until the file exists, the CSS
+   * artwork shows in its place.
    *
    * Convention: public/assets/work/<slug>/cover.webp for the cover, plus one
    * kebab-case file per figure. A path can be listed before its file exists.
@@ -130,7 +131,7 @@ export type Project = {
   visual: string;
   /** Lab-note paragraphs for the detail page; falls back to a generic line. */
   log?: string[];
-  /** One-line takeaway shown in the detail page's system note. */
+  /** One-line takeaway, shown on the detail page as the logged lesson. */
   lesson?: string;
   /** [label, value] pairs for the detail page credit block. */
   credits?: [string, string][];

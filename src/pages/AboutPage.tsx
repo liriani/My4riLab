@@ -1,12 +1,12 @@
-import { Link } from "react-router";
-import SouvenirTeaser from "@/features/glitch/SouvenirTeaser";
-import { assetUrl } from "@/components/ui/ProjectImage";
-import { cv } from "@/data/cv";
 import {
-  CSSProperties,
-  PointerEvent as ReactPointerEvent,
   useRef,
+  type CSSProperties,
+  type PointerEvent as ReactPointerEvent,
 } from "react";
+import { Link } from "react-router";
+import { assetUrl } from "@/components/ui/ProjectImage";
+import SouvenirTeaser from "@/features/glitch/SouvenirTeaser";
+import { cv } from "@/data/cv";
 
 type Tool = {
   name: string;

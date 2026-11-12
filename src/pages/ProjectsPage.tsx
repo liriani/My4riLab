@@ -1,8 +1,8 @@
-import { Link } from "react-router";
 import { useState } from "react";
+import { Link } from "react-router";
 import CursorTrailCanvas from "@/components/motion/CursorTrailCanvas";
 import MotionProjectCard from "@/components/motion/MotionProjectCard";
-import { projects, ProjectCategory } from "@/data/projects";
+import { projects, type ProjectCategory } from "@/data/projects";
 
 type Category = "All" | ProjectCategory;
 
