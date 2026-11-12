@@ -1,16 +1,9 @@
 import { createBrowserRouter } from "react-router";
+import BootScreen from "@/components/layout/BootScreen";
 import SiteLayout from "@/components/layout/SiteLayout";
 
 function HydrateFallback() {
-  return (
-    <main className="route-fallback" aria-live="polite" aria-label="Loading page">
-      <span>4RI.EXE</span>
-      <div>
-        <i />
-        LOADING SIGNAL
-      </div>
-    </main>
-  );
+  return <BootScreen />;
 }
 
 const basename = import.meta.env.BASE_URL.replace(/\/$/, "") || "/";

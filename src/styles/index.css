@@ -93,6 +93,45 @@ a {
   animation: blink 1s steps(2) infinite;
 }
 
+/* Minimum boot: the same screen laid over the app, with a bar that fills over
+   the boot time, then a short fade to reveal the page loaded underneath. */
+.route-fallback--overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  transition: opacity 400ms ease;
+}
+
+.route-fallback--overlay.is-leaving {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.route-fallback-bar {
+  position: relative;
+  width: min(220px, 60vw);
+  height: 2px;
+  overflow: hidden;
+  background: rgba(243, 240, 230, 0.18);
+}
+
+.route-fallback-bar::after {
+  position: absolute;
+  inset: 0;
+  background: var(--acid);
+  box-shadow: 0 0 10px var(--acid);
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: boot-fill var(--boot-ms, 2000ms) steps(12, end) forwards;
+  content: "";
+}
+
+@keyframes boot-fill {
+  to {
+    transform: scaleX(1);
+  }
+}
+
 .site-nav {
   position: sticky;
   top: 0;
@@ -5005,8 +5044,13 @@ a {
   .availability i,
   .visual-state i,
   .shader-orb,
-  .route-fallback i {
+  .route-fallback i,
+  .route-fallback-bar::after {
     animation: none !important;
+  }
+
+  .route-fallback-bar::after {
+    transform: scaleX(1);
   }
 
   .tool-card,
