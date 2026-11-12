@@ -1,39 +1,34 @@
-const coreStack = ["React", "TypeScript", "JavaScript", "Tailwind", "Vite"];
+const coreStack = ["Figma", "Design systems", "Components & variants", "Handoff specs", "Design QA"];
 
-const creativeTools = [
-  "Creative coding",
-  "GLSL shaders",
-  "TouchDesigner",
-  "Motion systems",
-  "Audio-reactive environments",
-];
+const organizeTools = ["File audits", "Component libraries", "Design tokens", "Documentation"];
 
 export default function AboutSkills() {
   return (
     <section className="about-section" id="about">
       <header className="about-heading">
         <p className="kicker">02 / ABOUT THE PRACTICE</p>
-        <p className="about-index">DESIGNER.DEV.MAKER</p>
+        <p className="about-index">DESIGNER.SYSTEMS.QA</p>
       </header>
 
       <div className="about-statement">
         <p>
-          PRODUCT DESIGNER
+          CREATIVE UI DESIGNER
           <br />
-          <span>WITH A DEEP</span>
+          <span>WHO CHECKS</span>
           <br />
-          CREATIVE EDGE.
+          THE BUILD.
         </p>
         <aside>
           <span>PROFILE</span>
           <p>
-            I build product-ready interfaces that feel visually alive—balancing
-            thoughtful UX, expressive UI, and polished browser-based storytelling.
+            I make interfaces with personality, then make sure that personality
+            survives the trip to production. Figma is where I design. The browser
+            is where I verify.
           </p>
         </aside>
       </div>
 
-      <div className="rhythm-bar" aria-label={`Core stack: ${coreStack.join(", ")}`}>
+      <div className="rhythm-bar" aria-label={`Practice: ${coreStack.join(", ")}`}>
         {coreStack.map((technology, index) => (
           <span key={technology}>
             {technology}
@@ -44,50 +39,51 @@ export default function AboutSkills() {
 
       <div className="about-grid">
         <article className="about-copy">
-          <span className="cell-number">A / BUILD</span>
-          <h3>FROM IDEA TO INTERFACE</h3>
+          <span className="cell-number">A / DESIGN</span>
+          <h3>EXPRESSIVE BY DEFAULT</h3>
           <p>
-            My work leans toward interactive experiences, motion, and polished
-            browser-based storytelling. I like turning ideas into fast prototypes,
-            thoughtful UX, and expressive UI that balances design with code.
+            Colour, motion and interaction states designed in Figma as a system,
+            not a mood board. Every hover, error and empty state exists in the
+            file before anyone asks for it.
           </p>
           <div className="capability-list">
-            <span>PRODUCT DESIGN</span>
-            <span>FRONT-END DEVELOPMENT</span>
-            <span>INTERACTION &amp; MOTION</span>
-            <span>RAPID PROTOTYPING</span>
+            <span>UI DESIGN</span>
+            <span>INTERACTION STATES</span>
+            <span>MOTION SPECS</span>
+            <span>PROTOTYPING</span>
           </div>
         </article>
 
         <article className="about-copy about-copy-acid">
-          <span className="cell-number">B / EXPERIMENT</span>
-          <h3>BEYOND THE STANDARD STACK</h3>
+          <span className="cell-number">B / ORGANIZE</span>
+          <h3>I RESCUE FILES</h3>
           <p>
-            My creative vision thrives on experimentation—from shaders and creative
-            code to immersive, audio-reactive environments. The browser is a
-            product surface, but it is also a playground.
+            Detached instances, forty shades of grey, pages called
+            &ldquo;final_v3_REAL&rdquo;. I audit legacy design projects, rebuild them
+            into components and tokens, and leave a file a new designer can open
+            without fear.
           </p>
           <div className="tool-cloud">
-            {creativeTools.map((tool) => (
+            {organizeTools.map((tool) => (
               <span key={tool}>{tool}</span>
             ))}
           </div>
         </article>
 
         <article className="about-copy about-copy-dark">
-          <span className="cell-number">C / MAKE</span>
-          <h3>PHYSICAL INPUT / DIGITAL OUTPUT</h3>
+          <span className="cell-number">C / VERIFY</span>
+          <h3>THE BRIDGE TO ENGINEERING</h3>
           <p>
-            Away from Figma grids, I reset through DIY handcrafts and analog game
-            design. GitHub sees a developer who ships high-impact code; at my core,
-            I am a multidisciplinary maker bringing personality to every pixel.
+            I sit between the design file and the engineering team. I read code
+            well enough to know where fidelity breaks (spacing, type, states,
+            breakpoints, motion) and report it in a language both sides act on.
           </p>
           <div className="maker-signal">
-            <span>HANDS</span>
+            <span>EYE</span>
             <i />
-            <span>HEAD</span>
+            <span>FILE</span>
             <i />
-            <span>CODE</span>
+            <span>BUILD</span>
           </div>
         </article>
       </div>

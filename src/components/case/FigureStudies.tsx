@@ -10,7 +10,7 @@ type StudiedFigure = ProjectFigure & { study: FigureStudy };
 export const hasStudy = (figure: ProjectFigure): figure is StudiedFigure => Boolean(figure.study);
 
 /** Used when a study doesn't name its layout: no two neighbours share a structure. */
-const ROTATION: StudyLayout[] = ["wide", "split", "quote", "ledger"];
+const ROTATION: StudyLayout[] = ["wide", "split", "feature", "quote", "ledger"];
 
 type BlockProps = {
   figure: StudiedFigure;
@@ -217,19 +217,51 @@ function LedgerStudy({ figure, number, visual }: BlockProps) {
   );
 }
 
+/**
+ * Full-bleed image with the headline set as a pull-quote across its lower edge,
+ * notes as a three-column spread, decisions as one numbered ruled row.
+ */
+function FeatureStudy({ figure, number, visual }: BlockProps) {
+  const { study } = figure;
+  return (
+    <>
+      <div className="study-feature">
+        <Plate figure={figure} number={number} visual={visual} className="study-plate--bleed" />
+        <blockquote className="study-feature-quote">
+          <Kicker number={number} phase={study.phase} />
+          <h3 id={`study-${number}`}>{study.title}</h3>
+        </blockquote>
+      </div>
+      <Notes notes={study.notes} className="study-notes--three" />
+      <ol className="study-row" aria-label="Design decisions">
+        {study.decisions.map(([call, why], i) => (
+          <li key={call}>
+            <span>{decisionId(i)}</span>
+            <b>{call}</b>
+            <p>{why}</p>
+          </li>
+        ))}
+      </ol>
+      <Solved solves={study.solves} />
+    </>
+  );
+}
+
 type FigureStudiesProps = {
   figures: StudiedFigure[];
   visual: string;
   /** Section number in the page's running index. */
   index: string;
+  /** Where in the rotation this page starts, so neighbouring projects open differently. */
+  offset?: number;
 };
 
 /**
  * The process log: one block per figure, the image beside the reasoning that
- * produced it. Each block takes one of four editorial layouts, so the page
+ * produced it. Each block takes one of five editorial layouts, so the page
  * reads as a sequence with rhythm rather than a stack of identical lists.
  */
-export default function FigureStudies({ figures, visual, index }: FigureStudiesProps) {
+export default function FigureStudies({ figures, visual, index, offset = 0 }: FigureStudiesProps) {
   let splits = 0;
 
   return (
@@ -248,12 +280,13 @@ export default function FigureStudies({ figures, visual, index }: FigureStudiesP
 
       {figures.map((figure, i) => {
         const number = pad(i + 1);
-        const layout = figure.study.layout ?? ROTATION[i % ROTATION.length];
+        const layout = figure.study.layout ?? ROTATION[(i + offset) % ROTATION.length];
         const props = { figure, number, visual };
         let block: ReactNode;
         if (layout === "wide") block = <WideStudy {...props} />;
         else if (layout === "quote") block = <QuoteStudy {...props} />;
         else if (layout === "ledger") block = <LedgerStudy {...props} />;
+        else if (layout === "feature") block = <FeatureStudy {...props} />;
         // Consecutive splits on a page alternate which side the image sits.
         else block = <SplitStudy {...props} flip={splits++ % 2 === 1} />;
 

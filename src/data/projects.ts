@@ -12,8 +12,9 @@ export type ProjectCategory = "Product" | "Creative" | "Tool";
  * - split: image beside the argument, decisions as a row of cards.
  * - quote: oversized offset callout with a tilted image, decisions as newspaper columns.
  * - ledger: metadata row, text beside image, decisions as a data table.
+ * - feature: full-bleed image with the headline set as a pull-quote across it, notes in three columns.
  */
-export type StudyLayout = "wide" | "split" | "quote" | "ledger";
+export type StudyLayout = "wide" | "split" | "quote" | "ledger" | "feature";
 
 export type FigureStudy = {
   /** Defaults to a rotation that keeps neighbouring figures from sharing a layout. */
@@ -42,20 +43,46 @@ export type ProjectFigure = {
 /**
  * How much page a project gets:
  * - deep: an editorial case study. Overview, editorial chapters, then the process log.
- * - experiment: a lab log. One terminal readout and the media; no prose sections.
+ * - experiment: opens with a terminal readout, then the same overview and process log as any case.
  */
 export type CaseFormat = "deep" | "experiment";
 
 /** One block of a deep case's editorial run, rendered between the specs and the process log. */
 export type Chapter =
-  /** Long-form text: kicker, headline, body in flowing columns. */
-  | { kind: "essay"; label: string; title: string; body: string[] }
+  /**
+   * Long-form text. `columns` picks the reading layout:
+   * 2 (default) puts the headline in a side rail with the body in two columns;
+   * 3 sets the headline across the top and the body as a three-column textbook spread.
+   */
+  | { kind: "essay"; label: string; title: string; body: string[]; columns?: 2 | 3 }
   /** Oversized offset blockquote: one design call, stated as a position. */
   | { kind: "pull"; quote: string; source: string }
   /** Two columns set against each other: assumption vs finding, before vs after. */
   | { kind: "versus"; label: string; left: { head: string; body: string }; right: { head: string; body: string } }
   /** A row of hard numbers. Only figures that are on record. */
-  | { kind: "figures"; label: string; items: [value: string, label: string][] };
+  | { kind: "figures"; label: string; items: [value: string, label: string][] }
+  /**
+   * A QA log: the build checked against the design intent, one row per check.
+   * Only checks the case can stand behind. "logged" is an open, known gap.
+   */
+  | { kind: "qa"; label: string; title: string; intro?: string; rows: QaRow[] }
+  /** Full-width image with an oversized pull-quote set against it. */
+  | { kind: "feature"; src: string; caption: string; quote: string; source: string; fit?: ImageFit }
+  /** Asymmetric spread: text in a wide column, image in a narrow one, either side. */
+  | {
+      kind: "aside";
+      label: string;
+      title: string;
+      body: string[];
+      src: string;
+      caption: string;
+      side?: "left" | "right";
+      fit?: ImageFit;
+    };
+
+export type QaStatus = "pass" | "logged" | "fixed";
+/** [what was checked, what the design intends, result, how it holds or why it's open] */
+export type QaRow = [check: string, expected: string, status: QaStatus, note: string];
 
 /** An experiment's terminal readout. Short lines, no paragraphs. */
 export type LabLog = {
@@ -75,7 +102,13 @@ export type Project = {
   title: string;
   subtitle: string;
   description: string;
+  /** What the project was built with. Shown as a footnote when `practice` is set. */
   stack: string[];
+  /**
+   * The design work the case demonstrates: what was organised, specified and checked.
+   * Leads the specs list and the project card; falls back to `stack`.
+   */
+  practice?: string[];
   category: ProjectCategory;
   badge?: string;
   type: string;
@@ -107,7 +140,7 @@ export type Project = {
   format?: CaseFormat;
   /** Deep cases only: editorial blocks between the specs and the process log. */
   chapters?: Chapter[];
-  /** Experiments only: the terminal readout that replaces the prose sections. */
+  /** Experiments only: the terminal readout that opens the page. */
   labLog?: LabLog;
 };
 
@@ -126,6 +159,12 @@ export const projects: Project[] = [
     visual: "creators",
     thumbnail: "assets/work/creators-fit/cover.webp",
     thumbnailFit: "contain",
+    log: [
+      "PROBLEM STATE — International creator platforms charged high fees, buried settings in complex flows, and ignored the payment methods Brazilians actually use. The friction was not technical. It was local.",
+      "FIELD WORK — 50+ interviews with creators across niches. Every screen traces back to a stated pain: how creators price, how fans pay, where their audience already lives.",
+      "SYSTEM — Three load-bearing modules. A profile builder that sets subscription tiers and turns previews into conversions. A subscription-gated feed with engagement analytics. An Instagram bridge that routes existing audiences into premium content.",
+      "OUTPUT — 500+ creators in the first six months and R$1M+ in creator earnings. The platform outgrew its name: Privi was rebranded Creators Fit and expanded into fitness and lifestyle.",
+    ],
     lesson: "Localization is not translation. It is payment behaviour, cultural nuance, and the specific friction of one market.",
     format: "deep",
     chapters: [
@@ -170,11 +209,25 @@ export const projects: Project[] = [
         kind: "essay",
         label: "RESEARCH → SYSTEM",
         title: "THREE MODULES CARRY THE WEIGHT.",
+        columns: 3,
         body: [
           "The profile builder is the storefront: tiered plans set in one modal, every post flagged promotional or private at the moment it is published. The paywall is a single field, not a configuration screen.",
           "The subscriber feed pays the creator twice: once for the subscription, again through gifts that don't wait for the next post. Recommendations inside the paid feed turn every subscriber into traffic for the next creator.",
           "The Instagram bridge removes the last chore. Membership of private groups follows payment automatically, and earnings from every source land in one ledger, withdrawn through PIX.",
           "The system outgrew its first name. Privi became Creators Fit and moved into fitness and lifestyle without rebuilding the core.",
+        ],
+      },
+      {
+        kind: "qa",
+        label: "DESIGN AUDIT / RULES CHECKED",
+        title: "FIVE RULES. EVERY SCREEN HELD TO THEM.",
+        intro: "The interviews produced rules, not features. Each screen was checked against them before it moved on.",
+        rows: [
+          ["Access is automatic", "Paid in, unpaid out. Never by hand.", "pass", "Group membership follows payment status."],
+          ["Pricing in one tap", "Plans set from the profile header", "pass", "One modal: toggles per plan, R$4.90 floor."],
+          ["Every post typed at publish", "Promotional or private, no third state", "pass", "One flag is the whole paywall model."],
+          ["Payout is a promise", "Fast withdrawal in reais, on the surface", "pass", "PIX withdrawal from the Creator Area."],
+          ["One number for earnings", "Subscriptions and gifts in one ledger", "pass", "One transactions table with a type column."],
         ],
       },
     ],
@@ -183,7 +236,7 @@ export const projects: Project[] = [
       ["TIMELINE", "8 months"],
       ["TEAM", "6 people"],
       ["OUTPUT", "R$1M+ processed"],
-      ["STACK", "React · Django · PostgreSQL · Stripe · AWS S3 · PIX"],
+      ["BUILT ON", "React · Django · PostgreSQL · Stripe · AWS S3 · PIX"],
     ],
     figures: [
       {
@@ -508,8 +561,9 @@ export const projects: Project[] = [
     title: "PIXELATOR",
     subtitle: "IMAGE DECONSTRUCTION ENGINE",
     description:
-      "A CRT-styled instrument that turns any uploaded image into animated retro pixel art in real time, then records it to a GIF without leaving the browser.",
+      "A CRT-styled instrument that makes image degradation visible while it happens: every parameter of a pixel-art effect exposed as a hardware control, tuned live, and recorded to a GIF in the browser.",
     stack: ["React 18", "Vite", "Tailwind CSS", "Lucide React", "gif.js", "Canvas 2D", "Sharp (build)"],
+    practice: ["Control-surface design", "Live-feedback interaction", "Retro visual language", "In-place export flow"],
     category: "Creative",
     type: "Dynamic / Interactive",
     repository: "https://github.com/liriani/Pixelator",
@@ -541,10 +595,67 @@ export const projects: Project[] = [
         "GIF caps each frame at 256 colours; encode time grows with every frame recorded",
       ],
     },
-    lesson: "If the process is the aesthetic, render the process.",
+    log: [
+      "PROBLEM STATE — Pixel-art filters are usually a single slider and a static result. The interesting part, the degradation itself, is never visible while it happens.",
+      "SYSTEM — A requestAnimationFrame loop on a 640×480 canvas. Each frame: draw the image downscaled offscreen, posterize RGB, scale back up with nearest-neighbour (smoothing off), then composite glitch slices, scanlines and a vignette.",
+      "INTERFACE — Hardware-style controls sit beside the viewport: pixel size, colour depth, glitch probability, scanline opacity, view bobbing, zoom. Uploading an image starts the animation immediately; there is no apply button.",
+      "OUTPUT — Still-frame export plus GIF recording. Frames are sampled straight from the rendered canvas into gif.js workers, so encoding runs client-side and nothing is uploaded.",
+    ],
+    lesson: "When the process is the aesthetic, render the process. A live loop is a better editor than a preview button.",
+    chapters: [
+      {
+        kind: "qa",
+        label: "QA LOG / LOOK vs OUTPUT",
+        title: "WHAT YOU SEE IS WHAT YOU SAVE.",
+        rows: [
+          ["Pixel edges", "Hard squares at every pixel size", "pass", "Image smoothing off on the upscale."],
+          ["Recorded GIF", "Matches the live viewport", "pass", "Frames sampled from the rendered canvas."],
+          ["Colour in the GIF", "Same palette as the screen", "logged", "GIF caps each frame at 256 colours."],
+        ],
+      },
+    ],
+    credits: [
+      ["ROLE", "UI & Interaction Design · Build QA"],
+      ["CANVAS", "640 × 480 / nearest-neighbour"],
+      ["EXPORT", "PNG frame · client-side GIF"],
+      ["CREDIT", "4RI / LIRI"],
+    ],
     figures: [
-      { src: "assets/work/pixelator/render-pipeline.webp", caption: "Live loop + GIF capture" },
-      { src: "assets/work/pixelator/crt-interface.webp", caption: "CRT viewport and control deck" },
+      {
+        src: "assets/work/pixelator/crt-interface.webp",
+        caption: "CRT viewport and hardware controls",
+        study: {
+          phase: "INTERFACE / CONTROL SURFACE",
+          title: "A FILTER YOU OPERATE, NOT APPLY.",
+          notes: [
+            "The viewport and its controls are one instrument. Every parameter is exposed at once (resolution, colour depth, glitch rate, scanlines, bobbing, zoom), and every change lands on the next frame.",
+            "Uploading an image is the only setup step. The animation pipeline starts the moment the file is read.",
+          ],
+          decisions: [
+            ["No apply button", "The loop is always running, so a slider is feedback rather than a request. Tuning becomes play instead of trial and error."],
+            ["Hardware vocabulary", "Scanlines, bobbing and colour depth are named like monitor settings, so the controls explain the look they produce."],
+            ["Export inline with playback", "Record, stop and save sit next to the play state instead of in a menu, so capturing a good moment never interrupts it."],
+          ],
+          solves: ["Static, one-slider pixel filters", "Effects you can only judge after export"],
+        },
+      },
+      {
+        src: "assets/work/pixelator/render-pipeline.webp",
+        caption: "Live render loop and GIF capture",
+        study: {
+          phase: "RENDER PIPELINE / EXPORT",
+          title: "DOWNSCALE, POSTERIZE, BREAK, RECORD.",
+          notes: [
+            "Per frame: the source is drawn small onto an offscreen canvas, its RGB values are posterized, and it is scaled back up with image smoothing off so every pixel stays a hard square.",
+            "Glitch slices, scanline overlays and a vignette are composited on top. The GIF recorder samples these finished frames and hands them to gif.js web workers for encoding.",
+          ],
+          decisions: [
+            ["Nearest-neighbour on purpose", "Turning smoothing off is the whole aesthetic. Interpolation would blur the grid the piece is about."],
+            ["Glitch as probability, not a preset", "A rate parameter means no two frames break the same way, which is what makes the animation read as a signal rather than a loop."],
+            ["Encode in the browser", "Client-side workers keep the image on the visitor's machine and keep the UI responsive while a GIF builds."],
+          ],
+        },
+      },
     ],
   },
   {
@@ -553,8 +664,9 @@ export const projects: Project[] = [
     title: "VISADO",
     subtitle: "VISUAL ASSESSMENT BOARD",
     description:
-      "Static assessment diagrams rebuilt as a navigable canvas: draggable nodes, labelled edges, Post-its and question cards, with pan and cursor-anchored zoom on mouse and touch.",
+      "Static assessment diagrams restructured into a canvas people can work in: draggable nodes, named connections, Post-its and question cards, with navigation specified to keep the reader's place at any zoom.",
     stack: ["React 18", "Vite", "Tailwind CSS", "JavaScript", "DOM + SVG canvas", "Pointer events"],
+    practice: ["Diagram restructuring", "Canvas interaction spec", "Zoom & pan behaviour", "Mouse + touch parity", "Preset / custom board model"],
     category: "Tool",
     type: "Dynamic / Interactive / Data-driven",
     repository: "https://github.com/liriani/VisadoAssessmentBoard",
@@ -563,14 +675,27 @@ export const projects: Project[] = [
     visual: "visado",
     thumbnail: "assets/work/visado-assessment-board/cover.webp",
     log: [
-      "PROBLEM STATE — Assessments and workflows were documented as static diagrams. They could be read but not worked in: nothing moved, nothing could be annotated, and big maps stopped being legible.",
-      "SYSTEM — Two modes on one engine: preset assessment models and custom boards. Nodes are absolutely positioned HTML elements; edges are SVG paths drawn between them.",
-      "STATE — One React tree holds node coordinates, connections, viewport offset, scale, link mode and board settings. Everything on screen derives from it.",
-      "INTERACTION — Drag, connect, label, annotate. Pan and pinch/scroll zoom keep large boards readable, with mouse and touch handled through the same pointer path.",
+      "INHERITED STATE — Assessments and workflows lived in static diagrams. They could be read but not worked in: nothing moved, nothing could be annotated, and large maps stopped being legible.",
+      "RESTRUCTURE — The diagram became a model: nodes, named connections, Post-it notes and question cards. Preset assessment boards and blank custom boards share one structure, so anything learned on a template carries over.",
+      "INTERACTION SPEC — Navigation rules written for readability: zoom anchors to the point under the cursor, a dragged node tracks the hand one-to-one at any zoom, and mouse, trackpad and touch behave the same.",
+      "MATERIAL — HTML for the things that hold text and focus, SVG for the lines that must stay crisp. Editing and accessibility come with the material instead of being rebuilt on a canvas.",
     ],
     lesson: "A diagram becomes a tool the moment it can be rearranged. Editing is how people think on a canvas.",
+    chapters: [
+      {
+        kind: "qa",
+        label: "QA LOG / INTERACTION SPEC",
+        title: "THE BOARD KEEPS YOUR PLACE.",
+        rows: [
+          ["Zoom in on a node", "The node stays under the cursor", "pass", "Zoom anchored to the canvas point under the pointer."],
+          ["Drag at 250% zoom", "Node follows the hand one-to-one", "pass", "Drag deltas divided by the current scale."],
+          ["Pinch on a tablet", "Same result as scroll-zoom on a trackpad", "pass", "One pointer path for mouse and touch."],
+          ["Read a relationship", "Named where it is drawn", "pass", "Labels live on the edge, no legend needed."],
+        ],
+      },
+    ],
     credits: [
-      ["ROLE", "Design & Development"],
+      ["ROLE", "UI & Interaction Design · Build QA"],
       ["RENDERING", "DOM nodes / SVG edges"],
       ["INPUT", "Mouse · touch · pinch"],
       ["CREDIT", "4RI / LIRI"],
@@ -619,14 +744,21 @@ export const projects: Project[] = [
     title: "CCSE PROJECT",
     subtitle: "GAMIFIED EXAM PREP / ES",
     description:
-      "CCSE exam preparation rebuilt as modular learning tracks with reward loops, interactive exercises and a map of Spain you answer by touching it.",
+      "A flat exam question bank reorganised into modular learning tracks: one module template, every exercise state specified, and one reward loop that keeps the next session warm. Geography answered on a map, schedule on a slider.",
     stack: ["React 19", "TypeScript", "Vite", "Tailwind CSS 4", "Framer Motion", "Vitest", "React Testing Library"],
+    practice: ["Content restructuring", "Module template", "Exercise state spec", "Reward-loop rules", "Responsive hit areas", "Tested exercise logic"],
     category: "Product",
     type: "Dynamic / Interactive",
     repository: "https://github.com/liriani/spccseProject",
     live: "https://spccseproject.vercel.app",
     visual: "ccse",
     thumbnail: "assets/work/spccse-project/cover.webp",
+    log: [
+      "INHERITED STATE — The CCSE is a memorisation exam about Spanish civic and cultural life. The usual material is a flat question bank: dry, unordered, and forgotten between sessions.",
+      "RESTRUCTURE — The bank was reorganised into modular tracks that all share one template: reference material, stateful exercises, a completion screen. Onboarding sets the learner up once.",
+      "STATE SPEC — Every exercise format pays into one reward loop (XP, hearts, streaks, badge unlocks). The rules are written once, and every new exercise inherits them instead of inventing its own.",
+      "FIDELITY — Exercise logic is covered by Vitest and React Testing Library, map hit areas are proportional so they hold at any size, and one known edge is logged in the open: the streak resets on a page refresh.",
+    ],
     lesson: "Memorisation sticks when the answer has a place. Put facts on a map, a clock or a card, and recall gets a location.",
     format: "deep",
     chapters: [
@@ -653,23 +785,41 @@ export const projects: Project[] = [
         ],
       },
       {
-        kind: "pull",
+        kind: "feature",
+        src: "assets/work/spccse-project/progression.webp",
+        caption: "Mi Progresión: XP-gated monument badges",
         quote: "Memorisation sticks when the answer has a place.",
-        source: "Design premise",
+        source: "Design premise. Progress is a map of monuments, not a percentage",
       },
       {
-        kind: "essay",
+        kind: "aside",
         label: "SYSTEM NOTES",
         title: "TYPED, TESTED, AND HONEST ABOUT WHAT PERSISTS.",
+        src: "assets/work/spccse-project/exercise-feedback.webp",
+        caption: "Mixed exercise formats with inline feedback",
+        side: "right",
         body: [
           "React 19, TypeScript and Tailwind 4, with Framer Motion carrying the card, slider and celebration transitions. Vitest and React Testing Library cover the exercise logic.",
           "The Spain map is a custom SVG with percentage-based hitboxes projected over it, so target zones stay aligned at any viewport size without a second set of coordinates.",
           "Module state, progression and score multipliers live in application state. Only the onboarding flag is written to localStorage. Lab note: refresh the page and the streak resets. A known edge, logged for the next pass.",
         ],
       },
+      {
+        kind: "qa",
+        label: "QA LOG / BUILD vs INTENT",
+        title: "FIVE CHECKS. FOUR PASS. ONE LOGGED, ON PURPOSE.",
+        intro: "A QA log that only shows passes isn't a log. The open item stays on the page until it's fixed.",
+        rows: [
+          ["Onboarding", "Shown once; returning learners land on their tracks", "pass", "Completion flag persisted to localStorage."],
+          ["Map targets", "Hit zones sit on the right region on phone and desktop", "pass", "Percentage-based zones scale with the SVG."],
+          ["Every format, one loop", "Map, slider and wallet pay XP, hearts and streaks like any question", "pass", "One reward loop for every exercise type."],
+          ["Answer marking", "Correct and wrong outcomes match the answer key", "pass", "Covered by Vitest + React Testing Library."],
+          ["Streak after refresh", "Progress survives a reload", "logged", "Lives in app state, resets on reload. Next pass."],
+        ],
+      },
     ],
     credits: [
-      ["ROLE", "Design & Development"],
+      ["ROLE", "Learning UX · UI Design · Build QA"],
       ["TESTING", "Vitest · React Testing Library"],
       ["MOTION", "Framer Motion"],
       ["CREDIT", "4RI / LIRI"],
@@ -740,8 +890,6 @@ export const projects: Project[] = [
           solves: ["Geography memorised as a list", "Exercises that only test text recall"],
         },
       },
-      { src: "assets/work/spccse-project/progression.webp", caption: "Mi Progresión: XP-gated monument badges" },
-      { src: "assets/work/spccse-project/exercise-feedback.webp", caption: "Mixed exercise formats with inline feedback" },
     ],
   },
   {
@@ -750,14 +898,21 @@ export const projects: Project[] = [
     title: "POTENTIA LAB",
     subtitle: "FIGMA TO LEARNING SYSTEM",
     description:
-      "A Figma design bundle translated into a working learning platform: theory modules, validated exercises with explanations, and visual boards that step through mathematical transformations.",
+      "A Figma design bundle carried into a working learning platform: the states the file never showed written down, two module engines specified, and the build checked against the file, including what the file left out.",
     stack: ["React 18", "TypeScript", "Vite", "Tailwind CSS 4", "Radix UI", "MUI / Emotion", "Framer Motion", "React Hook Form", "React Router", "Recharts", "React DnD"],
+    practice: ["Figma bundle audit", "Missing-state spec", "Exercise feedback rules", "Step-through visual boards", "UI-system audit"],
     category: "Product",
     type: "Interactive",
     repository: "https://github.com/liriani/PotentiaLab",
     live: "https://liriani.github.io/PotentiaLab/",
     visual: "potentia",
     thumbnail: "assets/work/potentia-lab/cover.webp",
+    log: [
+      "INHERITED STATE — A complete Figma bundle described every screen in its finished, correct state. A design file cannot mark an answer wrong or animate a proof, and it said nothing about the states in between.",
+      "AUDIT — Read frame by frame, the bundle implied three module types sharing one shell (theory, practice, visual demonstration) and a set of behaviours no frame showed: wrong, partially typed, step two of five, rewound.",
+      "RESTRUCTURE — Those behaviours became two specified engines. ExerciseSet: multiple-choice, true/false and typed answers from multilingual content, each returning correctness, a step-by-step explanation, live score and completion. VisualBoard: transformations as deterministic stages that step forward and back.",
+      "FIDELITY — The file's theme carried through Tailwind 4, with Radix primitives for accessible behaviour. One finding stayed open: the Figma-derived base carries both Radix and MUI, two UI systems in one product, logged for consolidation.",
+    ],
     lesson: "A design handoff is a spec for behaviour, not just layout. The work is deciding what each screen does when someone is wrong.",
     format: "deep",
     chapters: [
@@ -792,6 +947,7 @@ export const projects: Project[] = [
         kind: "essay",
         label: "SYSTEM NOTES",
         title: "ONE SHELL. THREE MODULE TYPES. TWO UI SYSTEMS.",
+        columns: 3,
         body: [
           "Theory, practice and visual demonstration share one application shell on React 18, TypeScript and Tailwind 4. Router handles the module map; Hook Form handles typed input; Recharts and React DnD cover the data and drag interactions.",
           "ExerciseSet consumes multilingual payloads and renders multiple-choice, true/false and typed questions with correctness, step-by-step explanation, live score and completion tracking. Content is data; new exercises never touch a component.",
@@ -799,9 +955,22 @@ export const projects: Project[] = [
           "Lab note: the stack carries both Radix primitives and MUI/Emotion, inherited from the Figma-derived base. It works. It is also the first seam a consolidation pass would close.",
         ],
       },
+      {
+        kind: "qa",
+        label: "STATE COVERAGE / FILE vs BUILD",
+        title: "EVERY STATE THE FILE DIDN'T DRAW.",
+        intro: "The Figma bundle showed the happy path. These are the states written into the build so the product behaves when the learner doesn't.",
+        rows: [
+          ["Wrong answer", "Marked, explained step by step, score updated", "pass", "Explanation shown on every answer, right or wrong."],
+          ["Step 3 of 5, then back", "Identical frame every time it's revisited", "pass", "VisualBoard stages render deterministically."],
+          ["Learner pauses mid-proof", "Nothing advances on its own", "pass", "Stages are state-driven, not on a timer."],
+          ["New language or exercise", "Added without touching a component", "pass", "Exercises arrive as multilingual payloads."],
+          ["One UI system", "Single component source across the product", "logged", "Radix and MUI/Emotion coexist from the Figma-derived base."],
+        ],
+      },
     ],
     credits: [
-      ["ROLE", "Frontend Development"],
+      ["ROLE", "Design-to-Build Translation · State Spec · QA"],
       ["SOURCE", "Figma design bundle"],
       ["ENGINES", "ExerciseSet · VisualBoard"],
       ["CREDIT", "4RI / LIRI"],
@@ -850,6 +1019,7 @@ export const projects: Project[] = [
     description:
       "Household chores, pet care and daily routines reframed as missions in a branching terminal RPG, with typewriter dialogue, CRT scanlines and a full step-back history.",
     stack: ["React 18 (CRA)", "Tailwind CSS 3", "Lucide React", "JSON dialogue trees", "Custom typewriter engine"],
+    practice: ["Narrative UX", "Dialogue content model", "Terminal visual language", "Motion pacing"],
     category: "Creative",
     type: "Interactive / Narrative",
     repository: "https://github.com/liriani/thepumaprotocol",
@@ -874,11 +1044,80 @@ export const projects: Project[] = [
         "step back → pop history, replay node",
       ],
     },
-    lesson: "Narrative is an interface. Same chores, briefed instead of listed.",
+    log: [
+      "PROBLEM STATE — Routine tasks have no story. A checklist records that the cat was fed; it gives no reason to want to do it.",
+      "SYSTEM — Missions are grouped into categories behind a hub. Each mission is a JSON dialogue tree: nodes, branches, objectives and metadata.",
+      "STATE — React tracks the active node, completed flags, a history stack and the selected hub category. Every choice pushes to history, so any step can be walked back.",
+      "OUTPUT — A terminal that talks back: a custom Typewriter component prints each line on an interval with strict cleanup, over CRT scanlines and location-specific colourways.",
+    ],
+    lesson: "Narrative is an interface. The same task list reads differently when it is briefed instead of listed.",
+    chapters: [
+      {
+        kind: "qa",
+        label: "QA LOG / NARRATIVE ENGINE",
+        title: "ONE VOICE AT A TIME.",
+        rows: [
+          ["Clicking fast through nodes", "One line types at a time, never garbled", "pass", "Typing interval cleared on every node change."],
+          ["Wrong branch", "A detour, not a dead end", "pass", "History stack replays any earlier step."],
+          ["New routine", "Added without touching a component", "pass", "Missions are written as JSON."],
+        ],
+      },
+    ],
+    credits: [
+      ["ROLE", "Writing · UI & Narrative Design · Build QA"],
+      ["DATA", "JSON dialogue trees"],
+      ["ENGINE", "Branching terminal + typewriter"],
+      ["CREDIT", "4RI / LIRI"],
+    ],
     figures: [
-      { src: "assets/work/puma-protocol/dialogue-engine.webp", caption: "Mission step, typed out" },
-      { src: "assets/work/puma-protocol/mission-hub.webp", caption: "Category hub + objective status" },
-      { src: "assets/work/puma-protocol/typewriter-terminal.webp", caption: "Remote uplink colourway" },
+      {
+        src: "assets/work/puma-protocol/mission-hub.webp",
+        caption: "Mission category hub",
+        study: {
+          phase: "INFORMATION ARCHITECTURE / NARRATIVE",
+          title: "CHORES, CLASSIFIED.",
+          notes: [
+            "The hub sorts routines into mission categories (household, pet care, personal). Each category has its own colourway, so the terminal tells you where you are before you read.",
+            "Choosing a category loads its mission trees; completion flags show which objectives are already cleared.",
+          ],
+          decisions: [
+            ["Category as location", "Colour shifts per area turn a list of chores into places to visit."],
+            ["Status on the briefing, not in a report", "Completed flags sit on the mission itself, so verification is part of the story."],
+          ],
+        },
+      },
+      {
+        src: "assets/work/puma-protocol/dialogue-engine.webp",
+        caption: "Branching dialogue and history playback",
+        study: {
+          phase: "DIALOGUE ENGINE / STATE",
+          title: "EVERY CHOICE IS REVERSIBLE.",
+          notes: [
+            "Dialogue nodes and branch logic are plain JSON. The engine resolves the active node, renders its choices and pushes each decision onto a history stack.",
+            "Step-back replays the history, so a wrong branch is a detour instead of a dead end.",
+          ],
+          decisions: [
+            ["Content as JSON", "Missions are written as data, so adding a routine never touches a component."],
+            ["A history stack, not a back button", "Keeping the full path lets the player retrace the conversation, not just undo the last click."],
+          ],
+        },
+      },
+      {
+        src: "assets/work/puma-protocol/typewriter-terminal.webp",
+        caption: "Typewriter output over CRT scanlines",
+        study: {
+          phase: "MOTION / TEXT RENDERING",
+          title: "THE TERMINAL TYPES. YOU WAIT. IT MATTERS.",
+          notes: [
+            "A custom Typewriter component prints characters on an interval hook. Moving to a new node clears the interval before the next line starts.",
+            "Scanlines and retro terminal styling frame the text as a transmission rather than a notification.",
+          ],
+          decisions: [
+            ["Strict interval cleanup", "Fast clicking through nodes would otherwise stack timers and garble lines. Cleanup on every change keeps one voice at a time."],
+            ["Pacing as tone", "Character-by-character output slows the reader just enough for a chore to sound like a briefing."],
+          ],
+        },
+      },
     ],
   },
   {
@@ -889,6 +1128,7 @@ export const projects: Project[] = [
     description:
       "A week-by-week photography course in plain HTML and JavaScript, with technique guides, comprehension checks and an exposure simulator that makes the aperture / shutter / ISO trade-off visible.",
     stack: ["HTML5", "CSS3", "Vanilla JavaScript (ES6+)", "Tailwind CSS (CDN)", "Lucide (CDN)"],
+    practice: ["Curriculum architecture", "Fixed module template", "Simulator interaction", "Learning by consequence"],
     category: "Creative",
     type: "Interactive / Static",
     repository: "https://github.com/liriani/PhotographyCourse",
@@ -903,7 +1143,7 @@ export const projects: Project[] = [
     ],
     lesson: "Simulate the trade-off and the theory explains itself.",
     credits: [
-      ["ROLE", "Curriculum, Design & Development"],
+      ["ROLE", "Curriculum · Learning UX · Build QA"],
       ["RUNTIME", "Vanilla JS / no build"],
       ["CREDIT", "4RI / LIRI"],
     ],
@@ -949,8 +1189,9 @@ export const projects: Project[] = [
     title: "GLSL VISUALIZER",
     subtitle: "SHADER BENCH FOR TOUCHDESIGNER",
     description:
-      "An in-browser bench for writing and previewing animated fragment shaders, with presets, live compile errors and one-click copy into TouchDesigner.",
+      "A shader sketching bench designed around one handoff: write in the browser, paste into TouchDesigner unedited. Presets, compile feedback in view, and one-click copy.",
     stack: ["React 19", "Vite 8", "Three.js", "WebGL", "GLSL", "Lucide React"],
+    practice: ["Tool-to-tool handoff", "Feedback-in-view UX", "Preset library", "Live preview"],
     category: "Creative",
     badge: "Shader",
     type: "Dynamic / Interactive",
@@ -977,10 +1218,66 @@ export const projects: Project[] = [
       ],
       limits: ["fragment-only by design: one fullscreen plane, no vertex stage"],
     },
-    lesson: "Speak the destination's dialect and the handoff disappears.",
+    log: [
+      "PROBLEM STATE — Iterating on a shader inside TouchDesigner means a heavy project open for every small edit. Sketching is faster in a lighter loop.",
+      "SYSTEM — Three panes: a preset browser, a live code editor and a WebGL viewport. Three.js owns the context, a fullscreen plane, an orthographic camera and the shader material.",
+      "PIPELINE — uTime and uRes are injected continuously. TouchDesigner-style fragColor output is rewritten to gl_FragColor, and the material is disposed and rebuilt on every edit.",
+      "OUTPUT — Compile errors land in a collapsible status overlay instead of the console, and finished code is one click from the clipboard.",
+    ],
+    lesson: "The fastest tool is the one that speaks the destination's dialect. Normalise once, and the handoff disappears.",
+    chapters: [
+      {
+        kind: "qa",
+        label: "QA LOG / HANDOFF",
+        title: "WRITTEN HERE. RUNS THERE. CHECKED.",
+        rows: [
+          ["Paste into TouchDesigner", "Runs without edits", "pass", "fragColor normalised to gl_FragColor only inside the bench."],
+          ["Compile error", "Visible next to the result", "pass", "Collapsible status overlay, not the console."],
+          ["Long session", "No stale shaders, no slowdown", "pass", "Material disposed and rebuilt on every edit."],
+          ["Vertex shaders", "Supported", "logged", "Fragment-only by design: one fullscreen plane."],
+        ],
+      },
+    ],
+    credits: [
+      ["ROLE", "Tool UX · Handoff Design · Build QA"],
+      ["TARGET", "TouchDesigner GLSL TOP"],
+      ["UNIFORMS", "uTime · uRes"],
+      ["CREDIT", "4RI / LIRI"],
+    ],
     figures: [
-      { src: "assets/work/glsl-shader-visualizer/live-coding.webp", caption: "Edit → compile → preview" },
-      { src: "assets/work/glsl-shader-visualizer/touchdesigner-handoff.webp", caption: "Presets, editor, viewport" },
+      {
+        src: "assets/work/glsl-shader-visualizer/live-coding.webp",
+        caption: "Editor, preview and live compile feedback",
+        study: {
+          phase: "LIVE CODING / FEEDBACK LOOP",
+          title: "TYPE, COMPILE, SEE. NO CONSOLE.",
+          notes: [
+            "Every edit disposes the old shader material and builds a new one, so the viewport is always running the code on screen.",
+            "When compilation fails, the error appears in a collapsible panel over the preview. Uniforms such as uTime are shown in the UI, not hidden in boilerplate.",
+          ],
+          decisions: [
+            ["Errors where the eyes are", "Developer tools are a context switch. An overlay keeps the fix and the result in one view."],
+            ["Dispose on every edit", "Rebuilding the material avoids stale programs and GPU leaks during long sessions."],
+            ["Uniforms made visible", "Seeing uTime tick explains why the shader moves and what to multiply."],
+          ],
+        },
+      },
+      {
+        src: "assets/work/glsl-shader-visualizer/touchdesigner-handoff.webp",
+        caption: "Presets and TouchDesigner-ready export",
+        study: {
+          phase: "PIPELINE / HANDOFF",
+          title: "WRITTEN HERE. RUNS THERE.",
+          notes: [
+            "Code is authored in TouchDesigner's style, with fragColor output. The app normalises it to gl_FragColor for WebGL, so the same text works in both places.",
+            "A preset browser provides starting points; copy-to-clipboard moves the result into the TouchDesigner network.",
+          ],
+          decisions: [
+            ["Normalise the dialect, not the author", "Translating fragColor at load means nobody has to edit code before pasting it into TouchDesigner."],
+            ["One-click copy", "The handoff is the product. It should cost one action."],
+          ],
+        },
+      },
     ],
   },
   {
@@ -991,6 +1288,7 @@ export const projects: Project[] = [
     description:
       "A browser lettering lab for graffiti wordmarks: scroll-drawn strokes, per-letter path and drip controls, procedural roughness, and clean SVG export.",
     stack: ["HTML", "CSS", "Vanilla JavaScript", "SVG", "feTurbulence / feDisplacementMap", "Tailwind CSS (CDN)"],
+    practice: ["Lettering system", "Per-glyph controls", "Responsive control dock", "What-you-see export"],
     category: "Tool",
     type: "Interactive / Experimental",
     repository: "https://github.com/liriani/uncut-engine",
@@ -1018,11 +1316,67 @@ export const projects: Project[] = [
       ],
       limits: ["roughness is a filter, not geometry: the SVG needs a renderer that supports SVG filters"],
     },
-    lesson: "Imperfection is a design decision once it has a slider.",
+    log: [
+      "PROBLEM STATE — Digital lettering tools produce clean, finished type. Graffiti is about the opposite: rough edges, paint that runs, letters drawn in a gesture.",
+      "SYSTEM — Wordmarks are SVG paths. Edge roughness comes from feTurbulence and feDisplacementMap filters, and paint drips are their own vector shapes.",
+      "INTERACTION — Scroll position is converted to a progress percentage that drives stroke-dasharray / stroke-dashoffset tracing and drip thresholds. Selecting a letter isolates its own path and drip controls.",
+      "OUTPUT — Export clones the live SVG, inlines computed styles and filter primitives, and downloads a raw vector that looks the same outside the browser.",
+    ],
+    lesson: "Imperfection can be a parameter. Roughness, spacing and drips are design decisions once they have sliders.",
+    chapters: [
+      {
+        kind: "qa",
+        label: "QA LOG / SCREEN vs EXPORT",
+        title: "THE FILE MATCHES THE SCREEN.",
+        rows: [
+          ["Downloaded SVG", "Looks like the screen", "pass", "Computed styles and filter primitives inlined on export."],
+          ["Controls on a phone", "Artwork stays uncovered", "pass", "Floating dock reflows into the page flow."],
+          ["One letter edited", "Neighbours stay untouched", "pass", "Path and drip params scoped to the selected glyph."],
+          ["SVG in other tools", "Roughness renders everywhere", "logged", "Roughness is an SVG filter: needs a filter-capable renderer."],
+        ],
+      },
+    ],
+    credits: [
+      ["ROLE", "Lettering · UI Design · Build QA"],
+      ["GRAPHICS", "SVG paths + filter primitives"],
+      ["EXPORT", "Self-contained SVG"],
+      ["CREDIT", "4RI / LIRI"],
+    ],
     figures: [
-      { src: "assets/work/uncut-engine/scroll-reveal.webp", caption: "Scroll-drawn strokes + drips" },
-      { src: "assets/work/uncut-engine/letter-controls.webp", caption: "One glyph isolated" },
-      { src: "assets/work/uncut-engine/cover.webp", caption: "Engine master: spacing, roughness, weight" },
+      {
+        src: "assets/work/uncut-engine/scroll-reveal.webp",
+        caption: "Scroll-driven stroke tracing",
+        study: {
+          phase: "MOTION / SCROLL AS BRUSH",
+          title: "SCROLLING IS THE SPRAY CAN.",
+          notes: [
+            "Native scroll listeners convert page position into a progress value. That value sets each stroke's dash offset, so letters are drawn in as the visitor scrolls.",
+            "Past set thresholds, the drips switch on and run.",
+          ],
+          decisions: [
+            ["Dash offset for drawing", "stroke-dasharray / dashoffset traces any path with no per-letter animation code."],
+            ["Thresholds for drips", "Drips appear only after the stroke lands, the way paint would."],
+          ],
+        },
+      },
+      {
+        src: "assets/work/uncut-engine/letter-controls.webp",
+        caption: "Per-letter controls, drips and roughness",
+        study: {
+          phase: "CONTROL SURFACE / RESPONSIVE",
+          title: "ONE LETTER AT A TIME, OR ALL OF THEM.",
+          notes: [
+            "Global controls (roughness, spacing, stroke weight) sit in a floating dock on desktop and reflow into an in-page stack on mobile.",
+            "Selecting a single character isolates its path geometry and drip parameters, so one letter can run while its neighbours stay clean.",
+          ],
+          decisions: [
+            ["Filters, not hand-drawn noise", "feTurbulence + feDisplacementMap make roughness procedural and adjustable instead of baked into the outline."],
+            ["Dock that becomes a stack", "A floating panel would cover the artwork on a phone, so the controls fall into the page flow there."],
+            ["Export what you see", "Cloning the live node and inlining computed styles and filters means the downloaded SVG matches the screen."],
+          ],
+          solves: ["Lettering tools that are too clean", "Exports that lose their effects"],
+        },
+      },
     ],
   },
 ];

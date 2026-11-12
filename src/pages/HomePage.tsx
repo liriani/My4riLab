@@ -9,7 +9,7 @@ export default function HomePage() {
 
       <header className="hero" id="top">
         <div className="hero-copy">
-          <p className="kicker">INDEPENDENT CREATIVE DEVELOPER</p>
+          <p className="kicker">CREATIVE UI DESIGNER / DESIGN SYSTEMS &amp; QA</p>
           <div className="hero-title">
             <div style={{ animation: "fade-up 0.6s ease both 0.2s" }}>
               <h1
@@ -34,8 +34,9 @@ export default function HomePage() {
           </div>
           <div className="hero-bottom">
             <p>
-              Creative developer shaping expressive digital systems at the edge of
-              design, code, and controlled chaos.
+              I design expressive interfaces in Figma, rescue the tangled files
+              behind them, and audit every build until it matches the design, down
+              to the pixel, the state and the hover.
             </p>
             <Link to="/projects">EXPLORE THE WORK ↓</Link>
           </div>
@@ -46,22 +47,22 @@ export default function HomePage() {
           alt="Glitched portrait of 4ri, also known as Liri"
         />
         <div className="hero-side-note" aria-hidden="true">
-          DESIGN × CODE × MOTION
+          DESIGN × SYSTEMS × FIDELITY
         </div>
       </header>
 
       <section className="work-strip" id="work">
         <div>
           <span>01 / SELECTED WORK</span>
-          <strong>EXPERIMENTAL INTERFACES</strong>
+          <strong>EXPRESSIVE INTERFACES</strong>
         </div>
         <div>
           <span>02 / PRACTICE</span>
-          <strong>IDENTITY, WEB &amp; MOTION</strong>
+          <strong>UI · DESIGN SYSTEMS · DESIGN QA</strong>
         </div>
         <div>
-          <span>STACK / CAPABILITIES</span>
-          <strong>REACT · WEBGL · CREATIVE CODE</strong>
+          <span>TOOLKIT</span>
+          <strong>FIGMA · TOKENS · HANDOFF</strong>
         </div>
       </section>
 

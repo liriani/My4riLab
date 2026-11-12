@@ -11,18 +11,18 @@ import {
 type Tool = {
   name: string;
   code: string;
-  kind: "core" | "creative" | "design";
+  kind: "design" | "system" | "literacy";
 };
 
 const tools: Tool[] = [
-  { name: "React", code: "R19", kind: "core" },
-  { name: "TypeScript", code: "TS", kind: "core" },
-  { name: "JavaScript", code: "JS", kind: "core" },
-  { name: "Tailwind", code: "TW", kind: "core" },
-  { name: "Vite", code: "VT", kind: "core" },
-  { name: "GLSL", code: "GL", kind: "creative" },
-  { name: "TouchDesigner", code: "TD", kind: "creative" },
   { name: "Figma", code: "FG", kind: "design" },
+  { name: "Prototyping", code: "PR", kind: "design" },
+  { name: "Variables & Tokens", code: "TK", kind: "system" },
+  { name: "Auto Layout & Variants", code: "AL", kind: "system" },
+  { name: "Dev Mode & Handoff", code: "DM", kind: "system" },
+  { name: "React", code: "R19", kind: "literacy" },
+  { name: "Tailwind", code: "TW", kind: "literacy" },
+  { name: "TypeScript", code: "TS", kind: "literacy" },
 ];
 
 type FieldPrint = {
@@ -89,29 +89,30 @@ export default function AboutPage() {
           <img src={`${import.meta.env.BASE_URL}portrait-profile.jpg`} alt="" decoding="async" />
         </div>
         <div className="about-page-kicker">
-          <span>ABOUT / FROM THE CANVAS TO THE CONSOLE</span>
-          <span>SENIOR CREATIVE DEVELOPER × ARTIST</span>
+          <span>ABOUT / FROM THE CANVAS TO THE BUILD</span>
+          <span>CREATIVE UI DESIGNER × ARTIST</span>
         </div>
         <div className="about-hero-grid">
           <h1>
             COLOR FIRST.
             <br />
-            <span>CODE SECOND.</span>
+            <span>SYSTEMS SECOND.</span>
             <br />
-            RULES?
+            PIXELS?
             <br />
-            NEGOTIABLE.
+            NON-NEGOTIABLE.
           </h1>
           <div className="about-hero-aside">
             <p className="about-role-index">01 / WHO I AM</p>
             <p>
-              I&apos;m Liri, a senior creative developer who came to code from
-              traditional art. I still think like a painter: in color, contrast and
-              gesture. The browser just happens to be a canvas that moves back.
+              I&apos;m Liri, a creative UI designer who came to screens from
+              traditional art. I still see like a painter: color, contrast, gesture.
+              That&apos;s exactly why I notice when a build is 4px off, a shade too
+              grey, or missing the state that made the design work.
             </p>
             <div className="about-status">
               <i />
-              <span>MAKING THE WEB LESS STATIC</span>
+              <span>AUDITING THE GAP BETWEEN FILE AND BUILD</span>
             </div>
           </div>
         </div>
@@ -122,25 +123,26 @@ export default function AboutPage() {
         <h2 id="about-origin-title">
           I DIDN&apos;T LEAVE ART.
           <br />
-          <span>I MOVED IT INTO THE BROWSER.</span>
+          <span>I MOVED IT INTO THE INTERFACE.</span>
         </h2>
         <div className="about-origin-body">
           <p>
-            I trained my eye long before I trained my hands on a keyboard.
+            I trained my eye long before I opened Figma.
             Traditional art taught me the things I still use every single day: how
             color sets a mood before a word is read, how composition tells the eye
             where to go next, how a mark carries the energy of the hand that made it.
           </p>
           <p>
-            Engineering gave those instincts a new material, and it turned out to be
-            the most flexible one I&apos;ve ever worked with. Code holds color and
-            composition, but it also holds time, state and response. A painting can
-            only be looked at. An interface can look back.
+            Then I learned how interfaces are built, and where they break. Building
+            my own experiments taught me how a design file turns into components,
+            states and breakpoints, and every place a design quietly loses
+            something on the way.
           </p>
           <p>
-            That is the part I fell for, and why I stayed. Today I design and build
-            in the same breath, so nothing gets lost between the first sketch and
-            the thing people actually touch.
+            That&apos;s where I stand now: between the file and the build. I design
+            the expressive version, organise the system that holds it, and check the
+            shipped result against the intent, so nothing gets lost between the
+            first sketch and the thing people actually touch.
           </p>
         </div>
         <blockquote className="about-origin-quote">
@@ -159,8 +161,9 @@ export default function AboutPage() {
             <span>INSTRUMENTS.</span>
           </h2>
           <p>
-            I swapped brushes for a stack, not the habit of picking each tool for
-            what it lets people feel. These are the ones that earn their place.
+            I swapped brushes for components, not the habit of choosing each tool
+            for what it lets people feel, and what it lets me check. Design tools
+            first; the code I read is there so I can speak engineering.
           </p>
         </header>
 
@@ -183,18 +186,18 @@ export default function AboutPage() {
           </div>
           <div>
             <span>02</span>
-            <strong>SKETCH</strong>
-            <p>Paper first. Always.</p>
+            <strong>DESIGN</strong>
+            <p>Expressive, with every state accounted for.</p>
           </div>
           <div>
             <span>03</span>
-            <strong>BUILD</strong>
-            <p>Make it real. Make it respond.</p>
+            <strong>ORGANIZE</strong>
+            <p>One source of truth. No orphan components.</p>
           </div>
           <div>
             <span>04</span>
-            <strong>TUNE</strong>
-            <p>Teach the hand where to go.</p>
+            <strong>VERIFY</strong>
+            <p>The build matches, or I say exactly where it doesn&apos;t.</p>
           </div>
         </div>
       </section>
@@ -218,7 +221,7 @@ export default function AboutPage() {
             what you try next, and how you know you&apos;ve arrived.
           </p>
           <p>
-            Shaders, GLSL and TouchDesigner are where I push that furthest, letting
+            Shaders, GLSL and TouchDesigner are my lab bench: where I push that furthest, letting
             light and color react to the person in front of them. The field beside
             this text is a small version of the idea. Move your pointer; it follows.
           </p>
@@ -328,15 +331,15 @@ export default function AboutPage() {
       <section className="about-manifesto">
         <p>06 / THE THROUGH-LINE</p>
         <blockquote>
-          I DON&apos;T BUILD PAGES.{" "}
-          <span>I BUILD PLACES THAT MOVE BACK.</span>
+          I DON&apos;T JUST DESIGN SCREENS.{" "}
+          <span>I MAKE SURE THEY SHIP AS DESIGNED.</span>
         </blockquote>
         <p className="about-manifesto-note">
-          Static, interchangeable websites are a habit, not a law. I&apos;m an
-          artist, an engineer, a maker and a bit of a troublemaker, and every
-          project is a small act of disobedience against the boring web: more
-          color, more motion, more of a person behind the pixels. Code isn&apos;t
-          just my tool. It&apos;s how I talk back.
+          Interchangeable websites are a habit, and so are builds that drift from
+          their design. I&apos;m an artist, a systems-minded organiser and a bit of
+          a troublemaker. I push for more color, more motion and more personality,
+          then I stay in the room until it&apos;s real. Fidelity isn&apos;t
+          pedantry. It&apos;s respect for the idea.
         </p>
         <div>
           <Link to="/projects">SEE SELECTED WORK ↗</Link>

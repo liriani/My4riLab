@@ -1,104 +1,64 @@
-import ProjectArtwork from "@/components/ui/ProjectArtwork";
-import ProjectImage from "@/components/ui/ProjectImage";
 import type { LabLog, Project } from "@/data/projects";
 
 const pad = (n: number) => String(n).padStart(2, "0");
 const slugFlag = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
 /**
- * An experiment's whole case study: one terminal readout and the media.
- * No overview, no process log. The build is the argument.
+ * An experiment's opening readout: the build stated as a terminal session.
+ * The overview, specs and process log follow it like any other case.
  */
 export default function LabLogCase({ project, log }: { project: Project; log: LabLog }) {
-  const figures = project.figures ?? [];
   const cmd = slugFlag(project.title);
 
   return (
-    <>
-      <section className="lablog" aria-label="Lab log">
-        <div className="lablog-bar" aria-hidden="true">
-          <span>~/4ri/lab/{project.number}-{cmd}</span>
-          <span>{project.type}</span>
-        </div>
+    <section className="lablog" aria-label="Lab log">
+      <div className="lablog-bar" aria-hidden="true">
+        <span>~/4ri/lab/{project.number}-{cmd}</span>
+        <span>{project.type}</span>
+      </div>
 
-        <div className="lablog-screen">
-          <p className="lablog-cmd">cat spark.txt</p>
-          <p className="lablog-spark">{log.spark}</p>
+      <div className="lablog-screen">
+        <p className="lablog-cmd">cat spark.txt</p>
+        <p className="lablog-spark">{log.spark}</p>
 
-          <p className="lablog-cmd">ls ./build</p>
-          <ul className="lablog-tree">
-            {log.build.map((line) => (
-              <li key={line}>{line}</li>
-            ))}
-          </ul>
-
-          <p className="lablog-cmd">./{cmd} --verbose</p>
-          <ol className="lablog-stdout">
-            {log.stdout.map((line, i) => (
-              <li key={line}>
-                <span>[{pad(i + 1)}]</span>
-                {line}
-              </li>
-            ))}
-            <li className="is-ok">
-              <span>[OK]</span>
-              exit 0
-            </li>
-          </ol>
-
-          {log.limits && log.limits.length > 0 && (
-            <>
-              <p className="lablog-cmd">grep WARN build.log</p>
-              <ul className="lablog-warn">
-                {log.limits.map((line) => (
-                  <li key={line}>{line}</li>
-                ))}
-              </ul>
-            </>
-          )}
-
-          <p className="lablog-stack">
-            {project.stack.map((tech) => (
-              <span key={tech}>--{slugFlag(tech)}</span>
-            ))}
-          </p>
-        </div>
-      </section>
-
-      {figures.length > 0 && (
-        <section className={`lablog-media ${figures.length === 1 ? "is-single" : ""}`} aria-label="Captures">
-          {figures.map((figure, i) => (
-            <figure key={figure.src} className={`visual-${project.visual}`}>
-              <ProjectArtwork type={project.visual} />
-              <ProjectImage src={figure.src} alt={figure.caption} fit={figure.fit ?? "contain"} />
-              <figcaption>
-                CAP_{pad(i + 1)} / {figure.caption}
-              </figcaption>
-            </figure>
+        <p className="lablog-cmd">ls ./build</p>
+        <ul className="lablog-tree">
+          {log.build.map((line) => (
+            <li key={line}>{line}</li>
           ))}
-        </section>
-      )}
+        </ul>
 
-      <section className="lablog-foot">
-        {project.lesson && (
-          <p className="lablog-lesson">
-            <span>// TAKEAWAY</span>
-            {project.lesson}
-          </p>
+        <p className="lablog-cmd">./{cmd} --verbose</p>
+        <ol className="lablog-stdout">
+          {log.stdout.map((line, i) => (
+            <li key={line}>
+              <span>[{pad(i + 1)}]</span>
+              {line}
+            </li>
+          ))}
+          <li className="is-ok">
+            <span>[OK]</span>
+            exit 0
+          </li>
+        </ol>
+
+        {log.limits && log.limits.length > 0 && (
+          <>
+            <p className="lablog-cmd">grep WARN build.log</p>
+            <ul className="lablog-warn">
+              {log.limits.map((line) => (
+                <li key={line}>{line}</li>
+              ))}
+            </ul>
+          </>
         )}
-        <nav className="lablog-links" aria-label="Project links">
-          {project.live && (
-            <a href={project.live} target="_blank" rel="noreferrer">
-              RUN LIVE ↗
-            </a>
-          )}
-          {project.repository && (
-            <a href={project.repository} target="_blank" rel="noreferrer">
-              {project.private ? "PRIVATE REPO ↗" : "SOURCE ↗"}
-            </a>
-          )}
-        </nav>
-      </section>
-    </>
+
+        <p className="lablog-stack">
+          {project.stack.map((tech) => (
+            <span key={tech}>--{slugFlag(tech)}</span>
+          ))}
+        </p>
+      </div>
+    </section>
   );
 }

@@ -30,7 +30,7 @@ export default function MotionProjectCard({ project }: MotionProjectCardProps) {
   const skewX = useSpring(rawSkew, spring);
   const artworkX = useTransform(rotateY, [-6, 6], [-8, 8]);
   const artworkY = useTransform(rotateX, [-6, 6], [6, -6]);
-  const hiddenTags = project.stack.length - MAX_TAGS;
+  const hiddenTags = (project.practice ?? project.stack).length - MAX_TAGS;
 
   const moveCard = (event: React.PointerEvent<HTMLElement>) => {
     if (reducedMotion) return;
@@ -126,7 +126,7 @@ export default function MotionProjectCard({ project }: MotionProjectCardProps) {
         </div>
         <p className="project-description">{project.description}</p>
         <ul>
-          {project.stack.slice(0, MAX_TAGS).map((item) => (
+          {(project.practice ?? project.stack).slice(0, MAX_TAGS).map((item) => (
             <li key={item}>{item}</li>
           ))}
           {hiddenTags > 0 && <li aria-label={`${hiddenTags} more`}>+{hiddenTags}</li>}

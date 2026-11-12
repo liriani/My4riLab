@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import { Link, useLocation } from "react-router";
+import { Link, NavLink, useLocation } from "react-router";
 import GlitchWordmark from "./GlitchWordmark";
 
 type DeploymentPhase = "idle" | "opening" | "spraying" | "painted" | "settled";
@@ -45,6 +45,21 @@ const SPRAY_DOTS = Array.from({ length: 52 }, (_, index) => {
   };
 });
 
+/**
+ * A nav label with brackets that only show on the current page: [ WORK ].
+ * The brackets are positioned outside the text, so switching pages never
+ * nudges the rest of the nav.
+ */
+function NavLabel({ children }: { children: string }) {
+  return (
+    <span className="nav-label">
+      <span className="nav-bracket nav-bracket--open" aria-hidden="true">[</span>
+      {children}
+      <span className="nav-bracket nav-bracket--close" aria-hidden="true">]</span>
+    </span>
+  );
+}
+
 export default function Header() {
   const [phase, setPhase] = useState<DeploymentPhase>(
     hasDeployedLab ? "settled" : "idle",
@@ -81,9 +96,14 @@ export default function Header() {
   };
 
   // The header stays mounted across routes, so a fresh page settles the
-  // painted LAB link instead of replaying its reveal.
+  // painted LAB link instead of replaying its reveal. Inside the Lab the paint
+  // is a given: the LAB link is already there to mark as the current page.
   useEffect(() => {
-    setPhase((current) => (current === "painted" ? "settled" : current));
+    const inLab = pathname === "/lab" || pathname.startsWith("/lab/");
+    if (inLab) hasDeployedLab = true;
+    setPhase((current) =>
+      current === "painted" || (inLab && current === "idle") ? "settled" : current,
+    );
   }, [pathname]);
 
   useEffect(
@@ -102,7 +122,9 @@ export default function Header() {
       <GlitchWordmark />
 
       <nav className="nav-links" aria-label="Primary navigation">
-        <Link to="/projects">WORK</Link>
+        <NavLink to="/projects">
+          <NavLabel>WORK</NavLabel>
+        </NavLink>
 
         <div
           className="guerrilla-zone"
@@ -165,7 +187,7 @@ export default function Header() {
                 <path className="paint-drip paint-drip--three" d="M131 0 L135 0 C134 7 135 13 133.5 20 C133 24 134 28 132 31 C130 28 131.5 24 131 20 C130.5 13 131 7 131 0 Z" />
               </svg>
               <div className="paint-glitch">
-                <Link
+                <NavLink
                   className={`injected-lab ${phase === "painted" || phase === "settled" ? "is-active" : ""}`}
                   to="/lab"
                   state={{ wetPaint: true }}
@@ -176,8 +198,8 @@ export default function Header() {
                     if (phase !== "painted" && phase !== "settled") event.preventDefault();
                   }}
                 >
-                  LAB
-                </Link>
+                  <NavLabel>LAB</NavLabel>
+                </NavLink>
                 <span className="paint-glitch-cut paint-glitch-cut--ink" aria-hidden="true">LAB</span>
                 <span className="paint-glitch-cut paint-glitch-cut--cyan" aria-hidden="true">LAB</span>
                 <span className="paint-glitch-cut paint-glitch-cut--magenta" aria-hidden="true">LAB</span>
@@ -200,10 +222,10 @@ export default function Header() {
 
         {/* Touch screens can't hover to spray the LAB link in, so phones get it already
             painted, still wet, with the fresh-paint sign hung beside it. */}
-        <Link className="nav-lab-compact" to="/lab" state={{ wetPaint: true }}>
-          LAB
+        <NavLink className="nav-lab-compact" to="/lab" state={{ wetPaint: true }}>
+          <NavLabel>LAB</NavLabel>
           <i aria-hidden="true" />
-        </Link>
+        </NavLink>
         <Link
           className="nav-paint-compact"
           to="/souvenir"
@@ -214,7 +236,9 @@ export default function Header() {
         </Link>
 
         <div className="nav-push">
-          <Link to="/about">ABOUT</Link>
+          <NavLink to="/about">
+            <NavLabel>ABOUT</NavLabel>
+          </NavLink>
         </div>
       </nav>
 
