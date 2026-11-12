@@ -5391,10 +5391,25 @@ a {
   background: repeating-linear-gradient(-45deg, transparent 0 9px, rgba(17, 17, 15, 0.06) 9px 10px);
 }
 
-.chapter--versus > div:first-of-type h3 {
-  text-decoration: line-through;
-  text-decoration-color: var(--orange);
-  text-decoration-thickness: 3px;
+/* The road not taken stays readable: tagged and dimmed, not struck out. */
+.chapter--versus > div:first-of-type h3,
+.chapter--versus > div:first-of-type p {
+  opacity: 0.72;
+}
+
+.versus-tag {
+  display: inline-block;
+  margin-bottom: 14px;
+  padding: 4px 7px;
+  border: 1px solid var(--ink);
+  font-family: "DM Mono", monospace;
+  font-size: 8px;
+  letter-spacing: 0.1em;
+}
+
+.chapter--versus > div:last-of-type .versus-tag {
+  color: var(--acid);
+  background: var(--ink);
 }
 
 .chapter--versus > div:last-of-type {

@@ -172,11 +172,13 @@ export default function EditorialChapters({ chapters, index, visual }: Editorial
             <article key={key} className="chapter chapter--versus">
               <span className="chapter-label">{chapter.label}</span>
               <div>
+                <span className="versus-tag">CONSIDERED</span>
                 <h3>{chapter.left.head}</h3>
                 <p>{chapter.left.body}</p>
               </div>
               <i aria-hidden="true">→</i>
               <div>
+                <span className="versus-tag">CHOSEN</span>
                 <h3>{chapter.right.head}</h3>
                 <p>{chapter.right.body}</p>
               </div>

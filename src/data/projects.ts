@@ -160,7 +160,7 @@ export const projects: Project[] = [
     thumbnail: "assets/work/creators-fit/cover.webp",
     thumbnailFit: "contain",
     log: [
-      "PROBLEM STATE — International creator platforms charged high fees, buried settings in complex flows, and ignored the payment methods Brazilians actually use. The friction was not technical. It was local.",
+      "PROBLEM STATE — International creator platforms charged high fees, buried settings in complex flows, and didn't support the payment methods Brazilian fans already used. The friction was not technical. It was local.",
       "FIELD WORK — 50+ interviews with creators across niches. Every screen traces back to a stated pain: how creators price, how fans pay, where their audience already lives.",
       "SYSTEM — Three load-bearing modules. A profile builder that sets subscription tiers and turns previews into conversions. A subscription-gated feed with engagement analytics. An Instagram bridge that routes existing audiences into premium content.",
       "OUTPUT — 500+ creators in the first six months and R$1M+ in creator earnings. The platform outgrew its name: Privi was rebranded Creators Fit and expanded into fitness and lifestyle.",
@@ -183,26 +183,26 @@ export const projects: Project[] = [
         label: "THE CHALLENGE",
         title: "THE FRICTION WAS NEVER TECHNICAL. IT WAS LOCAL.",
         body: [
-          "Brazilian creators were not short of audience. They were short of a way to charge it. The international platforms they were pushed toward took high fees, hid pricing behind multi-step settings, and paid out in a foreign currency after up to three days of waiting.",
-          "None of that is a feature gap. It is a market gap: the products were designed around how creators get paid somewhere else. Nobody had built for PIX, for reais, for an audience that already lives inside Instagram.",
-          "Fifty-plus interviews made the brief blunt. Creators did not want another destination to grow. They wanted a cash register attached to the one they already had, and they wanted it to run without them.",
+          "Brazilian creators were not short of audience. They were short of a way to charge it. International platforms charged high fees, placed pricing several steps deep in settings, and paid out in a foreign currency after up to three days of waiting.",
+          "None of that is a feature gap. It is a market gap: the products were designed around how creators get paid somewhere else. There was room for a product built around PIX, reais, and an audience already on Instagram.",
+          "Fifty-plus interviews made the brief clear. Creators did not want another destination to grow. They wanted a cash register attached to the one they already had, and they wanted it to run without them.",
         ],
       },
       {
         kind: "pull",
-        quote: "Who paid is in. Who didn't pay is out.",
-        source: "Creator interviews. Became the rule every screen was checked against",
+        quote: "Access should follow payment. Automatically.",
+        source: "Synthesised from 50+ creator interviews. The rule every screen was checked against",
       },
       {
         kind: "versus",
-        label: "THE REFRAME",
+        label: "DIRECTION CHOSEN",
         left: {
-          head: "A BETTER PLATFORM",
-          body: "Ask creators to move their audience to a new destination and out-feature the global players on their own terms.",
+          head: "A NEW DESTINATION",
+          body: "Build a standalone platform and ask creators to rebuild their audience there. High switching cost for creators and fans.",
         },
         right: {
-          head: "A LOCAL CASH REGISTER",
-          body: "Sit on top of the channels fans already open, charge in reais, withdraw through PIX, and let payment status decide who gets in.",
+          head: "A LOCAL PAYMENT LAYER",
+          body: "Add payments to the channels fans already use: pricing in reais, PIX withdrawals, and access that follows payment status.",
         },
       },
       {
@@ -223,7 +223,7 @@ export const projects: Project[] = [
         title: "FIVE RULES. EVERY SCREEN HELD TO THEM.",
         intro: "The interviews produced rules, not features. Each screen was checked against them before it moved on.",
         rows: [
-          ["Access is automatic", "Paid in, unpaid out. Never by hand.", "pass", "Group membership follows payment status."],
+          ["Access is automatic", "Access follows payment status, with no manual step", "pass", "Group membership follows payment status."],
           ["Pricing in one tap", "Plans set from the profile header", "pass", "One modal: toggles per plan, R$4.90 floor."],
           ["Every post typed at publish", "Promotional or private, no third state", "pass", "One flag is the whole paywall model."],
           ["Payout is a promise", "Fast withdrawal in reais, on the surface", "pass", "PIX withdrawal from the Creator Area."],
@@ -250,7 +250,7 @@ export const projects: Project[] = [
             "The pain-point quadrant reads like a spec written by the user: no time for menial tasks like tracking who paid for what; international platforms like OnlyFans are hard to set up and pay out with currency conversion and up to three days of waiting.",
           ],
           decisions: [
-            ["Admin is the enemy", "“Who paid is in, who didn't pay is out” became a hard rule: access is granted and revoked by the system, never by hand. Every later screen was checked against it."],
+            ["Remove the admin work", "Subscriber access became a system rule: granted and revoked by payment status, never by hand. Every later screen was checked against it."],
             ["Payout speed is a headline, not a settings page", "The three-day, currency-converted withdrawal was the most emotionally loaded complaint in the research. Fast withdrawal in reais moved from back-office detail to core promise."],
             ["Sit on top of her channels, don't replace them", "“Managing more than one platform is complicated.” The product had to reach the audience where it already lived instead of asking it to move."],
           ],
@@ -304,7 +304,7 @@ export const projects: Project[] = [
             "The Creator Area turns that into accounting: Overview, My Sales, Financial. Every transaction is logged with date, buyer, value and type: a normal purchase or a present.",
           ],
           decisions: [
-            ["Automate membership, not just billing", "Payment status drives who is in the group. The persona's “who paid is in, who didn't pay is out” stopped being a weekly chore and became a system rule."],
+            ["Automate membership, not just billing", "Payment status drives who is in the group. Keeping group membership in sync with payments stopped being a weekly chore and became a system rule."],
             ["PIX for instant withdrawal", "Balance is redeemed through PIX, Brazil's instant payment system: the direct answer to the three-day, currency-converted payout of international platforms. Here, localization meant payment behaviour, not translation."],
             ["One ledger for every income type", "Subscriptions and gifts share one transactions table with a type column, so earnings read as a single number and the creator never reconciles two systems."],
           ],
@@ -424,7 +424,7 @@ export const projects: Project[] = [
             "Two doctors on one page is the point. The record is shared between colleagues, so notes build on each other instead of contradicting each other.",
           ],
           decisions: [
-            ["Name every doctor on the record", "Showing who wrote what and who requested which test attacks the persona's “different notes from different doctors” problem at the source."],
+            ["Name every doctor on the record", "Showing who wrote what and who requested which test addresses the persona's “different notes from different doctors” problem at the source."],
             ["Results as cards with one action", "Each test is a card with a single CHECK RESULTS button, plus an empty card to add the next one. No tables, no lab codes."],
             ["Discuss inside the record", "Colleagues read and discuss the same diagnosis in place, replacing the phone calls that fail between shifts."],
           ],
