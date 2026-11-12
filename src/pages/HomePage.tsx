@@ -12,23 +12,26 @@ export default function HomePage() {
           <p className="kicker">CREATIVE UI DESIGNER / DESIGN SYSTEMS &amp; QA</p>
           <div className="hero-title">
             <div style={{ animation: "fade-up 0.6s ease both 0.2s" }}>
-              <h1
-                className="text-glitch text-[clamp(54px,9vw,120px)] font-bold leading-[0.85] tracking-tight uppercase text-white"
-                data-text="4RI"
-                style={{ fontFamily: "Rajdhani, sans-serif", letterSpacing: "-0.03em" }}
-              >
-                4RI
-              </h1>
-              <h1
-                className="text-[clamp(54px,9vw,120px)] font-bold leading-[0.85] tracking-tight uppercase"
-                style={{
-                  fontFamily: "Rajdhani, sans-serif",
-                  letterSpacing: "-0.03em",
-                  color: "#00ff41",
-                  textShadow: "0 0 40px #00ff4155, 0 0 80px #00ff4122",
-                }}
-              >
-                .EXE
+              {/* One heading for the page, set on two lines: "4RI.EXE". */}
+              <h1>
+                <span
+                  className="text-glitch text-[clamp(54px,9vw,120px)] font-bold leading-[0.85] tracking-tight uppercase text-white"
+                  data-text="4RI"
+                  style={{ fontFamily: "Rajdhani, sans-serif", letterSpacing: "-0.03em" }}
+                >
+                  4RI
+                </span>
+                <span
+                  className="text-[clamp(54px,9vw,120px)] font-bold leading-[0.85] tracking-tight uppercase"
+                  style={{
+                    fontFamily: "Rajdhani, sans-serif",
+                    letterSpacing: "-0.03em",
+                    color: "#00ff41",
+                    textShadow: "0 0 40px #00ff4155, 0 0 80px #00ff4122",
+                  }}
+                >
+                  .EXE
+                </span>
               </h1>
             </div>
           </div>

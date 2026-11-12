@@ -1,8 +1,14 @@
 import { GLITCH_HEIGHT, GLITCH_WIDTH } from "./useGlitchEngine";
 
-export function loadImage(source: string): Promise<HTMLImageElement> {
+/** `priority` maps to the browser's fetch priority, so a visible image beats deferred ones. */
+export function loadImage(
+  source: string,
+  priority: "high" | "low" | "auto" = "auto",
+): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const image = new Image();
+    image.fetchPriority = priority;
+    image.decoding = "async";
     image.onload = () => resolve(image);
     image.onerror = reject;
     image.src = source;

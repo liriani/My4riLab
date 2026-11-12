@@ -6,6 +6,11 @@
   --paper: #f3f0e6;
   --acid: #00ff41;
   --orange: #ff4618;
+  /* Orange as text needs more contrast than orange as a fill. Same hue, darker:
+     display for large text on paper or acid (>= 3:1), ink for small labels on
+     paper (>= 4.5:1). On dark backgrounds the base orange already passes. */
+  --orange-display: #e33e15;
+  --orange-ink: #c73713;
   --violet: #7457ff;
   --line: 2px solid var(--ink);
   /* One header height for every route; sticky offsets below derive from it. */
@@ -291,7 +296,7 @@ a {
 .nav-bracket {
   position: absolute;
   top: 50%;
-  color: var(--orange);
+  color: var(--orange-ink);
   font-weight: 700;
   opacity: 0;
   transform: translateY(-50%) scaleY(1.25);
@@ -1078,9 +1083,14 @@ a {
 }
 
 .hero-title h1 {
-  position: relative;
-  width: max-content;
   margin: 0;
+}
+
+/* Each line of the wordmark keeps the box it had as its own heading. */
+.hero-title h1 > span {
+  position: relative;
+  display: block;
+  width: max-content;
 }
 
 @keyframes fade-up {
@@ -1384,7 +1394,7 @@ a {
 }
 
 .about-statement > p span {
-  color: var(--orange);
+  color: var(--orange-display);
   font-style: italic;
   font-weight: 400;
 }
@@ -1452,7 +1462,7 @@ a {
   border-right: 0;
 }
 
-.about-copy h3 {
+.about-copy h2 {
   margin: 72px 0 24px;
   font-size: clamp(27px, 2.8vw, 46px);
   line-height: 0.92;
@@ -1843,7 +1853,7 @@ a {
 .studio-upload small {
   font-size: 8px;
   letter-spacing: 0.08em;
-  opacity: 0.7;
+  opacity: 0.85;
 }
 
 .studio-upload:hover,
@@ -1904,7 +1914,7 @@ a {
 }
 
 .souvenir-intro h1 span {
-  color: var(--orange);
+  color: var(--orange-display);
   font-style: italic;
   font-weight: 400;
 }
@@ -1940,7 +1950,7 @@ a {
 }
 
 .souvenir-doors b {
-  color: var(--orange);
+  color: var(--orange-ink);
   font-weight: 500;
 }
 
@@ -2091,7 +2101,7 @@ a {
   display: inline-block;
   padding-bottom: 5px;
   border-bottom: var(--line);
-  color: var(--orange);
+  color: var(--orange-display);
   font-size: clamp(20px, 3vw, 44px);
   font-weight: 600;
 }
@@ -2111,7 +2121,7 @@ a {
 
 .site-footer div a:hover,
 .site-footer div a:focus-visible {
-  color: var(--orange);
+  color: var(--orange-ink);
 }
 
 .projects-page {
@@ -2915,7 +2925,7 @@ a {
 }
 
 .detail-section-label span {
-  color: var(--orange);
+  color: var(--orange-ink);
 }
 
 .detail-specs {
@@ -3106,7 +3116,7 @@ a {
 }
 
 .detail-media-note p strong {
-  color: var(--orange);
+  color: var(--orange-display);
   font-style: italic;
   font-weight: 400;
 }
@@ -3132,7 +3142,7 @@ a {
 }
 
 .figure-studies-head h2 span {
-  color: var(--orange);
+  color: var(--orange-display);
 }
 
 .study {
@@ -3405,7 +3415,7 @@ a {
 }
 
 .study-cards span {
-  color: var(--orange);
+  color: var(--orange-display);
   font-size: 40px;
   font-weight: 600;
   line-height: 0.9;
@@ -3578,7 +3588,7 @@ a {
 
 .study-table td:first-child {
   width: 52px;
-  color: var(--orange);
+  color: var(--orange-ink);
   font-family: "DM Mono", monospace;
   font-size: 9px;
 }
@@ -3689,7 +3699,7 @@ a {
 }
 
 .project-contact a span {
-  color: var(--orange);
+  color: var(--orange-display);
   font-style: italic;
   font-weight: 400;
 }
@@ -3869,7 +3879,7 @@ a {
 .about-section-header h2 span,
 .creative-copy h2 span,
 .analog-title h2 span {
-  color: var(--orange);
+  color: var(--orange-display);
   font-style: italic;
   font-weight: 400;
 }
@@ -3901,7 +3911,7 @@ a {
 }
 
 .about-origin h2 span {
-  color: var(--orange);
+  color: var(--orange-display);
   font-style: italic;
   font-weight: 400;
 }
@@ -4007,6 +4017,11 @@ a {
 
 .tool-card > i {
   opacity: 0.6;
+}
+
+/* On the orange card the dimmed label needs more ink to stay readable. */
+.tool-design > i {
+  opacity: 0.85;
 }
 
 .tool-system {
@@ -4348,7 +4363,7 @@ a {
 }
 
 .about-field figcaption span {
-  color: var(--orange);
+  color: var(--orange-ink);
 }
 
 .analog-cards {
@@ -4419,7 +4434,7 @@ a {
 }
 
 .about-manifesto blockquote span {
-  color: var(--orange);
+  color: var(--orange-display);
   font-style: italic;
   font-weight: 400;
 }
@@ -5329,7 +5344,7 @@ a {
   font-family: "DM Mono", monospace;
   font-size: 9px;
   letter-spacing: 0.08em;
-  color: var(--orange);
+  color: var(--orange-ink);
 }
 
 /* ESSAY: kicker + headline on the left, body flowing in columns on the right. */
@@ -5367,7 +5382,7 @@ a {
   font-size: 84px;
   font-weight: 700;
   line-height: 0.7;
-  color: var(--orange);
+  color: var(--orange-display);
 }
 
 /* PULL: oversized blockquote pushed off the grid to the right. */
@@ -5609,9 +5624,10 @@ a {
   opacity: 0.85;
 }
 
+/* The violet, pre-lightened for the dark terminal (was a brightness filter,
+   which contrast checkers can't see). */
 .lablog-stdout li span {
-  color: var(--violet);
-  filter: brightness(1.5);
+  color: #ae82ff;
 }
 
 .lablog-stdout li.is-ok,
@@ -5735,7 +5751,7 @@ a {
 }
 
 .case-overview-index li span {
-  color: var(--orange);
+  color: var(--orange-ink);
 }
 
 .case-overview-notes {
@@ -6026,7 +6042,7 @@ a {
   font-size: 40px;
   font-weight: 700;
   line-height: 0.8;
-  color: var(--orange);
+  color: var(--orange-display);
 }
 
 .study-row b {
@@ -6238,7 +6254,7 @@ a {
   white-space: nowrap;
   font-family: "DM Mono", monospace;
   font-size: 10px;
-  color: var(--orange);
+  color: var(--orange-ink);
 }
 
 .qa-table tbody th {
@@ -6278,20 +6294,22 @@ a {
 }
 
 /* SPECS: the tech becomes a footnote under the scope of work. */
+/* Dimmed through its colour rather than opacity, so the orange label inside
+   keeps full contrast. */
 .detail-built-with {
   margin: 28px 0 0;
   padding-top: 14px;
-  border-top: 1px solid rgba(17, 17, 15, 0.3);
+  border-top: 1px solid rgba(17, 17, 15, 0.225);
+  color: rgba(17, 17, 15, 0.75);
   font-family: "DM Mono", monospace;
   font-size: 10px;
   line-height: 1.7;
   letter-spacing: 0.04em;
-  opacity: 0.75;
 }
 
 .detail-built-with span {
   margin-right: 12px;
-  color: var(--orange);
+  color: var(--orange-ink);
 }
 
 @media (max-width: 960px) {
@@ -6330,7 +6348,7 @@ a {
     font-family: "DM Mono", monospace;
     font-size: 9px;
     letter-spacing: 0.08em;
-    color: var(--orange);
+    color: var(--orange-ink);
   }
 
   .qa-table td[data-label="RESULT"] {

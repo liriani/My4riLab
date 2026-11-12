@@ -40,7 +40,7 @@ export default function AboutSkills() {
       <div className="about-grid">
         <article className="about-copy">
           <span className="cell-number">A / DESIGN</span>
-          <h3>EXPRESSIVE BY DEFAULT</h3>
+          <h2>EXPRESSIVE BY DEFAULT</h2>
           <p>
             Colour, motion and interaction states designed in Figma as a system,
             not a mood board. Every hover, error and empty state exists in the
@@ -56,7 +56,7 @@ export default function AboutSkills() {
 
         <article className="about-copy about-copy-acid">
           <span className="cell-number">B / ORGANIZE</span>
-          <h3>I RESCUE FILES</h3>
+          <h2>I RESCUE FILES</h2>
           <p>
             Detached instances, forty shades of grey, pages called
             &ldquo;final_v3_REAL&rdquo;. I audit legacy design projects, rebuild them
@@ -72,7 +72,7 @@ export default function AboutSkills() {
 
         <article className="about-copy about-copy-dark">
           <span className="cell-number">C / VERIFY</span>
-          <h3>THE BRIDGE TO ENGINEERING</h3>
+          <h2>THE BRIDGE TO ENGINEERING</h2>
           <p>
             I sit between the design file and the engineering team. I read code
             well enough to know where fidelity breaks (spacing, type, states,

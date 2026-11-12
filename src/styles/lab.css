@@ -332,7 +332,7 @@ button.lx-stage { background: none; }
 
 /* 02 shy voyeur */
 .lx-shy { background: #222; color: #fff; cursor: none; }
-.lx-shy-hint { top: 50%; left: 50%; color: rgba(255, 255, 255, 0.28); transform: translate(-50%, -50%); }
+.lx-shy-hint { top: 50%; left: 50%; color: rgba(255, 255, 255, 0.5); transform: translate(-50%, -50%); }
 .lx-shy-creature { position: absolute; top: 0; left: 50%; width: 134px; transform: translate(-50%, -38px); transition: transform 600ms cubic-bezier(0.34, 1.4, 0.64, 1); }
 .lx-shy-creature.is-watching { transform: translate(-50%, 0); }
 .lx-shy-head { position: absolute; top: 4px; left: 50%; display: flex; justify-content: center; gap: 22px; width: 88px; height: 44px; padding-top: 22px; border-radius: 0 0 44px 44px; background: #fff; transform: translateX(-50%); }
@@ -492,12 +492,12 @@ button.lx-stage { background: none; }
 .lx-elastic.is-late .lx-elastic-note { background: #ff4b36; }
 .lx-elastic-note small { display: block; font: 7px "DM Mono", monospace; letter-spacing: 0.1em; }
 .lx-elastic-note b { display: block; margin-top: 8px; font-size: 20px; font-weight: 800; letter-spacing: -0.04em; white-space: nowrap; }
-.lx-elastic-hint { bottom: 40px; left: 50%; color: rgba(255, 255, 255, 0.45); transform: translateX(-50%); }
+.lx-elastic-hint { bottom: 40px; left: 50%; color: rgba(255, 255, 255, 0.5); transform: translateX(-50%); }
 
 /* 06 typographic wildlife */
 .lx-wildlife { background: #ecd4dc; }
 .lx-wildlife-word { position: absolute; top: 50%; left: 50%; display: flex; font-size: clamp(36px, 8vw, 56px); font-weight: 800; letter-spacing: -0.04em; line-height: 1; transform: translate(-50%, -50%); }
-.lx-wildlife-f { position: relative; color: #ff4b36; transition: transform 380ms cubic-bezier(0.34, 1.9, 0.5, 1); }
+.lx-wildlife-f { position: relative; color: #db402e; transition: transform 380ms cubic-bezier(0.34, 1.9, 0.5, 1); }
 .lx-wildlife-f::before { position: absolute; top: -10px; left: 50%; width: 5px; height: 5px; border-radius: 50%; background: var(--lx-ink); content: ""; }
 .lx-wildlife-hint { bottom: 56px; left: 46px; }
 .lx-wildlife-link { position: absolute; right: 52px; bottom: 56px; padding-bottom: 4px; border-bottom: 1px solid var(--lx-ink); font: 9px "DM Mono", monospace; }
@@ -548,7 +548,7 @@ button.lx-stage { background: none; }
 .lx-hole-orbit--outer i { offset-path: inset(0 round 60px); animation-duration: 5.4s; }
 @keyframes lx-orbit { from { offset-distance: 0%; } to { offset-distance: 100%; } }
 .lx-hole-core { position: absolute; top: 0; left: 0; width: 52px; height: 52px; border: 2px solid var(--lx-lime); border-radius: 50%; background: #000; box-shadow: 0 0 22px rgba(223, 255, 0, 0.4); transition: transform 200ms ease-out; }
-.lx-hole-hint { bottom: 22px; left: 50%; color: rgba(255, 255, 255, 0.45); transform: translateX(-50%); }
+.lx-hole-hint { bottom: 22px; left: 50%; color: rgba(255, 255, 255, 0.5); transform: translateX(-50%); }
 .lx-hole.is-lost .lx-hole-hint { color: #ff4b36; }
 
 /* 10 maintenance crew: crooked nav, caution tape, a crew that measures and fixes */

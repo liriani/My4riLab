@@ -92,8 +92,10 @@ export default function HeroGlitch({ src, scrolledSrc, alt }: HeroGlitchProps) {
   // demo image, so the frame never sits on an empty black canvas.
   useEffect(() => {
     let active = true;
-    const load = (source: string) => loadImage(source).catch(() => null);
-    Promise.all([load(src), scrolledSrc ? load(scrolledSrc) : Promise.resolve(null)])
+    // The first portrait is on screen at load; the scrolled one can wait its turn.
+    const load = (source: string, priority: "high" | "low") =>
+      loadImage(source, priority).catch(() => null);
+    Promise.all([load(src, "high"), scrolledSrc ? load(scrolledSrc, "low") : Promise.resolve(null)])
       .then(async ([rest, scrolled]) => {
         const base = rest ?? scrolled ?? (await makeDemoImage());
         if (active) setImages({ rest: base, scrolled: scrolled ?? base });
@@ -135,7 +137,13 @@ export default function HeroGlitch({ src, scrolledSrc, alt }: HeroGlitchProps) {
         <canvas ref={canvasRef} className="engine-canvas" role="img" aria-label={alt} />
         {image && (
           <div className="hero-photo" aria-hidden="true">
-            <img src={image.src} alt="" />
+            <img
+              src={image.src}
+              alt=""
+              width={image.naturalWidth}
+              height={image.naturalHeight}
+              decoding="async"
+            />
           </div>
         )}
         <span className="visual-index">FIG. 001</span>
