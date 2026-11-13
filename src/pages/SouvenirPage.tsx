@@ -1,5 +1,7 @@
 import { Link, useLocation } from "react-router";
+import PageIntro from "@/components/layout/PageIntro";
 import SouvenirStudio from "@/features/glitch/SouvenirStudio";
+import { pageIntros } from "@/data/pageIntros";
 
 /** Where a visitor found the hidden room; set as router state by each secret door. */
 export type SouvenirEntry = "paint" | "about";
@@ -15,6 +17,7 @@ export default function SouvenirPage() {
 
   return (
     <main className="souvenir-page">
+      <PageIntro intro={pageIntros.backroom} />
       <header className="souvenir-intro">
         <div className="souvenir-intro-meta">
           <span>HIDDEN ROOM / UNLISTED</span>

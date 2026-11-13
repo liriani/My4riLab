@@ -4,9 +4,11 @@ import {
   type PointerEvent as ReactPointerEvent,
 } from "react";
 import { Link } from "react-router";
+import PageIntro from "@/components/layout/PageIntro";
 import { assetUrl } from "@/components/ui/ProjectImage";
 import SouvenirTeaser from "@/features/glitch/SouvenirTeaser";
 import { cv } from "@/data/cv";
+import { pageIntros } from "@/data/pageIntros";
 
 type Tool = {
   name: string;
@@ -82,6 +84,7 @@ export default function AboutPage() {
 
   return (
     <main className="about-page">
+      <PageIntro intro={pageIntros.about} />
 
       <header className="about-page-hero">
         {/* Decorative: the portrait melts into the hero instead of sitting in a frame. */}

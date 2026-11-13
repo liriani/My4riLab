@@ -6361,6 +6361,111 @@ a {
   }
 }
 
+/* ───────── page abstract: the lab note that opens each main page ───────── */
+.page-intro {
+  position: relative;
+  z-index: 2;
+  padding: 26px 3vw 34px;
+  border-bottom: var(--line);
+  color: var(--ink);
+  background: var(--paper);
+  font-family: "Manrope", sans-serif;
+}
+
+.page-intro .page-intro-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 24px;
+  padding-bottom: 14px;
+  border-bottom: var(--line);
+  font-family: "DM Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+}
+
+.page-intro .page-intro-kicker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+
+.page-intro .page-intro-kicker span {
+  padding: 3px 6px;
+  border: 1px solid var(--ink);
+  background: var(--acid);
+}
+
+.page-intro .page-intro-disciplines {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.page-intro .page-intro-disciplines li + li::before {
+  margin: 0 10px;
+  color: var(--orange-ink);
+  content: "·";
+}
+
+.page-intro .page-intro-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
+  gap: 20px 5vw;
+  align-items: end;
+  margin-top: 24px;
+}
+
+.page-intro .page-intro-abstract {
+  max-width: 960px;
+  margin: 0;
+  font-size: clamp(20px, 2.15vw, 31px);
+  font-weight: 700;
+  line-height: 1.18;
+  letter-spacing: -0.035em;
+}
+
+.page-intro .page-intro-note {
+  margin: 0;
+  padding-left: 16px;
+  border-left: var(--line);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.page-intro .page-intro-note span {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--orange-ink);
+  font-family: "DM Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+}
+
+@media (max-width: 760px) {
+  .page-intro {
+    padding: 20px 16px 26px;
+  }
+
+  .page-intro .page-intro-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* The list wraps here, so spacing replaces the dots that would strand at line starts. */
+  .page-intro .page-intro-disciplines {
+    gap: 6px 16px;
+  }
+
+  .page-intro .page-intro-disciplines li + li::before {
+    content: none;
+  }
+}
+
 /* ───────── touch targets: 44px on phones and touch screens ───────── */
 @media (max-width: 760px), (pointer: coarse) {
   /* Controls that look like buttons simply grow. */

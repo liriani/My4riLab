@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
+import PageIntro from "@/components/layout/PageIntro";
 import { CleanupCloth, InkLayer, InkTip, useInkTraces, WetWipePacket } from "@/features/lab/InkTraces";
 import LabManifesto from "@/features/lab/LabManifesto";
 import { labCaseId, labCasePath, labCases } from "@/data/lab/labCases";
+import { pageIntros } from "@/data/pageIntros";
 import "@/styles/lab.css";
 
 export default function InteractionGalleryPage() {
@@ -44,6 +46,7 @@ export default function InteractionGalleryPage() {
     // Clicks bubble here after each exhibit has handled them, so the paint
     // layer never gets in the way of the interactions themselves.
     <main className="lx-page lx-page--inked" ref={pageRef} onClick={ink.onPageClick}>
+      <PageIntro intro={pageIntros.lab} />
       <section className="lx-hero">
         <p>A FIELD STUDY IN DIGITAL MISBEHAVIOR</p>
         <h1>

@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link } from "react-router";
 import CursorTrailCanvas from "@/components/motion/CursorTrailCanvas";
 import MotionProjectCard from "@/components/motion/MotionProjectCard";
+import PageIntro from "@/components/layout/PageIntro";
+import { pageIntros } from "@/data/pageIntros";
 import { projects, type ProjectCategory } from "@/data/projects";
 
 type Category = "All" | ProjectCategory;
@@ -19,6 +21,7 @@ export default function ProjectsPage() {
   return (
     <main className="projects-page">
       <CursorTrailCanvas />
+      <PageIntro intro={pageIntros.work} />
 
       <header className="projects-hero">
         <div className="projects-eyebrow">
